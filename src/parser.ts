@@ -212,7 +212,7 @@ export class Parser {
     for (const filePath of jsonFiles) {
       const config = await this.parseJsonFile(filePath)
       if (config) {
-        const key = basename(filePath, '.json') + 'Config'
+        const key = basename(filePath, '.json') + 'Json' + 'Config'
         jsonConfigs[key] = config
       }
     }
@@ -232,7 +232,7 @@ export class Parser {
     for (const filePath of yamlFiles) {
       const config = await this.parseYamlFile(filePath)
       if (config) {
-        const key = basename(filePath).replace(/\.(yml|yaml)$/, '') + 'Config'
+        const key = basename(filePath).replace(/\.(yml|yaml)$/, '') + 'Yml' + 'Config'
         yamlConfigs[key] = config
       }
     }

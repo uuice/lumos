@@ -1143,13 +1143,13 @@
       "tagId": "c9c512c9-3e0a-59e9-9f25-87a7f34c15ad"
     }
   ],
-  "configConfig": {
+  "configJsonConfig": {
     "title": "Fayfox",
     "icon": "",
     "url": "https://www.fayfox.com/",
     "type": "码畜"
   },
-  "menuConfig": [
+  "menuJsonConfig": [
     {
       "title": "首页",
       "icon": "",
@@ -1181,7 +1181,21 @@
       "target": "_target"
     }
   ],
-  "linkConfig": [
+  "linkJsonConfig": [
+    {
+      "title": "Fayfox",
+      "icon": "",
+      "url": "https://www.fayfox.com/",
+      "type": "码畜"
+    }
+  ],
+  "configYmlConfig": {
+    "title": "Fayfox",
+    "icon": "",
+    "url": "https://www.fayfox.com/",
+    "type": "码畜"
+  },
+  "linkYmlConfig": [
     {
       "title": "Fayfox",
       "icon": "",
