@@ -3,7 +3,6 @@ import * as React from 'react'
 import { renderToString } from 'react-dom/server'
 import { DatabaseSchema, POST } from '../../types.ts'
 import { Layout } from '../../components/Layout.tsx'
-import { handle404 } from '../../utils/errorHandlers.ts'
 
 // 文章详情组件
 const PostDetailPage: React.FC<{ data: DatabaseSchema, post: POST }> = ({ data, post }) => (
@@ -61,7 +60,7 @@ export default async function handler(request: Request, params: { url: string })
       } catch (error) {
         console.error('加载 404 页面失败:', error)
       }
-      
+
       return new Response('Post not found', { status: 404 })
     }
 

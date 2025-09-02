@@ -16,6 +16,6 @@
     "jsxImportSource": "react",
     "types": ["bun-types"]
   },
-  "include": ["src/**/*", "templates/**/*"],
+  "include": ["src/**/*", "templates/**/*", "assets"],
   "exclude": ["node_modules"]
 }
