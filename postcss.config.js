@@ -5,7 +5,14 @@ export default {
     'postcss-nesting': {},
     'tailwindcss': {},
     'autoprefixer': {},
-    'cssnano': {}
+    'cssnano': {
+      preset: 'default'
+    }
   },
-  map: true
+  map: {
+    inline: false,
+    annotation: true,
+    sourcesContent: true,
+    from: undefined
+  }
 }
