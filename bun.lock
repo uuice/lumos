@@ -5,6 +5,7 @@
       "name": "lumos-bun",
       "dependencies": {
         "@types/xml2js": "^0.4.14",
+        "flexsearch": "^0.8.205",
         "gray-matter": "^4.0.3",
         "highlight.js": "^11.11.1",
         "js-yaml": "^4.1.0",
@@ -381,6 +382,8 @@
     "flat-cache": ["flat-cache@3.2.0", "https://mirrors.cloud.tencent.com/npm/flat-cache/-/flat-cache-3.2.0.tgz", { "dependencies": { "flatted": "^3.2.9", "keyv": "^4.5.3", "rimraf": "^3.0.2" } }, "sha512-CYcENa+FtcUKLmhhqyctpclsq7QF38pKjZHsGNiSQF5r4FtoKDWabFDl3hzaEQMvT1LHEysw5twgLvpYYb4vbw=="],
 
     "flatted": ["flatted@3.3.3", "https://mirrors.cloud.tencent.com/npm/flatted/-/flatted-3.3.3.tgz", {}, "sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg=="],
+
+    "flexsearch": ["flexsearch@0.8.205", "https://mirrors.cloud.tencent.com/npm/flexsearch/-/flexsearch-0.8.205.tgz", {}, "sha512-REFjMqy86DKkCTJ4gIE42c9MVm9t1vUWfEub/8taixYuhvyu4jd4XmFALk5VuKW4GH4VLav8A4BJboTsslHF1w=="],
 
     "for-each": ["for-each@0.3.5", "https://mirrors.cloud.tencent.com/npm/for-each/-/for-each-0.3.5.tgz", { "dependencies": { "is-callable": "^1.2.7" } }, "sha512-dKx12eRCVIzqCxFGplyFKJMPvLEWgmNtUrpTiJIR5u97zEhRG8ySrtboPHZXx7daLxQVrl643cTzbab2tkQjxg=="],
 
