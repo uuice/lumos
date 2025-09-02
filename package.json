@@ -1,0 +1,53 @@
+{
+  "name": "lumos-bun",
+  "version": "1.0.0",
+  "description": "A simplified static blog generator powered by Bun runtime",
+  "type": "module",
+  "main": "src/cli.ts",
+  "bin": {
+    "lumos": "./lumos"
+  },
+  "scripts": {
+    "cli": "bun src/cli.ts",
+    "new": "bun src/cli.ts new",
+    "dev": "bun --watch src/cli.ts",
+    "start": "bun src/cli.ts",
+    "build": "bun run tsc",
+    "gen": "bun src/generate.ts",
+    "lint": "eslint . --ext .ts,.tsx",
+    "fix": "eslint . --ext .ts,.tsx --fix"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/js-yaml": "^4.0.0",
+    "@types/lodash": "^4.14.0",
+    "@types/md5": "^2.3.5",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "bun-types": "latest",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "prettier": "^3.3.2",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "highlight.js": "^11.11.1",
+    "js-yaml": "^4.1.0",
+    "lodash": "^4.17.21",
+    "markdown-toc": "^1.2.0",
+    "marked": "^13.0.0",
+    "md5": "^2.3.0",
+    "pinyin": "^4.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "uuid": "^11.1.0"
+  }
+}

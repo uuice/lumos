@@ -1,0 +1,8 @@
+# Bun 配置文件
+[install]
+# 安装配置
+exact = false
+
+[test]
+# 测试配置
+preload = []
