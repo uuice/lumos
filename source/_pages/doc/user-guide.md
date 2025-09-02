@@ -57,7 +57,7 @@ Usage: uuice-cli server [options]
 nestjs server
 
 Options:
--p, --port <port> server port (default: "3000")
+-p, --port <port> server port (default: "6000")
 -w --watch Listen to data.json and reload db
 -h, --help display help for command
 ```

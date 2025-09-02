@@ -14,7 +14,7 @@ const IndexPage: React.FC<{ data: DatabaseSchema }> = ({ data }) => (
         {_.take(data.posts.filter(post => post.published), 10).map(post => (
           <article key={post.id}>
             <h3>
-              <a href={post.url}>{post.title}</a>
+              <a href={`/archives${post.url?.replace('/post', '') || `/${post.alias}`}`}>{post.title}</a>
             </h3>
             <p>{post.excerpt}</p>
             <div>

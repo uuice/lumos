@@ -45,6 +45,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@types/xml2js": "^0.4.14",
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",
     "js-yaml": "^4.1.0",
@@ -55,6 +56,7 @@
     "pinyin": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "xml2js": "^0.6.2"
   }
 }
