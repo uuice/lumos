@@ -1,5 +1,6 @@
-import { join } from 'path'
+import { join, extname } from 'path'
 import { DatabaseSchema } from './types.ts'
+import { ensureAssetsDir } from './utils.ts'
 
 export interface ServerOptions {
   port: number
@@ -50,10 +51,59 @@ export class LumosServer {
     }
   }
 
+  // 处理静态资源
+  private async handleStaticAssets(pathname: string): Promise<Response | null> {
+    // 检查是否是静态资源请求
+    if (pathname.startsWith('/assets/')) {
+      try {
+        const filePath = join(process.cwd(), pathname)
+        const file = Bun.file(filePath)
+
+        if (await file.exists()) {
+          // 根据文件扩展名设置Content-Type
+          const ext = extname(pathname).toLowerCase()
+          const contentTypes: { [key: string]: string } = {
+            '.css': 'text/css',
+            '.js': 'application/javascript',
+            '.png': 'image/png',
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.gif': 'image/gif',
+            '.svg': 'image/svg+xml',
+            '.ico': 'image/x-icon',
+            '.woff': 'font/woff',
+            '.woff2': 'font/woff2',
+            '.ttf': 'font/ttf',
+            '.eot': 'application/vnd.ms-fontobject'
+          }
+
+          const contentType = contentTypes[ext] || 'application/octet-stream'
+
+          return new Response(file, {
+            headers: {
+              'Content-Type': contentType,
+              'Cache-Control': 'public, max-age=31536000' // 1年缓存
+            }
+          })
+        }
+      } catch (error) {
+        console.error('静态资源处理错误:', error)
+      }
+    }
+
+    return null
+  }
+
   // 处理请求
   private async handleRequest(request: Request): Promise<Response> {
     const url = new URL(request.url)
     const pathname = url.pathname
+
+    // 首先尝试处理静态资源
+    const staticResponse = await this.handleStaticAssets(pathname)
+    if (staticResponse) {
+      return staticResponse
+    }
 
     // 确保数据已加载
     if (!this.data) {
@@ -85,6 +135,9 @@ export class LumosServer {
 
   // 启动服务器
   async start(): Promise<void> {
+    // 确保资源目录存在
+    await ensureAssetsDir(process.cwd())
+
     await this.loadData()
     await this.initRouter()
 
@@ -97,6 +150,7 @@ export class LumosServer {
     console.log(`📡 监听端口: ${this.port}`)
     console.log(`🌐 访问地址: http://localhost:${this.port}`)
     console.log(`📊 数据文件: ${this.dataPath}`)
+    console.log(`🎨 静态资源: /assets/*`)
   }
 
   // 停止服务器

@@ -101,3 +101,5 @@ echo convBase('1tckI2JJZDz','0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNO
 ```
 
 这只是一个基本的思路，对于一般的使用也够了
+
+<!-- 测试缓存失效机制 -->

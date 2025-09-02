@@ -4,6 +4,7 @@ import { newCommand } from './commands/new.ts'
 import { DataGenerator } from './generator.ts'
 import { LumosServer } from './server.ts'
 import { join } from 'path'
+import { ensureAssetsDir } from './utils.ts'
 
 interface CLIOptions {
   [key: string]: string | boolean | number | undefined
@@ -56,6 +57,8 @@ Lumos - 基于 Bun 的静态博客生成器
 命令:
   gen                     生成 data.json 数据文件
   server                  启动开发服务器
+  build                   构建项目 (生成数据 + 处理资源)
+  assets                  处理资源文件
   new <type> <title>      创建新的文章、页面或作者
     类型: post, page, author
     选项:
@@ -70,6 +73,8 @@ Lumos - 基于 Bun 的静态博客生成器
 
 示例:
   lumos gen               # 生成数据文件
+  lumos build             # 构建项目
+  lumos assets            # 处理资源文件
   lumos server            # 启动服务器
   lumos server -p 8080    # 在端口 8080 启动服务器
   lumos server -w         # 启动服务器并监听文件变化
@@ -98,7 +103,39 @@ async function generateCommand() {
   }
 }
 
-// 服务器命令
+// 资源处理命令
+async function assetsCommand() {
+  try {
+    console.log('🎨 开始处理资源文件...')
+
+    await ensureAssetsDir(process.cwd())
+
+    console.log('✅ 资源文件处理完成!')
+  } catch (error) {
+    console.error('❌ 处理资源文件失败:', error)
+    process.exit(1)
+  }
+}
+
+// 构建命令
+async function buildCommand() {
+  try {
+    console.log('🔨 开始构建项目...')
+
+    // 1. 生成数据
+    await generateCommand()
+
+    // 2. 处理资源
+    await assetsCommand()
+
+    console.log('✅ 项目构建完成!')
+    console.log('📊 数据文件: data.json')
+    console.log('🎨 静态资源: /assets/*')
+  } catch (error) {
+    console.error('❌ 项目构建失败:', error)
+    process.exit(1)
+  }
+}
 async function serverCommand(options: CLIOptions) {
   const port = parseInt((options.port || options.p || '3000') as string)
   const dataPath = join(process.cwd(), 'data.json')
@@ -190,6 +227,14 @@ async function main() {
       case 'server':
       case 'serve':
         await serverCommand(options)
+        break
+
+      case 'build':
+        await buildCommand()
+        break
+
+      case 'assets':
+        await assetsCommand()
         break
 
       case 'new': {

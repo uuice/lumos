@@ -21,7 +21,11 @@ import {
   generateExcerpt,
   getFilesByExtension,
   markdownToHtml,
-  markdownToToc
+  markdownToToc,
+  getFileMD5,
+  readCache,
+  saveCache,
+  isCacheValid
 } from './utils.ts'
 
 export class Parser {
@@ -31,9 +35,23 @@ export class Parser {
     this.basePath = basePath
   }
 
-  // 解析 Markdown 文件为 ARTICLE 对象
+  // 解析 Markdown 文件为 ARTICLE 对象（支持缓存）
   async parseMarkdownFile(filePath: string, type: 'post' | 'page' | 'author'): Promise<ARTICLE | null> {
     try {
+      // 计算文件 MD5
+      const fileHash = await getFileMD5(filePath)
+
+      // 检查缓存是否存在且有效
+      if (await isCacheValid(this.basePath, filePath, fileHash)) {
+        const cachedData = await readCache(this.basePath, filePath, fileHash)
+        if (cachedData) {
+          console.log(`📁 使用缓存: ${filePath}`)
+          return cachedData
+        }
+      }
+
+      console.log(`🔄 解析文件: ${filePath}`)
+
       const file = Bun.file(filePath)
       const content = await file.text()
       const { data: frontMatter, content: mdContent } = matter(content)
@@ -94,6 +112,9 @@ export class Parser {
         // 保留其他自定义字段
         ...frontMatter
       }
+
+      // 保存到缓存
+      await saveCache(this.basePath, filePath, fileHash, article)
 
       return article
     } catch (error) {

@@ -13,11 +13,15 @@
     "dev": "bun --watch src/cli.ts",
     "start": "bun src/cli.ts",
     "build": "bun run tsc",
+    "build:css": "tailwindcss -i ./assets/css/input.css -o ./assets/css/output.css --watch",
+    "build:assets": "bun run build:css",
     "gen": "bun src/generate.ts",
     "lint": "eslint . --ext .ts,.tsx",
     "fix": "eslint . --ext .ts,.tsx --fix"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10",
     "@types/bun": "latest",
     "@types/js-yaml": "^4.0.0",
     "@types/lodash": "^4.14.0",
@@ -27,6 +31,7 @@
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.41.0",
     "@typescript-eslint/parser": "^8.41.0",
+    "autoprefixer": "^10.4.16",
     "bun-types": "latest",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
@@ -34,7 +39,9 @@
     "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
+    "postcss": "^8.4.32",
     "prettier": "^3.3.2",
+    "tailwindcss": "^3.4.0",
     "typescript": "^5.0.0"
   },
   "dependencies": {
