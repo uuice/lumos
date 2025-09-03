@@ -111,3 +111,25 @@ export interface DatabaseSchema {
   tags: TAG[]
   [key: string]: unknown
 }
+
+// 插件接口
+export interface Plugin {
+  name: string
+  version?: string
+  description?: string
+
+  // 生命周期钩子
+  onGenerateStart?: (generator: any) => Promise<void> | void
+  onGenerateEnd?: (data: DatabaseSchema) => Promise<DatabaseSchema> | DatabaseSchema
+  onParseFile?: (filePath: string, content: string, type: 'post' | 'page' | 'author') => Promise<string> | string
+  onRender?: (html: string, data: any) => Promise<string> | string
+  onServerStart?: (server: any) => Promise<void> | void
+}
+
+// 插件配置
+export interface PluginConfig {
+  [pluginName: string]: {
+    enabled: boolean
+    options?: Record<string, any>
+  }
+}

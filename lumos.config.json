@@ -1,0 +1,14 @@
+{
+  "plugins": {
+    "example-plugin": {
+      "enabled": true,
+      "options": {
+        "customOption": "value"
+      }
+    },
+    "word-count-plugin": {
+      "enabled": true,
+      "options": {}
+    }
+  }
+}

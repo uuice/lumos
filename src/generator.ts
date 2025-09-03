@@ -13,14 +13,17 @@ import {
   DEFAULT_AUTHOR_ALIAS,
   titleToUrl
 } from './utils.ts'
+import { PluginManager } from './plugin-manager.ts'
 
 export class DataGenerator {
   private parser: Parser
   private basePath: string
+  private pluginManager: PluginManager
 
   constructor(basePath: string = process.cwd()) {
     this.basePath = basePath
     this.parser = new Parser(basePath)
+    this.pluginManager = new PluginManager(basePath)
   }
 
   // 从文章中提取分类
@@ -123,6 +126,13 @@ export class DataGenerator {
   async generateData(): Promise<DatabaseSchema> {
     console.log('开始解析文件...')
 
+    // 加载插件
+    await this.pluginManager.loadPluginConfig()
+    await this.pluginManager.loadPlugins()
+
+    // 执行生成开始钩子
+    await this.pluginManager.executeGenerateStart(this)
+
     // 解析 Markdown 文件
     const { posts, pages, authors } = await this.parser.parseAllMarkdownFiles()
     console.log(`解析完成: ${posts.length} 篇文章, ${pages.length} 个页面, ${authors.length} 个作者`)
@@ -142,7 +152,7 @@ export class DataGenerator {
     const postTags = this.generatePostTagRelations(posts, tags)
 
     // 构建数据结构
-    const data: DatabaseSchema = {
+    let data: DatabaseSchema = {
       posts: posts.sort((a, b) => b.created_timestamp - a.created_timestamp),
       pages: pages.sort((a, b) => a.title.localeCompare(b.title)),
       authors: authors.length > 0 ? authors : [{
@@ -173,6 +183,9 @@ export class DataGenerator {
       ...jsonConfigs,
       ...yamlConfigs
     }
+
+    // 执行生成结束钩子
+    data = await this.pluginManager.executeGenerateEnd(data) || data
 
     return data
   }
