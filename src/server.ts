@@ -1,6 +1,7 @@
 import { join, extname } from 'path'
 import { DatabaseSchema } from './types.ts'
 import { PluginManager } from './plugin-manager.ts'
+import { ThemeManager } from './theme-manager.ts'
 
 export interface ServerOptions {
   port: number
@@ -13,14 +14,17 @@ export class LumosServer {
   private port: number
   private dataPath: string
   private basePath: string
-  private _router: unknown = null
+  private _themeRouter: unknown = null
+  private _apiRouter: unknown = null
   private pluginManager: PluginManager
+  private themeManager: ThemeManager
 
   constructor(options: ServerOptions) {
     this.port = options.port
     this.dataPath = options.dataPath
     this.basePath = options.basePath || process.cwd()
     this.pluginManager = new PluginManager(this.basePath)
+    this.themeManager = new ThemeManager(this.basePath)
   }
 
   // 加载数据
@@ -43,10 +47,19 @@ export class LumosServer {
   // 初始化路由器
   private async initRouter(): Promise<void> {
     try {
-      // 创建 FileSystemRouter
-      this._router = new Bun.FileSystemRouter({
+      // 加载主题配置
+      await this.themeManager.loadThemeConfig()
+
+      // 创建主题路由器，使用主题路由目录
+      this._themeRouter = new Bun.FileSystemRouter({
         style: 'nextjs',
-        dir: join(process.cwd(), 'src/routes')
+        dir: this.themeManager.getRoutesPath()
+      })
+
+      // 创建API路由器，使用默认API路由目录
+      this._apiRouter = new Bun.FileSystemRouter({
+        style: 'nextjs',
+        dir: join(this.basePath, 'src', 'routes')
       })
 
       console.log('FileSystemRouter 初始化成功')
@@ -61,8 +74,15 @@ export class LumosServer {
     // 检查是否是静态资源请求
     if (pathname.startsWith('/assets/')) {
       try {
-        const filePath = join(process.cwd(), pathname)
-        const file = Bun.file(filePath)
+        // 首先尝试从主题目录加载资源
+        let filePath = join(this.themeManager.getAssetsPath(), pathname.replace('/assets/', ''))
+        let file = Bun.file(filePath)
+
+        // 如果主题目录中没有该资源，则从默认assets目录加载
+        if (!(await file.exists())) {
+          filePath = join(process.cwd(), pathname)
+          file = Bun.file(filePath)
+        }
 
         if (await file.exists()) {
           // 根据文件扩展名设置Content-Type
@@ -116,17 +136,30 @@ export class LumosServer {
     }
 
     try {
-      // 使用 FileSystemRouter 匹配路由
-      const match = (this._router as any).match(pathname)
-
-      if (match) {
+      // 首先尝试匹配API路由
+      const apiMatch = (this._apiRouter as any).match(pathname)
+      if (apiMatch) {
         // 动态导入路由处理器
-        const routeModule = await import(match.filePath)
+        const routeModule = await import(apiMatch.filePath)
         const handler = routeModule.default
 
         if (handler) {
           // 调用路由处理器
-          const response = await handler(request, match.params || {})
+          const response = await handler(request, apiMatch.params || {})
+          return response
+        }
+      }
+
+      // 如果没有匹配的API路由，尝试匹配主题路由
+      const themeMatch = (this._themeRouter as any).match(pathname)
+      if (themeMatch) {
+        // 动态导入路由处理器
+        const routeModule = await import(themeMatch.filePath)
+        const handler = routeModule.default
+
+        if (handler) {
+          // 调用路由处理器
+          const response = await handler(request, themeMatch.params || {})
 
           // 如果是 HTML 响应，执行渲染钩子
           if (response && response.headers.get('Content-Type')?.includes('text/html')) {
@@ -153,7 +186,8 @@ export class LumosServer {
   // 处理 404 错误
   private async handle404(): Promise<Response> {
     try {
-      const notFoundPath = join(process.cwd(), 'src/routes/404.tsx')
+      // 尝试从主题目录加载 404 页面
+      const notFoundPath = join(this.themeManager.getRoutesPath(), '404.tsx')
       const notFoundModule = await import(notFoundPath)
       const handler = notFoundModule.default
 
@@ -201,7 +235,8 @@ export class LumosServer {
   // 处理服务器错误
   private async handleError(errorMessage: string, statusCode: number = 500): Promise<Response> {
     try {
-      const errorPath = join(process.cwd(), 'src/routes/error.tsx')
+      // 尝试从主题目录加载错误页面
+      const errorPath = join(this.themeManager.getRoutesPath(), 'error.tsx')
       const errorModule = await import(errorPath)
       const handler = errorModule.default
 
@@ -274,7 +309,8 @@ export class LumosServer {
       console.log(`📡 监听端口: ${this.port}`)
       console.log(`🌐 访问地址: http://localhost:${this.port}`)
       console.log(`📊 数据文件: ${this.dataPath}`)
-      console.log(`🎨 静态资源: /assets/*`)
+      console.log(`🎨 静态资源: ${this.themeManager.getAssetsPath()}/*`)
+      console.log(`🎨 当前主题: ${this.themeManager.getThemeName()}`)
     } catch (error) {
       console.error('服务器启动失败:', error)
       throw error

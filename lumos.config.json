@@ -1,4 +1,5 @@
 {
+  "theme": "default",
   "plugins": {
     "example-plugin": {
       "enabled": true,
