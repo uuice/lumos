@@ -9,6 +9,14 @@
     "word-count-plugin": {
       "enabled": true,
       "options": {}
+    },
+    "full-featured-plugin": {
+      "enabled": true,
+      "options": {}
+    },
+    "test-all-hooks-plugin": {
+      "enabled": true,
+      "options": {}
     }
   }
 }

@@ -1,21 +1,26 @@
 import { join, extname } from 'path'
 import { DatabaseSchema } from './types.ts'
-import { ensureAssetsDir } from './utils.ts'
+import { PluginManager } from './plugin-manager.ts'
 
 export interface ServerOptions {
   port: number
   dataPath: string
+  basePath?: string
 }
 
 export class LumosServer {
   private data: DatabaseSchema | null = null
   private port: number
   private dataPath: string
+  private basePath: string
   private _router: unknown = null
+  private pluginManager: PluginManager
 
   constructor(options: ServerOptions) {
     this.port = options.port
     this.dataPath = options.dataPath
+    this.basePath = options.basePath || process.cwd()
+    this.pluginManager = new PluginManager(this.basePath)
   }
 
   // 加载数据
@@ -121,7 +126,19 @@ export class LumosServer {
 
         if (handler) {
           // 调用路由处理器
-          return await handler(request, match.params || {})
+          const response = await handler(request, match.params || {})
+
+          // 如果是 HTML 响应，执行渲染钩子
+          if (response && response.headers.get('Content-Type')?.includes('text/html')) {
+            const originalHtml = await response.text()
+            const modifiedHtml = await this.pluginManager.executeRender(originalHtml, this.data)
+            return new Response(modifiedHtml, {
+              status: response.status,
+              headers: response.headers
+            })
+          }
+
+          return response
         }
       }
 
@@ -211,6 +228,8 @@ export class LumosServer {
     .error-message { color: #666; margin-bottom: 30px; }
     .btn { display: inline-block; padding: 12px 24px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; margin: 0 10px; }
     .btn:hover { background: #0056b3; }
+    .btn-secondary { background: #6c757d; }
+    .btn-secondary:hover { background: #545b62; }
   </style>
 </head>
 <body>
@@ -219,7 +238,7 @@ export class LumosServer {
     <h1 class="error-title">服务器错误</h1>
     <p class="error-message">${errorMessage}</p>
     <a href="/" class="btn">返回首页</a>
-    <a href="javascript:window.location.reload()" class="btn">刷新页面</a>
+    <button class="btn btn-secondary" onclick="location.reload()">刷新页面</button>
   </div>
 </body>
 </html>`
@@ -232,27 +251,39 @@ export class LumosServer {
 
   // 启动服务器
   async start(): Promise<void> {
-    // 确保资源目录存在
-    await ensureAssetsDir(process.cwd())
+    try {
+      // 加载插件
+      await this.pluginManager.loadPluginConfig()
+      await this.pluginManager.loadPlugins()
 
-    await this.loadData()
-    await this.initRouter()
+      // 执行服务器启动钩子
+      await this.pluginManager.executeServerStart(this)
 
-    Bun.serve({
-      port: this.port,
-      fetch: this.handleRequest.bind(this)
-    })
+      // 加载数据
+      await this.loadData()
 
-    console.log(`🚀 Lumos 服务器已启动 (使用 FileSystemRouter)`)
-    console.log(`📡 监听端口: ${this.port}`)
-    console.log(`🌐 访问地址: http://localhost:${this.port}`)
-    console.log(`📊 数据文件: ${this.dataPath}`)
-    console.log(`🎨 静态资源: /assets/*`)
+      // 初始化路由器
+      await this.initRouter()
+
+      Bun.serve({
+        port: this.port,
+        fetch: (request) => this.handleRequest(request)
+      })
+
+      console.log(`🚀 Lumos 服务器已启动 (使用 FileSystemRouter)`)
+      console.log(`📡 监听端口: ${this.port}`)
+      console.log(`🌐 访问地址: http://localhost:${this.port}`)
+      console.log(`📊 数据文件: ${this.dataPath}`)
+      console.log(`🎨 静态资源: /assets/*`)
+    } catch (error) {
+      console.error('服务器启动失败:', error)
+      throw error
+    }
   }
 
   // 停止服务器
-  stop(): void {
-    // Bun server 会自动清理
-    console.log('服务器已停止')
+  async stop(): Promise<void> {
+    // 这里可以添加服务器停止时的清理逻辑
+    console.log('🛑 服务器已停止')
   }
 }

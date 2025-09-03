@@ -27,12 +27,15 @@ import {
   saveCache,
   isCacheValid
 } from './utils.ts'
+import { PluginManager } from './plugin-manager.ts'
 
 export class Parser {
   private basePath: string
+  private pluginManager: PluginManager
 
   constructor(basePath: string = process.cwd()) {
     this.basePath = basePath
+    this.pluginManager = new PluginManager(basePath)
   }
 
   // 解析 Markdown 文件为 ARTICLE 对象（支持缓存）
@@ -53,7 +56,11 @@ export class Parser {
       console.log(`🔄 解析文件: ${filePath}`)
 
       const file = Bun.file(filePath)
-      const content = await file.text()
+      let content = await file.text()
+
+      // 执行文件解析钩子
+      content = await this.pluginManager.executeParseFile(filePath, content, type)
+
       const { data: frontMatter, content: mdContent } = matter(content)
 
       // 将 Markdown 转换为 HTML（包含代码高亮）
