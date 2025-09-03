@@ -137,7 +137,7 @@ async function buildCommand() {
   }
 }
 async function serverCommand(options: CLIOptions) {
-  const port = parseInt((options.port || options.p || '3060）') as string)
+  const port = parseInt((options.port || options.p || '3060') as string)
   const dataPath = join(process.cwd(), 'data.json')
 
   try {
@@ -151,30 +151,101 @@ async function serverCommand(options: CLIOptions) {
     }
 
     // 启动服务器
-    const server = new LumosServer({ port, dataPath })
+    let server = new LumosServer({ port, dataPath })
+    let watchers: any[] = []
 
-    if (options.watch || options.w) {
-      // 监听文件变化
-      console.log('👀 监听模式已启用')
+    // 重启服务器的函数
+    const restartServer = async () => {
+      console.log('🔄 重启服务器...')
+
+      // 清理现有的监听器
+      for (const watcher of watchers) {
+        watcher.close()
+      }
+      watchers = []
+
+      // 重新启动服务器
+      try {
+        await server.stop()
+      } catch (error) {
+        // 忽略停止服务器时的错误
+        console.error('停止服务器时出错:', error)
+      }
+
+      // 等待一段时间确保端口释放
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      // 重新创建服务器实例
+      server = new LumosServer({ port, dataPath })
+      await server.start()
+
+      // 重新设置监听
+      await setupWatchers()
+    }
+
+    // 设置监听器的函数
+    const setupWatchers = async () => {
+      // 清理现有的监听器
+      for (const watcher of watchers) {
+        watcher.close()
+      }
+      watchers = []
+
+      // 动态获取当前主题名称
+      let themeName = 'default'
+      try {
+        const configPath = join(process.cwd(), 'lumos.config.json')
+        const configFile = Bun.file(configPath)
+        if (await configFile.exists()) {
+          const configContent = await configFile.text()
+          const config = JSON.parse(configContent)
+          themeName = config.theme || 'default'
+        }
+      } catch (error) {
+        console.warn('警告: 无法加载主题配置，使用默认主题:', error)
+      }
 
       // 使用 Bun 的文件监听 API
-      const { watch } = await import('fs')
-
-      const watchDirs = ['source/_posts', 'source/_pages', 'source/_authors', 'source/_jsons', 'source/_ymls']
+      const watchDirs = [
+        'source/_posts',
+        'source/_pages',
+        'source/_authors',
+        'source/_jsons',
+        'source/_ymls',
+        `themes/${themeName}`,
+      ]
 
       for (const dir of watchDirs) {
         try {
-          const watcher = watch(dir, { recursive: true }, async (eventType, filename) => {
+          const fullPath = join(process.cwd(), dir)
+
+          // 检查目录是否存在
+          const stat = await Bun.file(fullPath).stat().catch(() => null)
+          if (!stat || !stat.isDirectory()) {
+            console.warn(`监听目录不存在或不是目录: ${fullPath}`)
+            continue
+          }
+
+          // 使用 fs.watch 监听文件变化
+          const fs = await import('fs')
+          const watcher = fs.watch(fullPath, { recursive: true }, async (eventType, filename) => {
             if (filename) {
               console.log(`📝 检测到文件变化: ${dir}/${filename}`)
-              console.log('🔄 重新生成数据...')
 
-              try {
-                await generateCommand()
-                await server.loadData()
-                console.log('✅ 数据已更新')
-              } catch (error) {
-                console.error('❌ 更新数据失败:', error)
+              // 如果是主题目录的文件变化，重启服务器
+              if (dir.startsWith(`themes/${themeName}`)) {
+                console.log('🔄 主题文件发生变化，正在重启服务器...')
+                await restartServer()
+              } else {
+                // 内容文件变化，重新生成数据
+                console.log('🔄 重新生成数据...')
+                try {
+                  await generateCommand()
+                  await server.loadData()
+                  console.log('✅ 数据已更新')
+                } catch (error) {
+                  console.error('❌ 更新数据失败:', error)
+                }
               }
             }
           })
@@ -183,10 +254,19 @@ async function serverCommand(options: CLIOptions) {
           watcher.on('error', (error) => {
             console.warn(`监听目录 ${dir} 失败:`, error)
           })
+
+          watchers.push(watcher)
+          console.log(`👀 正在监听目录: ${fullPath}`)
         } catch (error) {
           console.warn(`无法监听目录 ${dir}:`, error)
         }
       }
+    }
+
+    if (options.watch || options.w) {
+      // 监听文件变化
+      console.log('👀 监听模式已启用')
+      await setupWatchers()
     }
 
     await server.start()

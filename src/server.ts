@@ -18,6 +18,7 @@ export class LumosServer {
   private _apiRouter: unknown = null
   private pluginManager: PluginManager
   private themeManager: ThemeManager
+  private serverInstance: ReturnType<typeof Bun.serve> | null = null
 
   constructor(options: ServerOptions) {
     this.port = options.port
@@ -300,7 +301,7 @@ export class LumosServer {
       // 初始化路由器
       await this.initRouter()
 
-      Bun.serve({
+      this.serverInstance = Bun.serve({
         port: this.port,
         fetch: (request) => this.handleRequest(request)
       })
@@ -319,7 +320,12 @@ export class LumosServer {
 
   // 停止服务器
   async stop(): Promise<void> {
-    // 这里可以添加服务器停止时的清理逻辑
-    console.log('🛑 服务器已停止')
+    if (this.serverInstance) {
+      this.serverInstance.stop()
+      this.serverInstance = null
+      console.log('🛑 服务器已停止')
+    } else {
+      console.log('🛑 服务器实例不存在')
+    }
   }
 }
