@@ -2,6 +2,14 @@
 
 基于 Bun 运行时的高性能静态博客生成器，使用 JSX 组件和现代化技术栈。专为低配置服务器优化，提供轻量级博客解决方案。
 
+## 📚 相关文档
+
+想要深入了解 Lumos 的更多功能和使用方法？请查看以下文档：
+
+- [Lumos 项目介绍](./source/_pages/lumos-introduce.md) - 项目的详细介绍和架构说明
+- [Lumos CLI 使用指南](./source/_pages/lumos-cli-usage.md) - CLI 命令的详细使用方法
+- [Lumos 二次开发教程](./source/_pages/lumos-development.md) - 插件和主题开发的详细教程
+
 ## ✨ 特性
 
 - ⚡ **极快启动**: 基于 Bun 运行时，冷启动时间 < 100ms
@@ -15,36 +23,8 @@
 - 📊 **智能缓存**: 基于 MD5 的文件缓存机制，提升构建性能
 - 🌐 **静态资源管理**: 自动处理 CSS、JS、图片等静态资源
 - 🔧 **强大的 CLI**: 完整的命令行工具，支持创建、构建、服务等功能
-
-## 📁 项目结构
-
-```
-lumos/
-├── source/               # 内容源目录
-│   ├── _authors/         # 作者 Markdown 文件
-│   ├── _pages/          # 页面 Markdown 文件
-│   ├── _posts/          # 文章 Markdown 文件
-│   ├── _jsons/          # JSON 配置文件
-│   └── _ymls/           # YAML 配置文件
-├── src/                  # 源码目录
-│   ├── cli.ts           # CLI 命令行工具
-│   ├── components/      # React 组件
-│   ├── routes/          # 路由处理器
-│   ├── server.ts        # HTTP 服务器
-│   ├── generator.ts     # 数据生成器
-│   └── utils.ts         # 工具函数
-├── assets/               # 静态资源目录
-│   ├── css/             # 样式文件
-│   ├── js/              # JavaScript 文件
-│   ├── images/          # 图片资源
-│   └── fonts/           # 字体文件
-├── templates/            # 模板文件
-├── package.json          # 项目配置
-├── tsconfig.json         # TypeScript 配置
-├── tailwind.config.js    # Tailwind CSS 配置
-├── lumos                 # CLI 可执行文件
-└── data.json             # 生成的数据文件
-```
+- 🔌 **插件系统**: 支持生命周期钩子的可扩展插件架构
+- 🎨 **主题系统**: 支持自定义主题和组件的灵活主题机制
 
 ## 🚀 安装
 
@@ -138,9 +118,235 @@ bun run dev
 lumos gen && lumos server -w
 ```
 
+## 📁 项目结构
+
+```
+lumos/
+├── source/ # 内容源目录
+│ ├── _authors/ # 作者 Markdown 文件
+│ ├── _pages/ # 页面 Markdown 文件
+│ ├── _posts/ # 文章 Markdown 文件
+│ ├── _jsons/ # JSON 配置文件
+│ └── _ymls/ # YAML 配置文件
+├── src/ # 源码目录
+│ ├── cli.ts # CLI 命令行工具
+│ ├── components/ # React 组件
+│ ├── routes/ # 路由处理器
+│ ├── server.ts # HTTP 服务器
+│ ├── generator.ts # 数据生成器
+│ └── utils.ts # 工具函数
+├── assets/ # 静态资源目录
+│ ├── css/ # 样式文件
+│ ├── js/ # JavaScript 文件
+│ ├── images/ # 图片资源
+│ └── fonts/ # 字体文件
+├── templates/ # 模板文件
+├── plugins/ # 插件目录
+├── themes/ # 主题目录
+│ └── default/ # 默认主题
+├── package.json # 项目配置
+├── tsconfig.json # TypeScript 配置
+├── tailwind.config.js # Tailwind CSS 配置
+├── lumos.config.json # 插件和主题配置
+├── lumos # CLI 可执行文件
+└── data.json # 生成的数据文件
+```
+
+## 🧩 插件系统
+
+Lumos 提供了强大的插件系统，允许开发者通过插件扩展博客的功能。插件系统基于生命周期钩子，可以在博客生成和运行的不同阶段执行自定义逻辑。
+
+### 插件架构
+
+插件系统基于以下核心概念：
+
+1. **生命周期钩子**: 插件可以在特定的生命周期阶段执行代码
+2. **配置管理**: 插件可以通过配置文件进行配置
+3. **易于扩展**: 插件可以轻松地添加新功能
+
+### 生命周期钩子
+
+插件支持以下生命周期钩子：
+
+- `onGenerateStart(generator)`: 数据生成开始前调用
+- `onGenerateEnd(data)`: 数据生成结束后调用
+- `onParseFile(filePath, content, type)`: 解析文件时调用
+- `onRender(html, data)`: 渲染页面时调用
+- `onServerStart(server)`: 服务器启动时调用
+
+### 插件配置
+
+插件配置在项目根目录的 `lumos.config.json` 文件中：
+
+```json
+{
+  "plugins": {
+    "example-plugin": {
+      "enabled": true,
+      "options": {
+        "customOption": "value"
+      }
+    }
+  }
+}
+```
+
+### 创建插件
+
+插件是一个导出默认对象的 TypeScript 文件，放置在 `plugins/` 目录中：
+
+```typescript
+// plugins/example-plugin.ts
+import { Plugin } from '../src/types.ts'
+
+const examplePlugin: Plugin = {
+  name: 'example-plugin',
+  version: '1.0.0',
+  description: '示例插件',
+
+  async onGenerateStart(generator: any) {
+    console.log('生成开始')
+  },
+
+  async onGenerateEnd(data: any) {
+    console.log('生成结束')
+    return data
+  },
+
+  async onParseFile(filePath: string, content: string, type: 'post' | 'page' | 'author') {
+    console.log(`解析文件: ${filePath}`)
+    return content
+  },
+
+  async onRender(html: string, data: any) {
+    console.log('渲染页面')
+    return html
+  },
+
+  async onServerStart(server: any) {
+    console.log('服务器启动')
+  }
+}
+
+export default examplePlugin
+```
+
+## 🎨 主题系统
+
+Lumos 支持灵活的主题系统，允许开发者创建和使用自定义主题来改变博客的外观和功能。
+
+### 主题结构
+
+主题文件位于 `themes/` 目录中，每个主题都有自己的目录：
+
+```
+themes/
+└── default/              # 主题目录
+    ├── assets/           # 主题静态资源
+    │   ├── styles/       # 样式文件
+    │   └── images/       # 图片资源
+    ├── components/       # 主题组件
+    │   └── Layout.tsx    # 布局组件
+    └── routes/           # 主题路由
+        ├── index.tsx     # 首页
+        ├── posts.tsx     # 文章列表页
+        └── post/[url].tsx # 文章详情页
+```
+
+### 主题配置
+
+主题配置在 `lumos.config.json` 文件中：
+
+```json
+{
+  "theme": "default"
+}
+```
+
+### 创建主题
+
+创建新主题只需在 `themes/` 目录中创建新文件夹，并按照主题结构添加文件。
+
+#### 1. 创建主题目录结构
+
+```bash
+mkdir -p themes/my-theme/{assets,components,routes}
+```
+
+#### 2. 创建布局组件
+
+```tsx
+// themes/my-theme/components/Layout.tsx
+import * as React from 'react'
+
+interface LayoutProps {
+title: string
+children: React.ReactNode
+}
+
+export const Layout: React.FC<LayoutProps> = ({ title, children }) => {
+return (
+
+<html>
+<head>
+<title>{title}</title>
+<link rel="stylesheet" href="/assets/styles/theme.css" />
+</head>
+<body>
+<header>
+<h1>我的自定义主题</h1>
+</header>
+<main>{children}</main>
+<footer>
+<p>&copy; 2024 我的博客</p>
+</footer>
+</body>
+</html>
+)
+}
+
+```
+
+#### 3. 创建路由页面
+
+```tsx
+// themes/my-theme/routes/index.tsx
+import * as React from 'react'
+import { renderToString } from 'react-dom/server'
+import { Layout } from '../components/Layout.tsx'
+
+const HomePage: React.FC = () => (
+  <div>
+    <h2>欢迎来到我的博客</h2>
+    <p>这是使用自定义主题的首页</p>
+  </div>
+)
+
+export default async function handler(_request: Request): Promise<Response> {
+  const html = '<!DOCTYPE html>' + renderToString(React.createElement(HomePage))
+  return new Response(html, {
+    headers: { 'Content-Type': 'text/html; charset=utf-8' }
+  })
+}
+```
+
+#### 4. 配置主题
+
+在 `lumos.config.json` 中切换到新主题：
+
+```json
+{
+  "theme": "my-theme"
+}
+```
+
+### 主题继承
+
+主题支持继承机制，可以通过扩展默认主题来创建自定义主题，只需覆盖需要修改的部分。
+
 ## 📄 Markdown 文件格式
 
-### 文章 (\_posts/\*.md)
+### 文章 (_posts/*.md)
 
 ```markdown
 ---
@@ -168,7 +374,7 @@ featured: false # 是否置顶
 - 中文 URL 友好化
 ```
 
-### 页面 (\_pages/\*.md)
+### 页面 (_pages/*.md)
 
 ```markdown
 ---
@@ -183,7 +389,7 @@ navOrder: 1 # 导航栏排序
 这里是页面内容...
 ```
 
-### 作者 (\_authors/\*.md)
+### 作者 (_authors/*.md)
 
 ```markdown
 ---
@@ -204,7 +410,7 @@ social:
 
 ## ⚙️ 配置文件
 
-### JSON 配置 (\_jsons/\*.json)
+### JSON 配置 (_jsons/*.json)
 
 ```json
 {
@@ -225,7 +431,7 @@ social:
 }
 ```
 
-### YAML 配置 (\_ymls/\*.yml)
+### YAML 配置 (_ymls/*.yml)
 
 ```yaml
 # 主题配置
@@ -421,7 +627,7 @@ interface POST {
 
 ## 📝 更新日志
 
-### v1.0.0 (2024-01-01)
+### v1.0.0 (2025-09-01)
 
 - ✨ 初始版本发布
 - ⚡ 基于 Bun 运行时重写，性能大幅提升
@@ -433,6 +639,17 @@ interface POST {
 - 🔍 SEO 优化，支持中文 URL 转拼音
 - 📦 静态资源管理和服务
 - 🔥 开发模式热更新支持
+
+## 🚀 路线图
+
+- [x] 支持多主题系统
+- [ ] 图片优化和懒加载
+- [x] 全文搜索功能
+- [ ] PWA 支持
+- [ ] 多语言国际化
+- [ ] 评论系统集成
+- [ ] 性能监控和分析
+- [ ] Docker 容器化支持
 
 ## 🤝 贡献
 
@@ -449,14 +666,3 @@ interface POST {
 ## 📄 许可证
 
 MIT License
-
-## 🚀 路线图
-
-- [ ] 支持多主题系统
-- [ ] 图片优化和懒加载
-- [ ] 全文搜索功能
-- [ ] PWA 支持
-- [ ] 多语言国际化
-- [ ] 评论系统集成
-- [ ] 性能监控和分析
-- [ ] Docker 容器化支持

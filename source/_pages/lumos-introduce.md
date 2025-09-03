@@ -14,6 +14,32 @@ published: true
 
 Lumos 是一个现代化的静态博客生成器，基于 Bun 运行时构建，采用 TypeScript + React + JSX 的技术栈，为开发者提供高性能、易扩展的博客解决方案。
 
+## 📚 相关文档
+
+想要深入了解 Lumos 的更多功能和使用方法？请查看以下文档：
+
+- [README 文档](../README.md) - 项目完整文档
+- [Lumos CLI 使用指南](./lumos-cli-usage.md) - CLI 命令的详细使用方法
+- [Lumos 二次开发教程](./lumos-development.md) - 插件和主题开发的详细教程
+
+## 🎯 项目概述
+
+### 核心价值
+
+Lumos 旨在为开发者提供一个高性能、易用且可扩展的静态博客解决方案：
+
+- 🚀 **极致性能**: 基于 Bun 运行时，冷启动时间 < 100ms
+- ⚛️ **现代化技术栈**: TypeScript + React + JSX，提供优秀的开发体验
+- 🔧 **易扩展性**: 插件系统和主题系统，轻松定制功能和外观
+- 📱 **响应式设计**: 移动端友好的界面设计
+
+### 适用场景
+
+- 👨‍💻 **个人技术博客**: 适合需要高性能博客系统的内容创作者
+- 📚 **技术文档**: 项目文档、API 文档的理想选择
+- 🏢 **企业网站**: 公司官网、产品介绍等静态网站
+- 🌟 **开源项目**: 需要项目文档和展示的开源项目
+
 ## 🚀 核心特性
 
 ### 极速性能
@@ -34,6 +60,11 @@ Lumos 是一个现代化的静态博客生成器，基于 Bun 运行时构建，
 - **热更新**: 文件变化自动重新生成，支持监听模式
 - **CLI 工具**: 完整的命令行工具链，支持创建、构建、服务等功能
 - **零配置**: 开箱即用，一键启动开发环境
+
+### 扩展能力
+
+- **🔌 插件系统**: 基于生命周期钩子的可扩展插件架构
+- **🎨 主题系统**: 支持自定义主题和组件的灵活主题机制
 
 ## 🏗️ 项目架构
 
@@ -122,6 +153,198 @@ export const Layout: React.FC<{
 - 🔍 SEO 优化（meta 标签、结构化数据）
 - 🔎 搜索功能
 - ✨ 现代化 UI 设计
+
+### 插件系统架构
+
+Lumos 提供了强大的插件系统，允许开发者通过插件扩展博客的功能。插件系统基于生命周期钩子，可以在博客生成和运行的不同阶段执行自定义逻辑。
+
+#### 核心概念
+
+- **生命周期钩子**: 插件可以在特定的生命周期阶段执行代码
+- **配置管理**: 插件可以通过配置文件进行配置
+- **易于扩展**: 插件可以轻松地添加新功能
+
+#### 生命周期钩子
+
+插件支持以下生命周期钩子：
+
+- `onGenerateStart(generator)`: 数据生成开始前调用
+- `onGenerateEnd(data)`: 数据生成结束后调用
+- `onParseFile(filePath, content, type)`: 解析文件时调用
+- `onRender(html, data)`: 渲染页面时调用
+- `onServerStart(server)`: 服务器启动时调用
+
+#### 插件配置
+
+插件配置在项目根目录的 `lumos.config.json` 文件中：
+
+```json
+{
+  "plugins": {
+    "example-plugin": {
+      "enabled": true,
+      "options": {
+        "customOption": "value"
+      }
+    }
+  }
+}
+```
+
+#### 创建插件
+
+插件是一个导出默认对象的 TypeScript 文件，放置在 `plugins/` 目录中：
+
+```typescript
+// plugins/example-plugin.ts
+import { Plugin } from '../src/types.ts'
+
+const examplePlugin: Plugin = {
+  name: 'example-plugin',
+  version: '1.0.0',
+  description: '示例插件',
+
+  async onGenerateStart(generator: any) {
+    console.log('生成开始')
+  },
+
+  async onGenerateEnd(data: any) {
+    console.log('生成结束')
+    return data
+  },
+
+  async onParseFile(filePath: string, content: string, type: 'post' | 'page' | 'author') {
+    console.log(`解析文件: ${filePath}`)
+    return content
+  },
+
+  async onRender(html: string, data: any) {
+    console.log('渲染页面')
+    return html
+  },
+
+  async onServerStart(server: any) {
+    console.log('服务器启动')
+  }
+}
+
+export default examplePlugin
+```
+
+如需了解更多插件开发的详细信息，请参阅 [Lumos 二次开发教程](./lumos-development.md)。
+
+### 主题系统架构
+
+Lumos 支持灵活的主题系统，允许开发者创建和使用自定义主题来改变博客的外观和功能。
+
+#### 主题结构
+
+主题文件位于 `themes/` 目录中，每个主题都有自己的目录：
+
+```
+themes/
+└── default/              # 主题目录
+    ├── assets/           # 主题静态资源
+    │   ├── styles/       # 样式文件
+    │   └── images/       # 图片资源
+    ├── components/       # 主题组件
+    │   └── Layout.tsx    # 布局组件
+    └── routes/           # 主题路由
+        ├── index.tsx     # 首页
+        ├── posts.tsx     # 文章列表页
+        └── post/[url].tsx # 文章详情页
+```
+
+#### 主题配置
+
+主题配置在 `lumos.config.json` 文件中：
+
+```json
+{
+  "theme": "default"
+}
+```
+
+#### 创建主题
+
+创建新主题只需在 `themes/` 目录中创建新文件夹，并按照主题结构添加文件。
+
+##### 1. 创建主题目录结构
+
+```bash
+mkdir -p themes/my-theme/{assets,components,routes}
+```
+
+##### 2. 创建布局组件
+
+```tsx
+// themes/my-theme/components/Layout.tsx
+import * as React from 'react'
+
+interface LayoutProps {
+  title: string
+  children: React.ReactNode
+}
+
+export const Layout: React.FC<LayoutProps> = ({ title, children }) => {
+  return (
+    <html>
+      <head>
+        <title>{title}</title>
+        <link rel="stylesheet" href="/assets/styles/theme.css" />
+      </head>
+      <body>
+        <header>
+          <h1>我的自定义主题</h1>
+        </header>
+        <main>{children}</main>
+        <footer>
+          <p>&copy; 2024 我的博客</p>
+        </footer>
+      </body>
+    </html>
+  )
+}
+```
+
+##### 3. 创建路由页面
+
+```tsx
+// themes/my-theme/routes/index.tsx
+import * as React from 'react'
+import { renderToString } from 'react-dom/server'
+import { Layout } from '../components/Layout.tsx'
+
+const HomePage: React.FC = () => (
+  <div>
+    <h2>欢迎来到我的博客</h2>
+    <p>这是使用自定义主题的首页</p>
+  </div>
+)
+
+export default async function handler(_request: Request): Promise<Response> {
+  const html = '<!DOCTYPE html>' + renderToString(React.createElement(HomePage))
+  return new Response(html, {
+    headers: { 'Content-Type': 'text/html; charset=utf-8' }
+  })
+}
+```
+
+##### 4. 配置主题
+
+在 `lumos.config.json` 中切换到新主题：
+
+```json
+{
+  "theme": "my-theme"
+}
+```
+
+#### 主题继承
+
+主题支持继承机制，可以通过扩展默认主题来创建自定义主题，只需覆盖需要修改的部分。
+
+如需了解更多主题开发的详细信息，请参阅 [Lumos 二次开发教程](./lumos-development.md)。
 
 ### 路由系统
 
@@ -253,6 +476,8 @@ lumos new page "关于我们"
 lumos new author "张三"
 ```
 
+关于 CLI 命令的详细使用方法，请参阅 [Lumos CLI 使用指南](./lumos-cli-usage.md)。
+
 ### 2. 开发调试
 
 ```bash
@@ -332,9 +557,9 @@ lumos gen
 
 ## 🔮 未来规划
 
-- [ ] 🎨 多主题系统支持
+- [x] 🎨 多主题系统支持
 - [ ] 🖼️ 图片优化和懒加载
-- [ ] 🔍 全文搜索功能
+- [x] 🔍 全文搜索功能
 - [ ] 📱 PWA 支持
 - [ ] 🌍 多语言国际化
 - [ ] 💬 评论系统集成
