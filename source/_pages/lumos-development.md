@@ -5,14 +5,14 @@ cover:
 created_time: 2025-09-02 17:57:35
 updated_time: 2025-09-02 17:57:35
 categories: ['开发教程', '技术文档']
-tags: ['Bun', 'TypeScript', 'React', '二次开发', '教程']
-excerpt: 详细的 Lumos 静态博客生成器二次开发教程，包括项目架构解析、自定义组件开发、路由扩展、数据处理等核心功能。
+tags: ['Bun', 'TypeScript', 'React', '二次开发', '教程', 'FileSystemRouter']
+excerpt: 详细的 Lumos 静态博客生成器二次开发教程，基于 Bun 运行时，包括项目架构解析、自定义组件开发、路由扩展等核心功能。
 published: true
 ---
 
 # 🛠️ Lumos 二次开发教程
 
-本教程将深入介绍如何对 Lumos 静态博客生成器进行二次开发，包括项目架构解析、自定义组件开发、路由扩展、数据处理等核心功能。适合有一定前端开发经验的开发者。
+本教程将深入介绍如何对 Lumos 静态博客生成器进行二次开发，包括项目架构解析、自定义组件开发、路由扩展等核心功能。适合有一定前端开发经验的开发者。
 
 ## 🎯 学习目标
 
@@ -21,8 +21,6 @@ published: true
 - 🏗️ **项目架构理解**: 深入理解 Lumos 的核心架构和设计理念
 - ⚛️ **React 组件开发**: 创建自定义的 React 组件和布局
 - 🛣️ **路由扩展**: 添加新的页面路由和 API 接口
-- 📊 **数据处理**: 自定义数据解析和处理逻辑
-- 🚀 **性能优化**: 优化构建和运行时性能
 - 🧪 **测试调试**: 建立完善的测试和调试环境
 
 ## 🏗️ 项目架构深度解析
@@ -73,8 +71,7 @@ lumos/
 
 ### 📋 前置要求
 
-- 🚀 **Bun**: 现代化的 JavaScript 运行时
-- 📝 **Node.js**: 版本 18+ (可选，用于兼容性测试)
+- 🚀 **Bun**: 现代化的 JavaScript 运行时（必需）
 - 🎨 **代码编辑器**: VS Code 或 WebStorm
 - 🔧 **Git**: 版本控制工具
 
@@ -126,12 +123,47 @@ bun run dev
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/src/cli.ts",
-      "args": ["server", "-p", "3000"],
+      "args": ["server", "-p", "3060"],
       "runtimeExecutable": "bun",
       "console": "integratedTerminal"
     }
   ]
 }
+```
+
+### 🚀 Bun 特有功能
+
+#### 1. 使用 Bun 的 FileSystemRouter
+
+```typescript
+// src/server.ts 中的路由配置
+const router = new Bun.FileSystemRouter({
+  style: 'nextjs',
+  dir: join(process.cwd(), 'src/routes')
+})
+```
+
+#### 2. 使用 Bun 的文件 API
+
+```typescript
+// 读取文件
+const file = Bun.file('data.json')
+const content = await file.text()
+
+// 写入文件
+await Bun.write('output.json', JSON.stringify(data, null, 2))
+```
+
+#### 3. 使用 Bun 的 HTTP 服务器
+
+```typescript
+// 创建 HTTP 服务器
+const server = Bun.serve({
+  port: 3000,
+  fetch(request) {
+    return new Response('Hello from Bun!')
+  }
+})
 ```
 
 ## ⚛️ React 组件开发
@@ -437,133 +469,87 @@ async function handlePost(data: DatabaseSchema, request: Request): Promise<Respo
 }
 ```
 
-## 📊 数据处理扩展
+## 📊 数据使用
 
-### 🔧 自定义数据解析器
+### 🔍 在组件中使用数据
 
-#### 1. 扩展 Parser 类
+#### 1. 获取全局数据
 
 ```typescript
-// src/parsers/CustomParser.ts
-import { Parser } from '../parser.ts'
-import { ARTICLE } from '../types.ts'
-
-export class CustomParser extends Parser {
-  // 重写 Markdown 解析方法
-  async parseMarkdownFile(
-    filePath: string,
-    type: 'post' | 'page' | 'author'
-  ): Promise<ARTICLE | null> {
-    const article = await super.parseMarkdownFile(filePath, type)
-
-    if (article) {
-      // 添加自定义字段
-      article.customField = this.extractCustomField(article.content)
-      article.readingTime = this.calculateReadingTime(article.content)
+// 在路由处理器中获取数据
+export default async function handler(_request: Request): Promise<Response> {
+  try {
+    const data = (globalThis as any).__LUMOS_DATA__ as DatabaseSchema
+    if (!data) {
+      return new Response('Server not initialized', { status: 500 })
     }
 
-    return article
-  }
+    // 使用数据进行渲染
+    const html = '<!DOCTYPE html>' + renderToString(React.createElement(MyComponent, { data }))
 
-  // 自定义字段提取
-  private extractCustomField(content: string): string {
-    // 实现自定义逻辑
-    const match = content.match(/<!-- custom: (.+?) -->/)
-    return match ? match[1] : ''
-  }
-
-  // 计算阅读时间
-  private calculateReadingTime(content: string): number {
-    const wordsPerMinute = 200
-    const wordCount = content.split(/\s+/).length
-    return Math.ceil(wordCount / wordsPerMinute)
+    return new Response(html, {
+      headers: { 'Content-Type': 'text/html; charset=utf-8' }
+    })
+  } catch (error) {
+    console.error('渲染错误:', error)
+    return new Response('Internal Server Error', { status: 500 })
   }
 }
 ```
 
-#### 2. 自定义数据生成器
+#### 2. 在组件中处理数据
 
 ```typescript
-// src/generators/CustomGenerator.ts
-import { DataGenerator } from '../generator.ts'
-import { DatabaseSchema } from '../types.ts'
+// 在 React 组件中使用数据
+const MyComponent: React.FC<{ data: DatabaseSchema }> = ({ data }) => {
+  // 获取最新文章
+  const latestPosts = data.posts
+    .filter(post => post.published)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 5)
 
-export class CustomDataGenerator extends DataGenerator {
-  async generateData(): Promise<DatabaseSchema> {
-    const data = await super.generateData()
+  // 获取分类统计
+  const categoryStats = data.categories.map(category => ({
+    ...category,
+    postCount: data.posts.filter(post =>
+      post.categories?.includes(category.title)
+    ).length
+  }))
 
-    // 添加自定义数据
-    data.customStats = this.generateCustomStats(data)
-    data.featuredPosts = this.getFeaturedPosts(data.posts)
+  return (
+    <div>
+      <h2>最新文章</h2>
+      {latestPosts.map(post => (
+        <div key={post.id}>
+          <h3>{post.title}</h3>
+          <p>{post.excerpt}</p>
+        </div>
+      ))}
 
-    return data
-  }
-
-  private generateCustomStats(data: DatabaseSchema) {
-    return {
-      totalWords: data.posts.reduce((sum, post) => sum + (post.wordCount || 0), 0),
-      averageReadingTime: this.calculateAverageReadingTime(data.posts),
-      mostPopularCategory: this.getMostPopularCategory(data.posts)
-    }
-  }
-
-  private getFeaturedPosts(posts: any[]) {
-    return posts.filter(post => post.featured).slice(0, 5)
-  }
-
-  private calculateAverageReadingTime(posts: any[]) {
-    const totalTime = posts.reduce((sum, post) => sum + (post.readingTime || 0), 0)
-    return Math.round(totalTime / posts.length)
-  }
-
-  private getMostPopularCategory(posts: any[]) {
-    const categoryCount: { [key: string]: number } = {}
-    posts.forEach(post => {
-      post.categories?.forEach((cat: string) => {
-        categoryCount[cat] = (categoryCount[cat] || 0) + 1
-      })
-    })
-
-    return Object.entries(categoryCount).sort(([, a], [, b]) => b - a)[0]?.[0] || '未分类'
-  }
+      <h2>分类统计</h2>
+      {categoryStats.map(category => (
+        <div key={category.id}>
+          <span>{category.title}: {category.postCount} 篇</span>
+        </div>
+      ))}
+    </div>
+  )
 }
 ```
 
 ## 🧪 测试与调试
 
-### 🔍 单元测试
+### 🔍 基本测试
 
-#### 1. 测试环境配置
-
-```bash
-# 安装测试依赖
-bun add -d vitest @testing-library/react @testing-library/jest-dom
-```
+#### 1. 组件测试
 
 ```typescript
-// vitest.config.ts
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  test: {
-    environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts']
-  }
-})
-```
-
-#### 2. 组件测试
-
-```typescript
-// src/components/__tests__/Layout.test.tsx
+// 简单的组件测试示例
 import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/react'
 import { Layout } from '../Layout.tsx'
-import { DatabaseSchema } from '../../types.ts'
 
-const mockData: DatabaseSchema = {
+const mockData = {
   posts: [],
   pages: [],
   authors: [],
@@ -582,56 +568,6 @@ describe('Layout Component', () => {
     expect(getByText('Test Page')).toBeInTheDocument()
     expect(getByText('Test Content')).toBeInTheDocument()
   })
-
-  it('includes meta tags', () => {
-    const { container } = render(
-      <Layout title="Test Page" data={mockData}>
-        <div>Test Content</div>
-      </Layout>
-    )
-
-    expect(container.querySelector('title')).toHaveTextContent('Test Page')
-    expect(container.querySelector('meta[charset="utf-8"]')).toBeInTheDocument()
-  })
-})
-```
-
-#### 3. API 测试
-
-```typescript
-// src/routes/api/__tests__/posts.test.ts
-import { describe, it, expect, beforeEach } from 'vitest'
-import handler from '../posts.ts'
-
-describe('Posts API', () => {
-  beforeEach(() => {
-    // 模拟全局数据
-    ;(globalThis as any).__LUMOS_DATA__ = {
-      posts: [
-        {
-          id: '1',
-          title: 'Test Post',
-          alias: 'test-post',
-          content: 'Test content',
-          published: true
-        }
-      ],
-      pages: [],
-      authors: [],
-      categories: [],
-      tags: []
-    }
-  })
-
-  it('returns posts list', async () => {
-    const request = new Request('http://localhost:3000/api/posts')
-    const response = await handler(request)
-    const data = await response.json()
-
-    expect(response.status).toBe(200)
-    expect(data).toHaveLength(1)
-    expect(data[0].title).toBe('Test Post')
-  })
 })
 ```
 
@@ -640,7 +576,7 @@ describe('Posts API', () => {
 #### 1. 开发模式调试
 
 ```typescript
-// src/utils/debug.ts
+// 简单的调试工具
 export function debugLog(message: string, data?: any) {
   if (process.env.NODE_ENV === 'development') {
     console.log(`[DEBUG] ${message}`, data)
@@ -654,124 +590,60 @@ export function debugError(error: Error, context?: string) {
 }
 ```
 
-#### 2. 性能监控
-
-```typescript
-// src/utils/performance.ts
-export function measurePerformance<T>(name: string, fn: () => T): T {
-  const start = performance.now()
-  const result = fn()
-  const end = performance.now()
-
-  console.log(`[PERF] ${name}: ${end - start}ms`)
-  return result
-}
-
-// 使用示例
-const data = measurePerformance('parseMarkdown', () => {
-  return parseMarkdownFile(filePath)
-})
-```
-
-## 🚀 部署与优化
-
-### 📦 生产构建
-
-#### 1. 构建配置
+#### 2. 服务器调试
 
 ```bash
-# 生产构建
-bun run build
+# 启动开发服务器进行调试
+bun run dev
 
+# 查看服务器日志
+tail -f logs/server.log
+```
+
+## 🚀 部署
+
+### 📦 基本部署
+
+#### 1. 构建项目
+
+```bash
 # 生成数据文件
 lumos gen
 
-# 构建静态资源
-lumos assets
+# 构建项目
+bun run build
+
+# 启动生产服务器
+lumos server -p 3000
 ```
 
-#### 2. 性能优化
-
-```typescript
-// src/utils/optimization.ts
-export function optimizeImages(images: string[]) {
-  // 图片压缩和格式转换
-  return images.map(img => ({
-    src: img,
-    webp: img.replace(/\.(jpg|jpeg|png)$/, '.webp'),
-    avif: img.replace(/\.(jpg|jpeg|png)$/, '.avif')
-  }))
-}
-
-export function generateCriticalCSS(html: string) {
-  // 提取关键 CSS
-  // 实现内联关键样式
-  return html
-}
-```
-
-### 🌐 部署选项
-
-#### 1. 静态部署
+#### 2. 环境变量配置
 
 ```bash
-# 构建静态文件
-lumos build --static
-
-# 部署到 CDN
-aws s3 sync ./dist s3://your-bucket --delete
+# .env 文件
+NODE_ENV=production
+PORT=3000
+HOST=0.0.0.0
 ```
 
-#### 2. 服务器部署
+#### 3. 简单部署
 
-```dockerfile
-# Dockerfile
-FROM oven/bun:1 as base
-WORKDIR /app
+```bash
+# 使用 Bun 直接运行
+bun run src/cli.ts server -p 3000
 
-# 安装依赖
-COPY package.json bun.lockb ./
-RUN bun install --frozen-lockfile
-
-# 复制源码
-COPY . .
-
-# 构建
-RUN bun run build
-
-# 生产镜像
-FROM oven/bun:1-slim
-WORKDIR /app
-
-COPY --from=base /app/dist ./dist
-COPY --from=base /app/data.json ./data.json
-COPY --from=base /app/assets ./assets
-
-EXPOSE 3000
-CMD ["bun", "dist/server.js"]
+# 或使用 systemd 服务
+sudo systemctl start lumos-blog
 ```
 
-#### 3. 环境配置
+#### 4. Bun 特有的部署优势
 
-```typescript
-// src/config/environment.ts
-export const config = {
-  development: {
-    port: 3000,
-    host: 'localhost',
-    debug: true
-  },
-  production: {
-    port: process.env.PORT || 3000,
-    host: '0.0.0.0',
-    debug: false
-  }
-}
+```bash
+# Bun 的快速启动
+bun --bun src/cli.ts server
 
-export function getConfig() {
-  const env = process.env.NODE_ENV || 'development'
-  return config[env as keyof typeof config]
-}
+# 使用 Bun 的打包功能
+bun build src/cli.ts --outdir ./dist --target bun
 ```
 
 ## 📚 最佳实践
@@ -782,15 +654,10 @@ export function getConfig() {
 
 ```
 src/
-├── components/          # 可复用组件
-│   ├── ui/             # 基础 UI 组件
-│   ├── layout/         # 布局组件
-│   └── features/       # 功能组件
-├── hooks/              # 自定义 Hooks
+├── components/          # React 组件
+├── routes/             # 路由处理器
 ├── utils/              # 工具函数
-├── types/              # 类型定义
-├── constants/          # 常量定义
-└── styles/             # 样式文件
+└── types.ts            # 类型定义
 ```
 
 #### 2. 命名规范
@@ -802,9 +669,6 @@ export const ArticleCard: React.FC<Props> = () => {}
 // 函数命名：camelCase
 export function parseMarkdownFile(filePath: string) {}
 
-// 常量命名：UPPER_SNAKE_CASE
-export const API_BASE_URL = 'https://api.example.com'
-
 // 类型命名：PascalCase
 export interface DatabaseSchema {}
 ```
@@ -812,27 +676,10 @@ export interface DatabaseSchema {}
 #### 3. 错误处理
 
 ```typescript
-// src/utils/errorHandling.ts
-export class LumosError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-    public statusCode: number = 500
-  ) {
-    super(message)
-    this.name = 'LumosError'
-  }
-}
-
+// 简单的错误处理
 export function handleError(error: unknown): Response {
-  if (error instanceof LumosError) {
-    return new Response(JSON.stringify({ error: error.message, code: error.code }), {
-      status: error.statusCode
-    })
-  }
-
-  console.error('Unexpected error:', error)
-  return new Response(JSON.stringify({ error: 'Internal Server Error' }), { status: 500 })
+  console.error('Error:', error)
+  return new Response('Internal Server Error', { status: 500 })
 }
 ```
 
@@ -840,51 +687,78 @@ export function handleError(error: unknown): Response {
 
 #### 1. 版本管理
 
-```json
-// package.json
-{
-  "version": "1.0.0",
-  "scripts": {
-    "version:patch": "npm version patch",
-    "version:minor": "npm version minor",
-    "version:major": "npm version major"
-  }
-}
+```bash
+# 更新版本
+npm version patch  # 补丁版本
+npm version minor  # 小版本
+npm version major  # 大版本
 ```
 
-#### 2. 更新日志
+#### 2. 代码提交
 
-```markdown
-# CHANGELOG.md
+```bash
+# 提交代码
+git add .
+git commit -m "feat: 添加新功能"
+git push origin main
+```
 
-## [1.0.1] - 2024-01-15
+### 🚀 Bun 开发最佳实践
 
-### Added
+#### 1. 使用 Bun 的包管理器
 
-- 新增自定义主题支持
-- 添加插件系统
+```bash
+# 安装依赖
+bun install
 
-### Changed
+# 添加新依赖
+bun add react react-dom
 
-- 优化构建性能
-- 改进错误处理
+# 添加开发依赖
+bun add -d @types/react @types/react-dom
+```
 
-### Fixed
+#### 2. 利用 Bun 的性能优势
 
-- 修复路由匹配问题
-- 解决内存泄漏
+```typescript
+// 使用 Bun 的并行处理
+const results = await Promise.all([
+  Bun.file('file1.json').text(),
+  Bun.file('file2.json').text(),
+  Bun.file('file3.json').text()
+])
+
+// 使用 Bun 的快速 JSON 解析
+const data = JSON.parse(await Bun.file('data.json').text())
+```
+
+#### 3. Bun 特有的类型支持
+
+```typescript
+// 使用 Bun 的类型定义
+import type { BunFile } from 'bun'
+
+const file: BunFile = Bun.file('example.txt')
+const content = await file.text()
 ```
 
 ## 🎉 总结
 
 通过本教程，你已经学会了：
 
-- 🏗️ **项目架构理解**: 深入理解 Lumos 的核心架构和设计理念
+- 🏗️ **项目架构理解**: 深入理解 Lumos 基于 Bun 的核心架构
 - ⚛️ **React 组件开发**: 创建自定义组件和布局系统
-- 🛣️ **路由扩展**: 添加新页面和 API 接口
-- 📊 **数据处理**: 自定义数据解析和处理逻辑
-- 🧪 **测试调试**: 建立完善的测试和调试环境
-- 🚀 **部署优化**: 生产环境部署和性能优化
+- 🛣️ **路由扩展**: 使用 Bun FileSystemRouter 添加新页面和 API
+- 📊 **数据使用**: 在组件中使用和处理数据
+- 🧪 **测试调试**: 基本的测试和调试技巧
+- 🚀 **Bun 部署**: 利用 Bun 的性能优势进行部署
+
+### 🚀 Bun 的优势
+
+- **极速启动**: 冷启动时间 < 100ms
+- **内置工具**: 包管理器、测试框架、打包工具一体化
+- **原生 TypeScript**: 无需额外配置
+- **高性能**: 比 Node.js 快 3-5 倍
 
 现在你可以开始你的 Lumos 二次开发之旅了！🚀
 
