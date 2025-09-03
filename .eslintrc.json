@@ -39,7 +39,8 @@
     "no-console": ["warn", { "allow": ["log", "error", "warn", "info"] }],
     "prefer-const": "error",
     "no-var": "error",
-    "no-case-declarations": "off"
+    "no-case-declarations": "off",
+    "jsx-a11y/click-events-have-key-events": "off"
   },
   "settings": {
     "react": {

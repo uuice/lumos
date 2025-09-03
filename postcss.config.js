@@ -3,7 +3,7 @@ export default {
     'postcss-import': {},
     'postcss-nested': {},
     'postcss-nesting': {},
-    'tailwindcss': {},
+    'tailwindcss': { config: './tailwind.config.js' },
     'autoprefixer': {},
     'cssnano': {
       preset: 'default'

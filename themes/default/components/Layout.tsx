@@ -1,5 +1,24 @@
 import * as React from 'react'
-import { DatabaseSchema } from '../../../src/types.ts'
+import { DatabaseSchema, CATEGORY, TAG } from '../../../src/types.ts'
+// 导入所有需要的组件
+import { Head } from './head'
+import { Sidebar } from './sidebar'
+import { Footer } from './footer'
+import { ParticleEffect } from './particle-effect'
+import { ScrollToTop } from './scroll-to-top'
+import { TOC } from './toc'
+
+// 定义 Sidebar 所需的数据类型
+interface SidebarCategory {
+  alias: string
+  title: string
+  article_count: number
+}
+
+interface SidebarTag {
+  value: string
+  title: string
+}
 
 // 基础布局组件
 export const Layout: React.FC<{
@@ -14,143 +33,347 @@ export const Layout: React.FC<{
   children,
   data,
   description = 'Lumos 静态博客生成器',
-  keywords = '博客,静态博客,Lumos',
   baseUrl = ''
 }) => {
+  // 获取站点配置
+  const siteConfig: any = data.siteConfig || {};
+
+  // 准备侧边栏数据
+  const categories: SidebarCategory[] = (data.categories || []).map((category: CATEGORY) => ({
+    alias: category.url,
+    title: category.title,
+    article_count: (category as any).postNum || 0
+  }));
+
+  const tags: SidebarTag[] = (data.tags || []).map((tag: TAG) => ({
+    value: tag.url,
+    title: tag.title
+  }));
+
   return (
-    <html lang="zh-CN" className="scroll-smooth">
+    <html lang="en" className="bg-[var(--page-bg)] transition text-[14px] md:text-[16px]">
       <head>
-        <meta charSet="utf-8" />
-        <title>{title}</title>
+        <title>{siteConfig.siteName || title}</title>
+        <meta charSet="UTF-8" />
         <meta name="description" content={description} />
-        <meta name="keywords" content={keywords} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#3b82f6" />
+        <meta name="author" content="uuice" />
+        <meta property="og:site_name" content={siteConfig.siteName || title} />
+        <meta property="og:url" content={baseUrl} />
+        <meta property="og:title" content={siteConfig.siteName || title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={baseUrl} />
+        <meta name="twitter:title" content={siteConfig.siteName || title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="viewport" content="width=device-width" />
+        <link
+          rel="icon"
+          href="/assets/favicon/favicon-light-32.png"
+          sizes="32x32"
+          media="(prefers-color-scheme: light)"
+        />
+        <link
+          rel="icon"
+          href="/assets/favicon/favicon-light-128.png"
+          sizes="128x128"
+          media="(prefers-color-scheme: light)"
+        />
+        <link
+          rel="icon"
+          href="/assets/favicon/favicon-light-180.png"
+          sizes="180x180"
+          media="(prefers-color-scheme: light)"
+        />
+        <link
+          rel="icon"
+          href="/assets/favicon/favicon-light-192.png"
+          sizes="192x192"
+          media="(prefers-color-scheme: light)"
+        />
+        <link
+          rel="icon"
+          href="/assets/favicon/favicon-dark-32.png"
+          sizes="32x32"
+          media="(prefers-color-scheme: dark)"
+        />
+        <link
+          rel="icon"
+          href="/assets/favicon/favicon-dark-128.png"
+          sizes="128x128"
+          media="(prefers-color-scheme: dark)"
+        />
+        <link
+          rel="icon"
+          href="/assets/favicon/favicon-dark-180.png"
+          sizes="180x180"
+          media="(prefers-color-scheme: dark)"
+        />
+        <link
+          rel="icon"
+          href="/assets/favicon/favicon-dark-192.png"
+          sizes="192x192"
+          media="(prefers-color-scheme: dark)"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function () {
+                var theme = localStorage.getItem('theme') || 'auto'
+                switch (theme) {
+                  case 'light':
+                    document.documentElement.classList.remove('dark')
+                    break
+                  case 'dark':
+                    document.documentElement.classList.add('dark')
+                    break
+                  case 'auto':
+                    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                      document.documentElement.classList.add('dark')
+                    } else {
+                      document.documentElement.classList.remove('dark')
+                    }
+                }
+                var hue = localStorage.getItem('hue') || 280
+                document.documentElement.style.setProperty('--hue', hue)
+              })()
+            `
+          }}
+        />
+        <script src="/assets/javascript/jquery-3.7.1.min.js"></script>
 
-        {/* 预连接到字体服务 */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+        {/* pjax 支持 */}
+        <script src="/assets/javascript/jquery.pjax.js"></script>
 
-        {/* CSS 样式 */}
-        <link rel="stylesheet" href={`${baseUrl}/assets/styles/style.css`} />
-
-        {/* 主题初始化脚本 */}
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            (function() {
-              const theme = localStorage.getItem('theme') || 'auto';
-              const isDark = theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-              if (isDark) document.documentElement.classList.add('dark');
-            })()
-          `
-        }} />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title={siteConfig.siteName || title}
+          href={`${baseUrl}/rss.xml`}
+        />
+        <link rel="stylesheet" href="/assets/styles/style.css" />
       </head>
-      <body className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
-        {/* 导航栏 */}
-        <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              {/* Logo */}
-              <div className="flex items-center">
-                <a href="/" className="text-2xl font-bold text-gradient">
-                  Lumos
-                </a>
-              </div>
+      <body className="min-h-screen transition lg:is-home enable-banner">
+        {/* 粒子效果组件 */}
+        <ParticleEffect />
+        <div
+          id="top-row"
+          className="z-50 pointer-events-none transition-all duration-700 max-w-[var(--page-width)] px-0 md:px-4 mx-auto sticky top-0"
+        >
+          <div id="navbar-wrapper" className="pointer-events-auto sticky top-0 transition-all">
+            {/* 头部组件 */}
+            <Head siteConfig={siteConfig} />
+          </div>
+        </div>
 
-              {/* 导航菜单 */}
-              <nav className="hidden md:flex space-x-8">
-                <a href="/" className="nav-link">首页</a>
-                <a href="/posts" className="nav-link">文章</a>
-                <a href="/pages" className="nav-link">页面</a>
-                <a href="/categories" className="nav-link">分类</a>
-                <a href="/tags" className="nav-link">标签</a>
-              </nav>
+        <div
+          id="banner-wrapper"
+          className="absolute z-10 w-full transition duration-700 overflow-hidden"
+          style={{ top: 0, height: '35vh' }}
+        >
+          <div
+            id="banner"
+            className="object-cover h-full transition duration-700 opacity-100 scale-100 overflow-hidden relative"
+          >
+            <div
+              className="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"
+            ></div>
+            <img
+              src="/assets/images/demo-banner.png"
+              alt="Banner image of the blog"
+              style={{ objectPosition: 'center' }}
+              width="1344"
+              height="896"
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </div>
 
-              {/* 右侧工具栏 */}
-              <div className="flex items-center space-x-4">
-                {/* 搜索框 */}
-                <div className="relative hidden sm:block">
-                  <input
-                    type="text"
-                    id="search-input"
-                    placeholder="搜索文章..."
-                    className="w-64 px-4 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                  <div id="search-results" className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg hidden max-h-96 overflow-y-auto"></div>
-                </div>
-
-                {/* 主题切换按钮 */}
-                <button
-                  id="theme-toggle"
-                  className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                  title="切换主题"
+        <div className="absolute w-full z-30 pointer-events-none" style={{ top: 'calc(35vh - 3.5rem)' }}>
+          {/* The pointer-events-none here prevent blocking the click event of the TOC */}
+          <div className="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
+            <div
+              id="main-grid"
+              className="transition duration-700 w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto] mx-auto gap-4 px-0 md:px-4"
+            >
+              {/* Banner image credit */}
+              <a
+                href=""
+                id="banner-credit"
+                target="_blank"
+                rel="noopener"
+                aria-label="Visit image source"
+                className="group onload-animation transition-all absolute flex justify-center items-center rounded-full px-3 right-4 -top-[3.25rem] bg-black/60 hover:bg-black/70 h-9 hover:pr-9 active:bg-black/80"
+              >
+                <svg
+                  width="1em"
+                  height="1em"
+                  className="text-white/75 text-[1.25rem] mr-1"
+                  data-icon="material-symbols:copyright-outline-rounded"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                  </svg>
-                </button>
+                  <symbol id="ai:material-symbols:copyright-outline-rounded" viewBox="0 0 24 24">
+                    <path
+                      fill="currentColor"
+                      d="M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m-2-4h4q.425 0 .713-.288T15 15v-1q0-.425-.288-.712T14 13t-.712.288T13 14h-2v-4h2q0 .425.288.713T14 11t.713-.288T15 10V9q0-.425-.288-.712T14 8h-4q-.425 0-.712.288T9 9v6q0 .425.288.713T10 16"
+                    />
+                  </symbol>
+                  <use href="#ai:material-symbols:copyright-outline-rounded"></use>
+                </svg>
+                <div className="text-white/75 text-xs">幻想变成轻盈的鱼， 畅游在自由的海洋</div>
+                <svg
+                  width="1em"
+                  height="1em"
+                  className="transition absolute text-[oklch(0.75_0.14_var(--hue))] right-4 text-[0.75rem] opacity-0 group-hover:opacity-100"
+                  data-icon="fa6-solid:arrow-up-right-from-square"
+                >
+                  <symbol id="ai:fa6-solid:arrow-up-right-from-square" viewBox="0 0 512 512">
+                    <path
+                      fill="currentColor"
+                      d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32zM80 32C35.8 32 0 67.8 0 112v320c0 44.2 35.8 80 80 80h320c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v112c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16h112c17.7 0 32-14.3 32-32s-14.3-32-32-32z"
+                    />
+                  </symbol>
+                  <use href="#ai:fa6-solid:arrow-up-right-from-square"></use>
+                </svg>
+              </a>
 
-                {/* 移动端菜单按钮 */}
-                <button className="md:hidden p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                </button>
-              </div>
+              {/* 侧边栏组件 */}
+              <Sidebar categories={categories} tags={tags} />
+
+              <main
+                id="swup-container"
+                className="transition-swup-fade col-span-2 lg:col-span-1 overflow-hidden"
+              >
+                <div id="content-wrapper" className="onload-animation">
+                  {children}
+                </div>
+              </main>
+
+              {/* 底部组件 */}
+              <Footer
+                currentYear={new Date().getFullYear()}
+                siteConfig={siteConfig}
+                recordSettings={data.recordSettings as any}
+              />
             </div>
+
+            {/* 滚动到顶部组件 */}
+            <ScrollToTop />
           </div>
-        </header>
+        </div>
 
-        {/* 主要内容区域 */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {children}
-        </main>
-
-        {/* 页脚 */}
-        <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              {/* 站点信息 */}
-              <div className="col-span-1 md:col-span-2">
-                <div className="text-xl font-bold text-gradient mb-4">Lumos</div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-                  基于 Bun 的高性能静态博客生成器，专为低配置服务器优化，提供轻量级博客解决方案。
-                </p>
-              </div>
-
-              {/* 快速导航 */}
-              <div>
-                <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-4">快速导航</h3>
-                <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                  <li><a href="/" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">首页</a></li>
-                  <li><a href="/posts" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">文章</a></li>
-                  <li><a href="/categories" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">分类</a></li>
-                  <li><a href="/tags" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">标签</a></li>
-                </ul>
-              </div>
-
-              {/* 统计信息 */}
-              <div>
-                <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-4">统计信息</h3>
-                <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                  <li>文章: {data.posts?.length || 0} 篇</li>
-                  <li>页面: {data.pages?.length || 0} 个</li>
-                  <li>分类: {data.categories?.length || 0} 个</li>
-                  <li>标签: {data.tags?.length || 0} 个</li>
-                </ul>
+        <div className="absolute w-full z-0 hidden 2xl:block">
+          <div className="relative max-w-[var(--page-width)] mx-auto">
+            {/* TOC component */}
+            <div
+              id="toc-wrapper"
+              className="hidden lg:block transition absolute top-0 -right-[var(--toc-width)] w-[var(--toc-width)] items-center"
+            >
+              <div
+                id="toc-inner-wrapper"
+                className="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar"
+              >
+                <div id="toc" className="w-full h-full transition-swup-fade">
+                  <div className="h-8 w-full"></div>
+                  {/* TOC 组件 */}
+                  <TOC />
+                  <div className="h-8 w-full"></div>
+                </div>
               </div>
             </div>
 
-            <div className="border-t border-gray-200 dark:border-gray-700 mt-8 pt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-              <p>&copy; 2024 Powered by <a href="https://github.com/your-username/lumos" className="text-blue-600 dark:text-blue-400 hover:underline">Lumos</a></p>
-            </div>
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  document.addEventListener('DOMContentLoaded', function () {
+                    'use strict'
+
+                    // TOC show/hide logic based on banner height
+                    const toc = document.getElementById('toc-wrapper')
+                    let bannerHeight = window.innerHeight * 0.35 // 35vh banner height
+
+                    function toggleTOC() {
+                      if (
+                        document.body.scrollTop > bannerHeight ||
+                        document.documentElement.scrollTop > bannerHeight
+                      ) {
+                        toc.classList.remove('toc-hide')
+                      } else {
+                        toc.classList.add('toc-hide')
+                      }
+                    }
+
+                    // Initial check
+                    toggleTOC()
+
+                    // Add scroll listener
+                    window.addEventListener('scroll', toggleTOC)
+
+                    // Also check on resize
+                    window.addEventListener('resize', function () {
+                      // Update banner height on resize
+                      const newBannerHeight = window.innerHeight * 0.35
+                      bannerHeight = newBannerHeight
+                      toggleTOC()
+                    })
+                  })
+                `
+              }}
+            />
           </div>
-        </footer>
+        </div>
 
-        {/* JavaScript */}
-        <script src={`${baseUrl}/assets/javascript/jquery-3.7.1.min.js`} defer></script>
-        <script src={`${baseUrl}/assets/javascript/highlight.min.js`} defer></script>
+        {/* increase the page height during page transition to prevent the scrolling animation from jumping */}
+        <div
+          id="page-height-extend"
+          className="hidden h-[300vh]"
+          style={{
+            // @ts-ignore
+            '--bannerOffset': '15vh',
+            '--banner-height-home': '65vh',
+            '--banner-height': '35vh',
+            '--configHue': '280',
+            '--page-width': '75rem'
+          } as React.CSSProperties}
+        ></div>
+
+        <script src="/assets/javascript/highlight.min.js"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              document.addEventListener('DOMContentLoaded', function () {
+                if (window.hljs) hljs.highlightAll()
+              })
+            `
+          }}
+        />
+
+        {/* pjax 初始化脚本 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              document.addEventListener('DOMContentLoaded', function () {
+                // 只对所有 a 标签启用 pjax，排除外部链接和带 target 的链接
+                if (window.jQuery) {
+                  $(document).pjax(
+                    'a:not([target="_blank"]):not([href^="#"]):not([href^="http"]):not([download])',
+                    '#swup-container',
+                    {
+                      fragment: '#swup-container',
+                      timeout: 8000
+                    }
+                  )
+
+                  // pjax 完成后重新高亮代码
+                  $(document).on('pjax:end', function () {
+                    if (window.hljs) hljs.highlightAll()
+                  })
+                }
+              })
+            `
+          }}
+        />
       </body>
     </html>
   )
