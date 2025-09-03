@@ -17,7 +17,7 @@ export default async function handler(_request: Request): Promise<Response> {
     // 获取站点配置信息（从 JSON 配置文件中获取）
     const siteConfig = {
       title: (data as any).title || (data as any).config?.title || 'Lumos Blog',
-      url: (data as any).url || (data as any).config?.url || 'http://localhost:6000',
+      url: (data as any).url || (data as any).config?.url || 'http://localhost:3060）',
       description: (data as any).description || (data as any).config?.description || 'A blog powered by Lumos'
     }
 

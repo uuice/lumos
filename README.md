@@ -106,7 +106,7 @@ lumos generate
 ### 3. 启动开发服务器
 
 ```bash
-# 启动服务器（默认端口 6000）
+# 启动服务器（默认端口 3060）
 lumos server
 
 # 指定端口
@@ -287,21 +287,47 @@ GET /api/posts?page=1&limit=10&category=技术&tag=JavaScript&author=author-alia
 
 ### 前台页面
 
-- `/` - 首页（文章列表）
-- `/posts` - 文章列表页
+#### 核心页面
+
+- `/` - 首页（最新文章列表）
+- `/posts` - 文章列表页（分页显示）
+- `/archives` - 文章归档页（按年份分组）
+- `/about` - 关于页面
+- `/links` - 友情链接页面
+
+#### 内容页面
+
 - `/post/:alias` - 文章详情页
-- `/page/:alias` - 页面详情
-- `/category/:name` - 分类页面
-- `/tag/:name` - 标签页面
-- `/author/:alias` - 作者页面
+- `/archives/:url` - 文章归档详情页
+- `/page/:alias` - 自定义页面详情
+- `/pages/:url` - 页面详情（支持 URL 路径）
+
+#### 分类和标签
+
+- `/category/:name` - 分类页面（显示该分类下的文章）
+- `/categories/:alias` - 分类页面（支持别名）
+- `/tag/:name` - 标签页面（显示该标签下的文章）
+- `/tags/:value` - 标签页面（支持值匹配）
+
+#### 特殊页面
+
+- `/404` - 404 错误页面
+- `/error` - 通用错误页面
+
+#### 数据接口
+
+- `/rss.xml` - RSS 订阅源
+- `/sitemap.xml` - 网站地图
+- `/api/*` - RESTful API 接口
 
 ### 特性
 
 - 基于 Bun FileSystemRouter 的自动路由
-- 支持动态路由参数
-- SSR 服务端渲染
-- SEO 友好的 URL 结构
-- 中文 URL 自动转拼音
+- 支持动态路由参数和别名系统
+- SSR 服务端渲染，SEO 友好
+- SEO 友好的 URL 结构, 中文 URL 自动转拼音
+- 智能缓存和性能优化
+- 响应式设计，移动端友好
 
 ## 🛠️ 开发
 

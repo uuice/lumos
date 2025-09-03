@@ -16,7 +16,7 @@ export default async function handler(_request: Request): Promise<Response> {
 
     // 获取站点配置信息
     const siteConfig = {
-      url: (data as any).url || (data as any).config?.url || 'http://localhost:6000'
+      url: (data as any).url || (data as any).config?.url || 'http://localhost:3060）'
     }
 
     // 确保 URL 不以斜杠结尾

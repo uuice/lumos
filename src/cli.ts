@@ -66,7 +66,7 @@ Lumos - 基于 Bun 的静态博客生成器
   help                    显示帮助信息
 
 选项:
-  -p, --port <port>       服务器端口 (默认: 6000)
+  -p, --port <port>       服务器端口 (默认: 3060）)
   -w, --watch             监听文件变化
   -h, --help              显示帮助信息
   -v, --version           显示版本信息
@@ -137,7 +137,7 @@ async function buildCommand() {
   }
 }
 async function serverCommand(options: CLIOptions) {
-  const port = parseInt((options.port || options.p || '6000') as string)
+  const port = parseInt((options.port || options.p || '3060）') as string)
   const dataPath = join(process.cwd(), 'data.json')
 
   try {

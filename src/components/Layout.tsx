@@ -33,7 +33,7 @@ export const Layout: React.FC<{
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
         {/* CSS 样式 */}
-        <link rel="stylesheet" href={`${baseUrl}/assets/css/output.css`} />
+        <link rel="stylesheet" href={`${baseUrl}/assets/styles/style.css`} />
 
         {/* 主题初始化脚本 */}
         <script dangerouslySetInnerHTML={{
@@ -149,7 +149,8 @@ export const Layout: React.FC<{
         </footer>
 
         {/* JavaScript */}
-        <script src={`${baseUrl}/assets/js/main.js`} defer></script>
+        <script src={`${baseUrl}/assets/javascript/jquery-3.7.1.min.js`} defer></script>
+        <script src={`${baseUrl}/assets/javascript/highlight.min.js`} defer></script>
       </body>
     </html>
   )
