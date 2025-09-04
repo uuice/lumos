@@ -1,5 +1,11 @@
 {
   "theme": "default",
+  "cache": {
+    "staticAssets": {
+      "enabled": false,
+      "maxAge": 31536000
+    }
+  },
   "plugins": {
     "example-plugin": {
       "enabled": true,

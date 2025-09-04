@@ -3,6 +3,18 @@ import { DatabaseSchema } from './types.ts'
 import { PluginManager } from './plugin-manager.ts'
 import { ThemeManager } from './theme-manager.ts'
 
+// 定义配置接口
+interface LumosConfig {
+  theme: string;
+  cache?: {
+    staticAssets?: {
+      maxAge?: number;
+      enabled?: boolean;
+    };
+  };
+  plugins: Record<string, any>;
+}
+
 export interface ServerOptions {
   port: number
   dataPath: string
@@ -19,6 +31,7 @@ export class LumosServer {
   private pluginManager: PluginManager
   private themeManager: ThemeManager
   private serverInstance: ReturnType<typeof Bun.serve> | null = null
+  private config: LumosConfig | null = null
 
   constructor(options: ServerOptions) {
     this.port = options.port
@@ -26,6 +39,45 @@ export class LumosServer {
     this.basePath = options.basePath || process.cwd()
     this.pluginManager = new PluginManager(this.basePath)
     this.themeManager = new ThemeManager(this.basePath)
+  }
+
+  // 加载配置
+  private async loadConfig(): Promise<void> {
+    try {
+      const configPath = join(this.basePath, 'lumos.config.json')
+      const configFile = Bun.file(configPath)
+      if (await configFile.exists()) {
+        const content = await configFile.text()
+        this.config = JSON.parse(content)
+      } else {
+        // 默认配置
+        this.config = {
+          theme: 'default',
+          plugins: {}
+        }
+      }
+    } catch (error) {
+      console.error('配置加载失败:', error)
+      // 使用默认配置
+      this.config = {
+        theme: 'default',
+        plugins: {}
+      }
+    }
+  }
+
+  // 获取静态资源缓存配置
+  private getStaticAssetCacheConfig(): { enabled: boolean; maxAge: number } {
+    const defaultConfig = { enabled: true, maxAge: 31536000 }; // 默认1年缓存
+
+    if (!this.config?.cache?.staticAssets) {
+      return defaultConfig;
+    }
+
+    return {
+      enabled: this.config.cache.staticAssets.enabled ?? defaultConfig.enabled,
+      maxAge: this.config.cache.staticAssets.maxAge ?? defaultConfig.maxAge
+    };
   }
 
   // 加载数据
@@ -75,6 +127,9 @@ export class LumosServer {
     // 检查是否是静态资源请求
     if (pathname.startsWith('/assets/')) {
       try {
+        // 获取缓存配置
+        const cacheConfig = this.getStaticAssetCacheConfig();
+
         // 首先尝试从主题目录加载资源
         let filePath = join(this.themeManager.getAssetsPath(), pathname.replace('/assets/', ''))
         let file = Bun.file(filePath)
@@ -105,11 +160,18 @@ export class LumosServer {
 
           const contentType = contentTypes[ext] || 'application/octet-stream'
 
+          // 构建响应头
+          const headers: Record<string, string> = {
+            'Content-Type': contentType
+          };
+
+          // 如果启用了缓存，则添加缓存控制头
+          if (cacheConfig.enabled) {
+            headers['Cache-Control'] = `public, max-age=${cacheConfig.maxAge}`;
+          }
+
           return new Response(file, {
-            headers: {
-              'Content-Type': contentType,
-              'Cache-Control': 'public, max-age=31536000' // 1年缓存
-            }
+            headers
           })
         }
       } catch (error) {
@@ -288,6 +350,9 @@ export class LumosServer {
   // 启动服务器
   async start(): Promise<void> {
     try {
+      // 加载配置
+      await this.loadConfig();
+
       // 加载插件
       await this.pluginManager.loadPluginConfig()
       await this.pluginManager.loadPlugins()
@@ -312,6 +377,13 @@ export class LumosServer {
       console.log(`📊 数据文件: ${this.dataPath}`)
       console.log(`🎨 静态资源: ${this.themeManager.getAssetsPath()}/*`)
       console.log(`🎨 当前主题: ${this.themeManager.getThemeName()}`)
+      // 显示缓存配置信息
+      const cacheConfig = this.getStaticAssetCacheConfig();
+      if (cacheConfig.enabled) {
+        console.log(`📚 静态资源缓存已启用`)
+      } else {
+        console.log(`📚 静态资源缓存已禁用`)
+      }
     } catch (error) {
       console.error('服务器启动失败:', error)
       throw error

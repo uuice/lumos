@@ -1,32 +1,6 @@
 {
   "posts": [
     {
-      "id": "dc5dfcf9-fe27-5e54-8496-9fe9d4e94626",
-      "title": "test-content",
-      "alias": "test-content",
-      "cover": "",
-      "created_time": "2025-09-03 15:42:58",
-      "date": "2025-09-03 15:42:58",
-      "updated_time": "2025-09-03 15:42:58",
-      "updated": "2025-09-03 15:42:58",
-      "categories": [],
-      "tags": [],
-      "excerpt": "",
-      "published": true,
-      "content": "",
-      "mdContent": "",
-      "toc": "",
-      "created_timestamp": 1756885378417,
-      "updated_timestamp": 1756885378417,
-      "url": "/post/test-content",
-      "symbolsCount": 0,
-      "authorIds": [
-        "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
-      ],
-      "wordCount": 0,
-      "readingTime": 0
-    },
-    {
       "id": "1ef3b59b-0a4e-6760-9d78-69ba27cbd20e",
       "title": "通过takeUntil取消订阅可观察对象",
       "alias": null,
@@ -1050,6 +1024,32 @@
       "tagId": "c9c512c9-3e0a-59e9-9f25-87a7f34c15ad"
     }
   ],
+  "settingJsonConfig": {
+    "storageSetting": {
+      "storageType": "local",
+      "accessKey": "",
+      "secretKey": "",
+      "bucket": "",
+      "region": "",
+      "domain": "",
+      "uploadPath": "uploads"
+    },
+    "siteSetting": {
+      "siteName": "轻盈的鱼",
+      "siteDescription": "专注于前端开发的程序员，分享Vue、Angular、Node.js等技术栈的学习笔记和解决方案。记录工作中遇到的问题和解决方案，致力于构建现代化的响应式Web应用。",
+      "siteKeywords": "前端开发, Vue, Angular, Node.js, JavaScript, 学习笔记, 技术博客, 前端技术栈, 响应式设计, Web开发, 程序员, 前端工程师",
+      "siteLogo": "",
+      "siteFavicon": "",
+      "siteFooter": "",
+      "allowRegistration": true,
+      "allowComment": true,
+      "commentAudit": true,
+      "defaultLanguage": "zh-CN",
+      "timezone": "Asia/Shanghai",
+      "dateFormat": "YYYY-MM-DD",
+      "timeFormat": "HH:mm:ss"
+    }
+  },
   "menuJsonConfig": [
     {
       "title": "首页",

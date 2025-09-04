@@ -109,7 +109,7 @@ export interface DatabaseSchema {
   authors: AUTHOR[]
   categories: CATEGORY[]
   tags: TAG[]
-  [key: string]: unknown
+  [key: string]: unknown | any
 }
 
 // 插件接口

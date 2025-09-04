@@ -29,14 +29,11 @@ export const Layout: React.FC<{
   keywords?: string
   baseUrl?: string
 }> = ({
-  title,
   children,
   data,
-  description = 'Lumos 静态博客生成器',
-  baseUrl = ''
 }) => {
   // 获取站点配置
-  const siteConfig: any = data.siteConfig || {};
+  const siteConfig: any = data.settingJsonConfig.siteConfig || {};
 
   // 准备侧边栏数据
   const categories: SidebarCategory[] = (data.categories || []).map((category: CATEGORY) => ({
@@ -53,20 +50,20 @@ export const Layout: React.FC<{
   return (
     <html lang="en" className="bg-[var(--page-bg)] transition text-[14px] md:text-[16px]">
       <head>
-        <title>{siteConfig.siteName || title}</title>
-        <meta charSet="UTF-8" />
-        <meta name="description" content={description} />
-        <meta name="author" content="uuice" />
-        <meta property="og:site_name" content={siteConfig.siteName || title} />
-        <meta property="og:url" content={baseUrl} />
-        <meta property="og:title" content={siteConfig.siteName || title} />
-        <meta property="og:description" content={description} />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content={baseUrl} />
-        <meta name="twitter:title" content={siteConfig.siteName || title} />
-        <meta name="twitter:description" content={description} />
-        <meta name="viewport" content="width=device-width" />
+      <title>{ siteConfig.siteName }</title>
+    <meta charSet="UTF-8" />
+    <meta name="description" content="{ siteConfig.siteDescription }" />
+    <meta name="author" content="uuice" />
+    <meta property="og:site_name" content="{ siteConfig.siteName }" />
+    <meta property="og:url" content="{ siteConfig.baseUrl}" />
+    <meta property="og:title" content="{ siteConfig.siteName }" />
+    <meta property="og:description" content="{ siteConfig.siteDescription }" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="{ siteConfig.baseUrl}" />
+    <meta name="twitter:title" content="{ siteConfig.siteName }" />
+    <meta name="twitter:description" content="{ siteConfig.siteDescription }" />
+    <meta name="viewport" content="width=device-width" />
         <link
           rel="icon"
           href="/assets/favicon/favicon-light-32.png"
@@ -145,11 +142,12 @@ export const Layout: React.FC<{
         {/* pjax 支持 */}
         <script src="/assets/javascript/jquery.pjax.js"></script>
 
+        <script src="/assets/javascript/main.js"></script>
         <link
           rel="alternate"
           type="application/rss+xml"
-          title={siteConfig.siteName || title}
-          href={`${baseUrl}/rss.xml`}
+          title={siteConfig.siteName}
+          href={`${siteConfig.baseUrl}/rss.xml`}
         />
         <link rel="stylesheet" href="/assets/styles/style.css" />
       </head>
@@ -180,7 +178,7 @@ export const Layout: React.FC<{
             ></div>
             <img
               src="/assets/images/demo-banner.png"
-              alt="Banner image of the blog"
+              alt="Banner of the blog"
               style={{ objectPosition: 'center' }}
               width="1344"
               height="896"
@@ -203,7 +201,7 @@ export const Layout: React.FC<{
                 href=""
                 id="banner-credit"
                 target="_blank"
-                rel="noopener"
+                rel="noopener noreferrer"
                 aria-label="Visit image source"
                 className="group onload-animation transition-all absolute flex justify-center items-center rounded-full px-3 right-4 -top-[3.25rem] bg-black/60 hover:bg-black/70 h-9 hover:pr-9 active:bg-black/80"
               >
@@ -282,45 +280,6 @@ export const Layout: React.FC<{
                 </div>
               </div>
             </div>
-
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  document.addEventListener('DOMContentLoaded', function () {
-                    'use strict'
-
-                    // TOC show/hide logic based on banner height
-                    const toc = document.getElementById('toc-wrapper')
-                    let bannerHeight = window.innerHeight * 0.35 // 35vh banner height
-
-                    function toggleTOC() {
-                      if (
-                        document.body.scrollTop > bannerHeight ||
-                        document.documentElement.scrollTop > bannerHeight
-                      ) {
-                        toc.classList.remove('toc-hide')
-                      } else {
-                        toc.classList.add('toc-hide')
-                      }
-                    }
-
-                    // Initial check
-                    toggleTOC()
-
-                    // Add scroll listener
-                    window.addEventListener('scroll', toggleTOC)
-
-                    // Also check on resize
-                    window.addEventListener('resize', function () {
-                      // Update banner height on resize
-                      const newBannerHeight = window.innerHeight * 0.35
-                      bannerHeight = newBannerHeight
-                      toggleTOC()
-                    })
-                  })
-                `
-              }}
-            />
           </div>
         </div>
 
@@ -329,7 +288,6 @@ export const Layout: React.FC<{
           id="page-height-extend"
           className="hidden h-[300vh]"
           style={{
-            // @ts-ignore
             '--bannerOffset': '15vh',
             '--banner-height-home': '65vh',
             '--banner-height': '35vh',
@@ -338,7 +296,7 @@ export const Layout: React.FC<{
           } as React.CSSProperties}
         ></div>
 
-        <script src="/assets/javascript/highlight.min.js"></script>
+        {/* <script src="/assets/javascript/highlight.min.js"></script>
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -347,33 +305,7 @@ export const Layout: React.FC<{
               })
             `
           }}
-        />
-
-        {/* pjax 初始化脚本 */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              document.addEventListener('DOMContentLoaded', function () {
-                // 只对所有 a 标签启用 pjax，排除外部链接和带 target 的链接
-                if (window.jQuery) {
-                  $(document).pjax(
-                    'a:not([target="_blank"]):not([href^="#"]):not([href^="http"]):not([download])',
-                    '#swup-container',
-                    {
-                      fragment: '#swup-container',
-                      timeout: 8000
-                    }
-                  )
-
-                  // pjax 完成后重新高亮代码
-                  $(document).on('pjax:end', function () {
-                    if (window.hljs) hljs.highlightAll()
-                  })
-                }
-              })
-            `
-          }}
-        />
+        /> */}
       </body>
     </html>
   )

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 interface SiteConfig {
   siteName: string;
@@ -9,40 +9,6 @@ interface HeadProps {
 }
 
 export const Head: React.FC<HeadProps> = ({ siteConfig }) => {
-  useEffect(() => {
-    const switchTheme = () => {
-      if (localStorage.theme === 'dark') {
-        document.documentElement.classList.remove('dark');
-        localStorage.theme = 'light';
-      } else {
-        document.documentElement.classList.add('dark');
-        localStorage.theme = 'dark';
-      }
-    };
-
-    const handleSchemeSwitch = () => {
-      switchTheme();
-    };
-
-    const handleNavMenuSwitch = () => {
-      const panel = document.getElementById('nav-menu-panel');
-      if (panel) {
-        panel.classList.toggle('float-panel-closed');
-      }
-    };
-
-    const schemeSwitch = document.getElementById('scheme-switch');
-    const navMenuSwitch = document.getElementById('nav-menu-switch');
-
-    schemeSwitch?.addEventListener('click', handleSchemeSwitch);
-    navMenuSwitch?.addEventListener('click', handleNavMenuSwitch);
-
-    return () => {
-      schemeSwitch?.removeEventListener('click', handleSchemeSwitch);
-      navMenuSwitch?.removeEventListener('click', handleNavMenuSwitch);
-    };
-  }, []);
-
   return (
     <div id="navbar" className="z-50 onload-animation">
       <div className="absolute h-8 left-0 right-0 -top-8 bg-[var(--card-bg)] transition"></div>
