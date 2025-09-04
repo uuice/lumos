@@ -1,58 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 
 export const Settings: React.FC = () => {
-  const [isPanelOpen, setIsPanelOpen] = useState(false);
-  const [hue, setHue] = useState('225');
-  const panelRef = useRef<HTMLDivElement>(null);
-
-  // 初始化色调值
-  useEffect(() => {
-    const savedHue = localStorage.getItem('hue');
-    if (savedHue) {
-      setHue(savedHue);
-      const root = document.documentElement;
-      if (root) {
-        root.style.setProperty('--hue', savedHue);
-      }
-    }
-  }, []);
-
-  // 处理色调变化
-  const handleHueChange = (newHue: string) => {
-    setHue(newHue);
-    localStorage.setItem('hue', newHue);
-    const root = document.documentElement;
-    if (root) {
-      root.style.setProperty('--hue', newHue);
-    }
-  };
-
-  // 重置为默认值
-  const resetToDefault = () => {
-    handleHueChange('225');
-  };
-
-  // 处理点击外部关闭面板
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
-        setIsPanelOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
   return (
     <>
       <button
         aria-label="Display Settings"
         className="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90"
         id="display-settings-switch"
-        onClick={() => setIsPanelOpen(!isPanelOpen)}
       >
         <svg width="1em" height="1em" className="text-[1.25rem]" data-icon="material-symbols:palette-outline">
           <symbol id="ai:material-symbols:palette-outline" viewBox="0 0 24 24">
@@ -66,9 +20,8 @@ export const Settings: React.FC = () => {
       </button>
 
       <div
-        ref={panelRef}
         id="display-setting"
-        className={`float-panel absolute transition-all w-80 right-4 px-4 py-4 ${isPanelOpen ? '' : 'float-panel-closed'}`}
+        className="float-panel absolute transition-all w-80 right-4 px-4 py-4 float-panel-closed"
       >
         <div className="flex flex-row gap-2 mb-3 items-center justify-between">
           <div
@@ -78,7 +31,6 @@ export const Settings: React.FC = () => {
             <button
               aria-label="Reset to Default"
               className="btn-regular w-7 h-7 rounded-md active:scale-90"
-              onClick={resetToDefault}
             >
               <div className="text-[var(--btn-content)]">
                 <svg
@@ -103,7 +55,7 @@ export const Settings: React.FC = () => {
               id="hueValue"
               className="transition bg-[var(--btn-regular-bg)] w-10 h-7 rounded-md flex justify-center font-bold text-sm items-center text-[var(--btn-content)]"
             >
-              {hue}
+              225
             </div>
           </div>
         </div>
@@ -119,8 +71,6 @@ export const Settings: React.FC = () => {
             step="1"
             style={{ width: '100%' }}
             aria-label="Theme Color"
-            value={hue}
-            onChange={(e) => handleHueChange(e.target.value)}
           />
         </div>
       </div>

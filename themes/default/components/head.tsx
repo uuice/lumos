@@ -1,4 +1,6 @@
 import React from 'react';
+import { Search } from './search';
+import { Settings } from './settings';
 
 interface SiteConfig {
   siteName: string;
@@ -50,7 +52,8 @@ export const Head: React.FC<HeadProps> = ({ siteConfig }) => {
           </a>
         </div>
         <div className="flex">
-          {/* Search and Settings components would be included here */}
+          <Search />
+          <Settings/>
           <button
             aria-label="Light/Dark Mode"
             role="menuitem"

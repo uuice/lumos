@@ -192,16 +192,14 @@ $(function () {
 
     // 调用搜索API
     $.ajax({
-      url: '/api/content/search/articles',
+      url: '/api/search',
       method: 'GET',
       data: { q: query },
       headers: {
-        'x-access-token': 'web_token_123456789',
-        'x-app-name': 'WebApp',
-        'x-channel': 'web'
       },
       success: function (res) {
-        const data = res.data
+        debugger
+        const data = res.results || []
         // 清空搜索结果容器
         $('#search-results').empty()
 
