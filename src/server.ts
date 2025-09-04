@@ -2,6 +2,7 @@ import { join, extname } from 'path'
 import { DatabaseSchema } from './types.ts'
 import { PluginManager } from './plugin-manager.ts'
 import { ThemeManager } from './theme-manager.ts'
+import { BunFile } from 'bun';
 
 // 定义配置接口
 interface LumosConfig {
@@ -191,6 +192,84 @@ export class LumosServer {
     const staticResponse = await this.handleStaticAssets(pathname)
     if (staticResponse) {
       return staticResponse
+    }
+
+    // 检查是否是 dist 目录中的静态文件
+    if (!pathname.startsWith('/api/') && !pathname.startsWith('/assets/')) {
+      try {
+        const themePath = this.themeManager.getThemePath();
+        const distDir = join(themePath, 'dist');
+
+        // 构建可能的文件路径列表
+        const possiblePaths = [
+          // 直接使用请求的路径
+          join(distDir, pathname.substring(1)),
+          // 如果路径以 / 结尾，尝试查找 index.html
+          join(distDir, pathname.substring(1), 'index.html'),
+          // 如果路径不以 .html 结尾，尝试添加 .html 扩展名
+          pathname.endsWith('.html') ? '' : join(distDir, pathname.substring(1) + '.html')
+        ].filter(path => path.length > 0); // 过滤掉空路径
+
+        // 查找第一个存在的文件
+        let filePath: string | null = null;
+        let file: BunFile | null = null;
+
+        for (const path of possiblePaths) {
+          const candidateFile = Bun.file(path);
+          if (await candidateFile.exists()) {
+            filePath = path;
+            file = candidateFile;
+            break;
+          }
+        }
+
+        // 如果找到了存在的文件
+        if (filePath && file) {
+          // 根据文件扩展名设置Content-Type
+          const ext = extname(filePath).toLowerCase();
+          const contentTypes: { [key: string]: string } = {
+            '.html': 'text/html',
+            '.htm': 'text/html',
+            '.css': 'text/css',
+            '.js': 'application/javascript',
+            '.png': 'image/png',
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.gif': 'image/gif',
+            '.svg': 'image/svg+xml',
+            '.ico': 'image/x-icon',
+            '.woff': 'font/woff',
+            '.woff2': 'font/woff2',
+            '.ttf': 'font/ttf',
+            '.eot': 'application/vnd.ms-fontobject',
+            '.json': 'application/json',
+            '.txt': 'text/plain',
+            '.xml': 'application/xml',
+            '.pdf': 'application/pdf'
+          }
+
+          const contentType = contentTypes[ext] || 'application/octet-stream';
+
+          // 获取缓存配置
+          const cacheConfig = this.getStaticAssetCacheConfig();
+
+          // 构建响应头
+          const headers: Record<string, string> = {
+            'Content-Type': contentType
+          };
+
+          // 如果启用了缓存，则添加缓存控制头
+          if (cacheConfig.enabled) {
+            headers['Cache-Control'] = `public, max-age=${cacheConfig.maxAge}`;
+          }
+
+          return new Response(file, {
+            headers
+          });
+        }
+      } catch (error) {
+        console.error('dist目录静态文件处理错误:', error);
+      }
     }
 
     // 确保数据已加载
