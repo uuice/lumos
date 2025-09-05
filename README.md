@@ -122,34 +122,40 @@ lumos gen && lumos server -w
 
 ```
 lumos/
-├── source/ # 内容源目录
-│ ├── _authors/ # 作者 Markdown 文件
-│ ├── _pages/ # 页面 Markdown 文件
-│ ├── _posts/ # 文章 Markdown 文件
-│ ├── _jsons/ # JSON 配置文件
-│ └── _ymls/ # YAML 配置文件
-├── src/ # 源码目录
-│ ├── cli.ts # CLI 命令行工具
-│ ├── components/ # React 组件
-│ ├── routes/ # 路由处理器
-│ ├── server.ts # HTTP 服务器
-│ ├── generator.ts # 数据生成器
-│ └── utils.ts # 工具函数
-├── assets/ # 静态资源目录
-│ ├── css/ # 样式文件
-│ ├── js/ # JavaScript 文件
-│ ├── images/ # 图片资源
-│ └── fonts/ # 字体文件
-├── templates/ # 模板文件
-├── plugins/ # 插件目录
-├── themes/ # 主题目录
-│ └── default/ # 默认主题
-├── package.json # 项目配置
-├── tsconfig.json # TypeScript 配置
-├── tailwind.config.js # Tailwind CSS 配置
-├── lumos.config.json # 插件和主题配置
-├── lumos # CLI 可执行文件
-└── data.json # 生成的数据文件
+├── 📁 source/               # 内容源目录
+│   ├── 📁 _authors/         # 作者 Markdown 文件
+│   ├── 📁 _pages/          # 页面 Markdown 文件
+│   ├── 📁 _posts/          # 文章 Markdown 文件
+│   ├── 📁 _jsons/          # JSON 配置文件
+│   └── 📁 _ymls/           # YAML 配置文件
+├── 📁 src/                  # 源码目录
+│   ├── 📄 cli.ts           # CLI 命令行工具
+│   ├── 📁 components/      # React 组件
+│   ├── 📁 routes/          # 路由处理器
+│   ├── 📄 server.ts        # HTTP 服务器
+│   ├── 📄 generator.ts     # 数据生成器
+│   └── 📄 utils.ts         # 工具函数
+├── 📁 assets/               # 静态资源目录
+│   ├── 📁 styles/          # 样式文件
+│   ├── 📁 javascript/      # JavaScript 文件
+│   ├── 📁 images/          # 图片资源
+│   └── 📁 fonts/           # 字体文件
+├── 📁 bundler/              # Bun HTML Bundling 目录
+│   ├── 📁 html/            # HTML 源文件
+│   │   ├── 📄 index.html   # 首页 HTML 入口
+│   │   ├── 📄 app.tsx      # React 组件
+│   │   └── 📄 about.html   # 关于页面 HTML 入口
+│   └── 📁 dist/            # 构建输出目录
+├── 📁 templates/            # 模板文件
+├── 📁 plugins/              # 插件目录
+├── 📁 themes/               # 主题目录
+│   └── 📁 default/         # 默认主题
+├── 📄 lumos.config.json     # 插件和主题配置
+├── 📄 package.json          # 项目配置
+├── 📄 tsconfig.json         # TypeScript 配置
+├── 📄 tailwind.config.js    # Tailwind CSS 配置
+├── 📄 lumos                 # CLI 可执行文件
+└── 📄 data.json             # 生成的数据文件
 ```
 
 ## 🧩 插件系统
@@ -535,11 +541,72 @@ GET /api/posts?page=1&limit=10&category=技术&tag=JavaScript&author=author-alia
 - 智能缓存和性能优化
 - 响应式设计，移动端友好
 
+## 📦 Bundler HTML 页面 (高优先级)
+
+Lumos 支持使用 Bun 的 HTML bundling 功能创建页面，这种方式的优先级比主题中的 route 更高。Bundler HTML 页面位于 `bundler/html/` 目录中，构建后会生成到 `bundler/dist/` 目录。
+
+### 工作原理
+
+1. 在 `bundler/html/` 目录中创建 HTML 文件和相关的 TypeScript/JSX 组件
+2. 运行 `bun run build:html` 命令构建这些页面
+3. 构建后的页面会被放置在 `bundler/dist/` 目录中
+4. 服务器会优先检查请求的路径是否在 `bundler/dist/` 目录中存在对应文件
+5. 如果存在，则直接返回该文件，不会经过主题路由处理
+
+### 使用场景
+
+- 创建高性能的静态页面
+- 构建独立的 landing pages
+- 实现特殊的前端交互效果
+- 创建演示页面或测试页面
+
+### 示例
+
+```
+<!-- bundler/html/index.html -->
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lumos 主题测试页面</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- 将 app.tsx 作为模块引入 -->
+    <script src="./app.tsx" type="module"></script>
+  </body>
+</html>
+```
+
+```
+// bundler/html/app.tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+
+function App() {
+  return (
+    <div>
+      <h1>Hello from Bun HTML Bundling!</h1>
+    </div>
+  );
+}
+
+// 渲染应用
+document.addEventListener('DOMContentLoaded', () => {
+  const rootElement = document.getElementById('root');
+  if (rootElement) {
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(React.createElement(App));
+  }
+});
+```
+
 ## 🛠️ 开发
 
 ### 开发命令
 
-```bash
+```
 # 开发模式（热更新）
 bun run dev
 
@@ -580,7 +647,7 @@ bun run tsc
 
 生成的 `data.json` 包含以下数据结构：
 
-```typescript
+```
 interface DatabaseSchema {
   // 核心实体
   posts: POST[] // 文章列表

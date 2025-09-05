@@ -197,7 +197,7 @@ export class LumosServer {
     // 检查是否是 dist 目录中的静态文件
     if (!pathname.startsWith('/api/') && !pathname.startsWith('/assets/')) {
       try {
-        const themePath = this.themeManager.getThemePath();
+        const themePath = join(this.basePath, 'bundler')
         const distDir = join(themePath, 'dist');
 
         // 构建可能的文件路径列表

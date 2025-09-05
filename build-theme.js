@@ -41,13 +41,20 @@ async function buildTheme() {
     await execAsync('bun run build:css');
     console.log('✅ CSS 预处理完成!');
 
+    // 动态获取 bundler/html 目录下的所有 .html 文件
+    console.log('正在扫描 HTML 文件...');
+    const htmlDir = './bundler/html';
+    const htmlFiles = (await fs.readdir(htmlDir))
+      .filter(file => file.endsWith('.html'))
+      .map(file => path.join(htmlDir, file));
+
+    console.log(`发现 ${htmlFiles.length} 个 HTML 文件:`);
+    htmlFiles.forEach(file => console.log(`  - ${file}`));
+
     // 使用 Bun.build API 构建 HTML 文件
     const result = await Bun.build({
-      entrypoints: [
-        "./themes/default/html/index1.html",
-        "./themes/default/html/about1.html"
-      ],
-      outdir: './themes/default/dist',
+      entrypoints: htmlFiles,
+      outdir: './bundler/dist',
       minify: {
         whitespace: true,
         identifiers: true,
