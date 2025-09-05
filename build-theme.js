@@ -9,13 +9,65 @@ import path from "path";
 
 const execAsync = promisify(exec);
 
+// 递归获取目录下的所有 HTML 文件（包括子目录）
+async function getAllHtmlFiles(dirPath, fileList = []) {
+  const files = await fs.readdir(dirPath);
+
+  for (const file of files) {
+    const filePath = path.join(dirPath, file);
+    const stat = await fs.stat(filePath);
+
+    if (stat.isDirectory()) {
+      // 递归处理子目录
+      await getAllHtmlFiles(filePath, fileList);
+    } else if (file.endsWith('.html')) {
+      // 添加 HTML 文件到列表
+      fileList.push(filePath);
+    }
+  }
+
+  return fileList;
+}
+
+// 递归复制目录（保持子目录结构）
+async function copyDirectoryRecursive(src, dest) {
+  try {
+    await fs.access(src);
+  } catch (error) {
+    // 源目录不存在，直接返回
+    return;
+  }
+
+  try {
+    await fs.access(dest);
+  } catch (error) {
+    // 目标目录不存在，创建它
+    await fs.mkdir(dest, { recursive: true });
+  }
+
+  const entries = await fs.readdir(src, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+
+    if (entry.isDirectory()) {
+      // 递归复制子目录
+      await copyDirectoryRecursive(srcPath, destPath);
+    } else {
+      // 复制文件
+      await fs.copyFile(srcPath, destPath);
+    }
+  }
+}
+
 async function buildTheme() {
   console.log('开始构建主题文件...');
 
   try {
     // 在构建之前先清空 dist 目录
     console.log('正在清空 dist 目录...');
-    const distDir = './themes/default/dist';
+    const distDir = './bundler/dist';
     try {
       // 检查 dist 目录是否存在
       await fs.access(distDir);
@@ -41,12 +93,10 @@ async function buildTheme() {
     await execAsync('bun run build:css');
     console.log('✅ CSS 预处理完成!');
 
-    // 动态获取 bundler/html 目录下的所有 .html 文件
+    // 动态获取 bundler/html 目录下的所有 .html 文件（包括子目录）
     console.log('正在扫描 HTML 文件...');
     const htmlDir = './bundler/html';
-    const htmlFiles = (await fs.readdir(htmlDir))
-      .filter(file => file.endsWith('.html'))
-      .map(file => path.join(htmlDir, file));
+    const htmlFiles = await getAllHtmlFiles(htmlDir);
 
     console.log(`发现 ${htmlFiles.length} 个 HTML 文件:`);
     htmlFiles.forEach(file => console.log(`  - ${file}`));
@@ -61,9 +111,9 @@ async function buildTheme() {
         syntax: true,
       },
       naming: {
-        entry: "[name].[ext]", // 保持原始文件名
-        chunk: "[name]-[hash].[ext]",
-        asset: "[name]-[hash].[ext]"
+        entry: "[dir]/[name].[ext]", // 保持子目录结构
+        chunk: "[dir]/[name]-[hash].[ext]",
+        asset: "[dir]/[name]-[hash].[ext]"
       }
     });
 
@@ -76,9 +126,9 @@ async function buildTheme() {
         console.log(`  - ${output.path}`);
       }
 
-      // 复制 favicon 目录到输出目录
+      // 复制 favicon 目录到输出目录（保持子目录结构）
       try {
-        await fs.cp('./themes/default/html/favicon', './themes/default/dist/favicon', { recursive: true });
+        await copyDirectoryRecursive('./themes/default/html/favicon', './themes/default/dist/favicon');
         console.log('✅ favicon 目录复制成功!');
       } catch (error) {
         console.log('ℹ️  favicon 目录复制失败或不存在:', error.message);

@@ -3,6 +3,7 @@ import * as React from 'react'
 import { createRoot } from 'react-dom/client'
 import _ from 'lodash'
 import './data.css'
+
 // 获取数据
 const fetchData = async () => {
   try {
@@ -17,9 +18,24 @@ const fetchData = async () => {
   }
 }
 
+// 获取构建页面列表
+const fetchDistPages = async () => {
+  try {
+    const response = await fetch('/api/dist-pages')
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    return await response.json()
+  } catch (error) {
+    console.error('获取构建页面列表失败:', error)
+    return []
+  }
+}
+
 // 数据展示组件
 const ShowDataPage: React.FC = () => {
   const [data, setData] = React.useState<any>(null)
+  const [distPages, setDistPages] = React.useState<any[]>([])
   const [loading, setLoading] = React.useState<boolean>(true)
   const [error, setError] = React.useState<string | null>(null)
 
@@ -33,6 +49,10 @@ const ShowDataPage: React.FC = () => {
         } else {
           setError('无法获取数据')
         }
+
+        // 获取构建后的页面列表
+        const pages = await fetchDistPages()
+        setDistPages(pages)
       } catch (err) {
         setError('加载数据时发生错误')
         console.error(err)
@@ -203,6 +223,39 @@ const ShowDataPage: React.FC = () => {
                   </tr>
                 )
               })}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* 构建页面列表展示 */}
+      <section>
+        <h2>构建页面列表 ({distPages.length || 0})</h2>
+        <div className="data-table">
+          <table>
+            <thead>
+              <tr>
+                <th>页面路径</th>
+                <th>访问链接</th>
+              </tr>
+            </thead>
+            <tbody>
+              {distPages.length > 0 ? (
+                distPages.map((page: any, index: number) => (
+                  <tr key={index}>
+                    <td>{page.path}</td>
+                    <td>
+                      <a href={page.url} target="_blank" rel="noopener noreferrer">
+                        访问页面
+                      </a>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={2}>暂无构建页面信息</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
