@@ -1,14 +1,8 @@
 import React from 'react';
-
-interface Item {
-  create_time?: string;
-  category?: string;
-  category_alias?: string;
-  tagRef?: Record<string, string>;
-}
+import { POST } from '../../../../src/types';
 
 interface MetadataProps {
-  item: Item;
+  item: POST;
 }
 
 export const Metadata: React.FC<MetadataProps> = ({ item }) => {
@@ -56,13 +50,20 @@ export const Metadata: React.FC<MetadataProps> = ({ item }) => {
           </svg>
         </div>
         <div className="flex flex-row flex-nowrap items-center">
+        {item.categories && item.categories.map((c, index) => (
+            <React.Fragment key={c}>
           <a
-            href={`/categories/${item.category_alias}`}
-            aria-label={`View all posts in the ${item.category} category`}
+            href={`/categories/${c}`}
+            aria-label={`View all posts in the ${c} category`}
             className="link-lg transition text-50 text-sm font-medium hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap"
           >
-            {item.category}
-          </a>
+            {c}
+            </a>
+            {index < item.categories.length - 1 && (
+                <div className="mx-1.5 text-[var(--meta-divider)] text-sm">/</div>
+              )}
+          </React.Fragment>
+           ))}
         </div>
       </div>
 
@@ -81,16 +82,16 @@ export const Metadata: React.FC<MetadataProps> = ({ item }) => {
         </div>
         <div className="flex flex-row flex-nowrap items-center">
           <div className="hidden mx-1.5 text-[var(--meta-divider)] text-sm">/</div>
-          {item.tagRef && Object.entries(item.tagRef).map(([tagKey, tagValue], index, array) => (
-            <React.Fragment key={tagKey}>
+          {item.tags && item.tags.map((tag, index) => (
+            <React.Fragment key={tag}>
               <a
-                href={`/tags/${tagValue}`}
-                aria-label={`View all posts with the ${tagKey} tag`}
+                href={`/tags/${tag}`}
+                aria-label={`View all posts with the ${tag} tag`}
                 className="link-lg transition text-50 text-sm font-medium hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap"
               >
-                {tagKey}
+                {tag}
               </a>
-              {index < array.length - 1 && (
+              {index < item.tags.length - 1 && (
                 <div className="mx-1.5 text-[var(--meta-divider)] text-sm">/</div>
               )}
             </React.Fragment>

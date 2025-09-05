@@ -2,7 +2,6 @@
 
 import { newCommand } from './commands/new.ts'
 import { DataGenerator } from './generator.ts'
-import { LumosServer } from './server.ts'
 import { join } from 'path'
 import { ensureAssetsDir } from './utils.ts'
 
@@ -150,131 +149,199 @@ async function serverCommand(options: CLIOptions) {
       await generateCommand()
     }
 
-    // 启动服务器
-    let server = new LumosServer({ port, dataPath })
-    let watchers: any[] = []
+    // 判断是否为开发模式（启用监听模式）
+    const isDevMode = options.watch || options.w;
 
-    // 重启服务器的函数
-    const restartServer = async () => {
-      console.log('🔄 重启服务器...')
-
-      // 清理现有的监听器
-      for (const watcher of watchers) {
-        watcher.close()
-      }
-      watchers = []
-
-      // 重新启动服务器
-      try {
-        await server.stop()
-      } catch (error) {
-        // 忽略停止服务器时的错误
-        console.error('停止服务器时出错:', error)
-      }
-
-      // 等待一段时间确保端口释放
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      // 重新创建服务器实例
-      server = new LumosServer({ port, dataPath })
-      await server.start()
-
-      // 重新设置监听
-      await setupWatchers()
+    if (isDevMode) {
+      // 开发模式使用子进程管理
+      await runServerInDevMode(port, dataPath);
+    } else {
+      // 生产模式直接运行服务器
+      await runServerInProductionMode(port, dataPath);
     }
-
-    // 设置监听器的函数
-    const setupWatchers = async () => {
-      // 清理现有的监听器
-      for (const watcher of watchers) {
-        watcher.close()
-      }
-      watchers = []
-
-      // 动态获取当前主题名称
-      let themeName = 'default'
-      try {
-        const configPath = join(process.cwd(), 'lumos.config.json')
-        const configFile = Bun.file(configPath)
-        if (await configFile.exists()) {
-          const configContent = await configFile.text()
-          const config = JSON.parse(configContent)
-          themeName = config.theme || 'default'
-        }
-      } catch (error) {
-        console.warn('警告: 无法加载主题配置，使用默认主题:', error)
-      }
-
-      // 使用 Bun 的文件监听 API
-      const watchDirs = [
-        'source/_posts',
-        'source/_pages',
-        'source/_authors',
-        'source/_jsons',
-        'source/_ymls',
-        `themes/${themeName}`,
-      ]
-
-      for (const dir of watchDirs) {
-        try {
-          const fullPath = join(process.cwd(), dir)
-
-          // 检查目录是否存在
-          const stat = await Bun.file(fullPath).stat().catch(() => null)
-          if (!stat || !stat.isDirectory()) {
-            console.warn(`监听目录不存在或不是目录: ${fullPath}`)
-            continue
-          }
-
-          // 使用 fs.watch 监听文件变化
-          const fs = await import('fs')
-          const watcher = fs.watch(fullPath, { recursive: true }, async (eventType, filename) => {
-            if (filename) {
-              console.log(`📝 检测到文件变化: ${dir}/${filename}`)
-
-              // 如果是主题目录的文件变化，重启服务器
-              if (dir.startsWith(`themes/${themeName}`)) {
-                console.log('🔄 主题文件发生变化，正在重启服务器...')
-                await restartServer()
-              } else {
-                // 内容文件变化，重新生成数据
-                console.log('🔄 重新生成数据...')
-                try {
-                  await generateCommand()
-                  await server.loadData()
-                  console.log('✅ 数据已更新')
-                } catch (error) {
-                  console.error('❌ 更新数据失败:', error)
-                }
-              }
-            }
-          })
-
-          // 处理错误
-          watcher.on('error', (error) => {
-            console.warn(`监听目录 ${dir} 失败:`, error)
-          })
-
-          watchers.push(watcher)
-          console.log(`👀 正在监听目录: ${fullPath}`)
-        } catch (error) {
-          console.warn(`无法监听目录 ${dir}:`, error)
-        }
-      }
-    }
-
-    if (options.watch || options.w) {
-      // 监听文件变化
-      console.log('👀 监听模式已启用')
-      await setupWatchers()
-    }
-
-    await server.start()
-
   } catch (error) {
     console.error('❌ 启动服务器失败:', error)
     process.exit(1)
   }
+}
+
+async function runServerInProductionMode(port: number, dataPath: string) {
+  const { LumosServer } = await import('./server.ts');
+
+  // 直接运行服务器，不使用子进程
+  const server = new LumosServer({ port, dataPath });
+  await server.start();
+
+  // 监听进程退出信号，确保服务器正确关闭
+  const signals = ['SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2'];
+  for (const signal of signals) {
+    process.on(signal, async () => {
+      console.log(`收到信号 ${signal}，正在关闭服务器...`);
+      try {
+        await server.stop();
+        console.log('服务器已关闭');
+        process.exit(0);
+      } catch (error) {
+        console.error('关闭服务器时出错:', error);
+        process.exit(1);
+      }
+    });
+  }
+}
+
+async function runServerInDevMode(port: number, dataPath: string) {
+  // 声明变量
+  let serverProcess: any;
+  let watchers: any[] = [];
+
+  // 启动服务器的函数
+  const startServer = async () => {
+    const { spawn } = await import('bun')
+    const child = spawn({
+      cmd: ['bun', 'src/standalone-server.ts'],
+      env: {
+        ...process.env,
+        PORT: port.toString(),
+        DATA_PATH: dataPath
+      },
+      stdout: 'inherit',
+      stderr: 'inherit'
+    })
+    return child
+  }
+
+  // 重启服务器的函数
+  const restartServer = async () => {
+    console.log('🔄 重启服务器...')
+
+    // 关闭现有的子进程
+    if (serverProcess) {
+      serverProcess.kill()
+    }
+
+    // 等待一段时间确保端口释放
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    // 重新启动服务器
+    serverProcess = await startServer()
+    console.log('✅ 服务器已重启')
+  }
+
+  // 设置监听器的函数
+  const setupWatchers = async () => {
+    // 清理现有的监听器
+    for (const watcher of watchers) {
+      watcher.close()
+    }
+    watchers = []
+
+    // 动态获取当前主题名称
+    let themeName = 'default'
+    try {
+      const configPath = join(process.cwd(), 'lumos.config.json')
+      const configFile = Bun.file(configPath)
+      if (await configFile.exists()) {
+        const configContent = await configFile.text()
+        const config = JSON.parse(configContent)
+        themeName = config.theme || 'default'
+      }
+    } catch (error) {
+      console.warn('警告: 无法加载主题配置，使用默认主题:', error)
+    }
+
+    // 使用 Bun 的文件监听 API
+    const watchDirs = [
+      'source/_posts',
+      'source/_pages',
+      'source/_authors',
+      'source/_jsons',
+      'source/_ymls',
+      `themes/${themeName}`,
+    ]
+
+    for (const dir of watchDirs) {
+      try {
+        const fullPath = join(process.cwd(), dir)
+
+        // 检查目录是否存在
+        const stat = await Bun.file(fullPath).stat().catch(() => null)
+        if (!stat || !stat.isDirectory()) {
+          console.warn(`监听目录不存在或不是目录: ${fullPath}`)
+          continue
+        }
+
+        // 使用 fs.watch 监听文件变化
+        const fs = await import('fs')
+        const watcher = fs.watch(fullPath, { recursive: true }, async (eventType, filename) => {
+          if (filename) {
+            console.log(`📝 检测到文件变化: ${dir}/${filename}`)
+
+            // 如果是主题目录的文件变化，重启服务器
+            if (dir.startsWith(`themes/${themeName}`)) {
+              console.log('🔄 主题文件发生变化，正在重启服务器...')
+              await restartServer()
+            } else {
+              // 内容文件变化，重新生成数据
+              console.log('🔄 重新生成数据...')
+              try {
+                await generateCommand()
+                // 发送信号给子进程重新加载数据
+                if (serverProcess) {
+                  process.kill(serverProcess.pid, 'SIGUSR1')
+                }
+                console.log('✅ 数据已更新')
+              } catch (error) {
+                console.error('❌ 更新数据失败:', error)
+              }
+            }
+          }
+        })
+
+        // 处理错误
+        watcher.on('error', (error) => {
+          console.warn(`监听目录 ${dir} 失败:`, error)
+        })
+
+        watchers.push(watcher)
+        console.log(`👀 正在监听目录: ${fullPath}`)
+      } catch (error) {
+        console.warn(`无法监听目录 ${dir}:`, error)
+      }
+    }
+  }
+
+  // 初始化服务器进程
+  serverProcess = await startServer();
+
+  // 监听文件变化
+  console.log('👀 监听模式已启用')
+  await setupWatchers()
+
+  // 监听主进程退出信号，确保子进程也被关闭
+  const signals = ['SIGINT', 'SIGTERM'];
+  for (const signal of signals) {
+    process.on(signal, () => {
+      console.log(`收到信号 ${signal}，正在关闭开发服务器...`);
+      // 关闭监听器
+      for (const watcher of watchers) {
+        watcher.close();
+      }
+
+      // 关闭子进程
+      if (serverProcess) {
+        console.log('正在关闭子进程...');
+        serverProcess.kill();
+      }
+
+      console.log('开发服务器已关闭');
+      process.exit(0);
+    });
+  }
+
+  // 监听子进程退出事件
+  serverProcess.exited.then((code: number) => {
+    console.log(`服务器进程退出，退出码: ${code}`)
+  })
 }
 
 async function main() {
