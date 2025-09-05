@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
 
 // 首页组件
 function HomePage() {
@@ -10,9 +10,9 @@ function HomePage() {
         <h1>Lumos React Router 测试</h1>
         <nav>
           <ul>
-            <li><Link to="/test-router/">首页</Link></li>
-            <li><Link to="/test-router/about">关于</Link></li>
-            <li><Link to="/test-router/test">测试</Link></li>
+            <li><Link to="/">首页</Link></li>
+            <li><Link to="/about">关于</Link></li>
+            <li><Link to="/test">测试</Link></li>
           </ul>
         </nav>
       </header>
@@ -37,7 +37,7 @@ function NavigationButton() {
   const navigate = useNavigate();
 
   const handleNavigation = () => {
-    navigate('/test-router/about');
+    navigate('/about');
   };
 
   return <button onClick={handleNavigation}>导航到关于页面</button>;
@@ -51,9 +51,9 @@ function AboutPage() {
         <h1>Lumos React Router 测试</h1>
         <nav>
           <ul>
-            <li><Link to="/test-router/">首页</Link></li>
-            <li><Link to="/test-router/about">关于</Link></li>
-            <li><Link to="/test-router/test">测试</Link></li>
+            <li><Link to="/">首页</Link></li>
+            <li><Link to="/about">关于</Link></li>
+            <li><Link to="/test">测试</Link></li>
           </ul>
         </nav>
       </header>
@@ -86,9 +86,9 @@ function TestPage() {
         <h1>Lumos React Router 测试</h1>
         <nav>
           <ul>
-            <li><Link to="/test-router/">首页</Link></li>
-            <li><Link to="/test-router/about">关于</Link></li>
-            <li><Link to="/test-router/test">测试</Link></li>
+            <li><Link to="/">首页</Link></li>
+            <li><Link to="/about">关于</Link></li>
+            <li><Link to="/test">测试</Link></li>
           </ul>
         </nav>
       </header>
@@ -114,11 +114,9 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/test-router/" element={<HomePage />} />
-        <Route path="/test-router/about" element={<AboutPage />} />
-        <Route path="/test-router/test" element={<TestPage />} />
-        {/* 添加匹配 /test-router 路径的路由 */}
-        <Route path="/test-router/" element={<HomePage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/test" element={<TestPage />} />
       </Routes>
     </Router>
   );
