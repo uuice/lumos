@@ -19,8 +19,8 @@
     "gen": "bun src/generate.ts",
     "lint": "eslint . --ext .ts,.tsx",
     "fix": "eslint . --ext .ts,.tsx --fix",
-    "dev:html": "bun ./dev-html.js",
-    "build:html": "bun ./build-theme.js"
+    "dev:html": "bun ./dev-bundler-html.js",
+    "build:html": "bun ./build-bundler-html.js"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",
