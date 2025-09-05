@@ -109,6 +109,43 @@ lumos build
 lumos assets
 ```
 
+### 5. 使用 PM2 部署（生产环境）
+
+Lumos 支持使用 PM2 进行生产环境部署，确保应用的高可用性和自动重启。
+
+首先安装 PM2：
+
+```bash
+# 全局安装 PM2
+bun install -g pm2
+```
+
+使用 PM2 启动应用：
+
+```bash
+# 启动应用
+bun run pm2:start
+
+# 查看应用状态
+bun run pm2:status
+
+# 查看日志
+bun run pm2:logs
+
+# 重启应用
+bun run pm2:restart
+
+# 停止应用
+bun run pm2:stop
+```
+
+PM2 配置文件 `ecosystem.config.cjs` 已经包含在项目中，可以根据需要进行调整：
+
+- 应用名称: `lumos-blog`
+- 启动脚本: 使用 Bun 运行 `src/cli.ts server`
+- 端口: 默认 3000
+- 日志文件: 存储在 `logs` 目录中
+
 ### 快速开始
 
 ```bash
@@ -287,31 +324,29 @@ mkdir -p themes/my-theme/{assets,components,routes}
 import * as React from 'react'
 
 interface LayoutProps {
-title: string
-children: React.ReactNode
+  title: string
+  children: React.ReactNode
 }
 
 export const Layout: React.FC<LayoutProps> = ({ title, children }) => {
-return (
-
-<html>
-<head>
-<title>{title}</title>
-<link rel="stylesheet" href="/assets/styles/theme.css" />
-</head>
-<body>
-<header>
-<h1>我的自定义主题</h1>
-</header>
-<main>{children}</main>
-<footer>
-<p>&copy; 2024 我的博客</p>
-</footer>
-</body>
-</html>
-)
+  return (
+    <html>
+      <head>
+        <title>{title}</title>
+        <link rel="stylesheet" href="/assets/styles/theme.css" />
+      </head>
+      <body>
+        <header>
+          <h1>我的自定义主题</h1>
+        </header>
+        <main>{children}</main>
+        <footer>
+          <p>&copy; 2024 我的博客</p>
+        </footer>
+      </body>
+    </html>
+  )
 }
-
 ```
 
 #### 3. 创建路由页面
@@ -353,7 +388,7 @@ export default async function handler(_request: Request): Promise<Response> {
 
 ## 📄 Markdown 文件格式
 
-### 文章 (_posts/*.md)
+### 文章 (\_posts/\*.md)
 
 ```markdown
 ---
@@ -381,7 +416,7 @@ featured: false # 是否置顶
 - 中文 URL 友好化
 ```
 
-### 页面 (_pages/*.md)
+### 页面 (\_pages/\*.md)
 
 ```markdown
 ---
@@ -396,7 +431,7 @@ navOrder: 1 # 导航栏排序
 这里是页面内容...
 ```
 
-### 作者 (_authors/*.md)
+### 作者 (\_authors/\*.md)
 
 ```markdown
 ---
@@ -417,7 +452,7 @@ social:
 
 ## ⚙️ 配置文件
 
-### JSON 配置 (_jsons/*.json)
+### JSON 配置 (\_jsons/\*.json)
 
 ```json
 {
@@ -438,7 +473,7 @@ social:
 }
 ```
 
-### YAML 配置 (_ymls/*.yml)
+### YAML 配置 (\_ymls/\*.yml)
 
 ```yaml
 # 主题配置

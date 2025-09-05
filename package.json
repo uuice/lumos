@@ -20,7 +20,12 @@
     "lint": "eslint . --ext .ts,.tsx",
     "fix": "eslint . --ext .ts,.tsx --fix",
     "dev:html": "bun ./dev-bundler-html.js",
-    "build:html": "bun ./build-bundler-html.js"
+    "build:html": "bun ./build-bundler-html.js",
+    "pm2:start": "pm2 start ecosystem.config.cjs",
+    "pm2:stop": "pm2 stop lumos-blog",
+    "pm2:restart": "pm2 restart lumos-blog",
+    "pm2:status": "pm2 status",
+    "pm2:logs": "pm2 logs lumos-blog"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.7",
