@@ -4,13 +4,13 @@ import { Categories } from './categories';
 import { Tags } from './tags';
 
 interface Category {
-  alias: string;
+  url: string;
   title: string;
   article_count: number;
 }
 
 interface Tag {
-  value: string;
+  url: string;
   title: string;
 }
 

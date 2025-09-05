@@ -33,9 +33,9 @@ export const Head: React.FC<HeadProps> = ({ siteConfig }) => {
           <a aria-label="Archive" href="/archives" className="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95">
             <div className="flex items-center">归档</div>
           </a>
-          <a aria-label="Daily Libs" href="/daily-libs" className="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95">
-            <div className="flex items-center">每日一库</div>
-          </a>
+          {/* <a aria-label="Daily Libs" href="/daily-libs" className="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"> */}
+            {/* <div className="flex items-center">每日一库</div>
+          </a> */}
           <a aria-label="Links" href="/links" className="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95">
             <div className="flex items-center">友情链接</div>
           </a>
@@ -112,14 +112,14 @@ export const Head: React.FC<HeadProps> = ({ siteConfig }) => {
             </svg>
           </a>
 
-          <a href="/daily-libs" className="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8 hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition">
+          {/* <a href="/daily-libs" className="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8 hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition">
             <div className="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]">
               每日一库
             </div>
             <svg width="1em" height="1em" viewBox="0 0 24 24" className="transition text-[1.25rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">
               <use href="#ai:material-symbols:chevron-right-rounded"></use>
             </svg>
-          </a>
+          </a> */}
           <a href="/links" className="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8 hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition">
             <div className="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]">
               友情链接

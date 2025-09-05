@@ -4,6 +4,7 @@ import { renderToString } from 'react-dom/server'
 import _ from 'lodash'
 import { DatabaseSchema, POST } from '../../../src/types.ts'
 import { Layout } from '../components/Layout.tsx'
+import dayjs from 'dayjs'
 
 // 归档页组件
 const ArchivesPage: React.FC<{ data: DatabaseSchema }> = ({ data }) => {
@@ -18,32 +19,62 @@ const ArchivesPage: React.FC<{ data: DatabaseSchema }> = ({ data }) => {
 
   return (
     <Layout title="归档" data={data}>
-      <div>
-        <h1>文章归档</h1>
-        <div>
-          {years.map(year => {
-            const posts = postsByYear[year].sort((a: POST, b: POST) =>
-              new Date(b.date || b.created_time).getTime() - new Date(a.date || a.created_time).getTime()
-            )
+      <div className="card-base px-8 py-6">
+        {years.map(year => {
+          const posts = postsByYear[year].sort((a: POST, b: POST) =>
+            new Date(b.date || b.created_time).getTime() - new Date(a.date || a.created_time).getTime()
+          )
 
-            return (
-              <div key={year}>
-                <h2>{year}年 ({posts.length}篇)</h2>
-                <div>
-                  {posts.map(post => (
-                    <article key={post.id}>
-                      <div>
-                        <span>{new Date(post.date || post.created_time).toLocaleDateString()}</span>
-                        <a href={`/archives${post.url?.replace('/post', '') || `/${post.alias}`}`}>{post.title}</a>
-                      </div>
-                      {post.excerpt && <p>{post.excerpt}</p>}
-                    </article>
-                  ))}
+          return (
+            <div key={year}>
+              <div className="flex flex-row w-full items-center h-[3.75rem]">
+                <div className="w-[15%] md:w-[10%] transition text-2xl font-bold text-right text-75">
+                  {year}
+                </div>
+                <div className="w-[15%] md:w-[10%]">
+                  <div
+                    className="h-3 w-3 bg-none rounded-full outline outline-[var(--primary)] mx-auto -outline-offset-[2px] z-50 outline-3"
+                  ></div>
+                </div>
+                <div className="w-[70%] md:w-[80%] transition text-left text-50">
+                  {posts.length} posts
                 </div>
               </div>
-            )
-          })}
-        </div>
+
+              {posts.map(item => (
+                <a
+                  key={item.id}
+                  className="group btn-plain !block h-10 w-full rounded-lg hover:text-[initial]"
+                  href={`/archives/${item.url}`}
+                  aria-label={item.title}
+                >
+                  <div className="flex flex-row justify-start items-center h-full">
+                    <div className="w-[15%] md:w-[10%] transition text-sm text-right text-50">
+                      {dayjs(item.date || item.created_time).format('MM-DD')}
+                    </div>
+                    <div className="w-[15%] md:w-[10%] relative dash-line h-full flex items-center">
+                      <div
+                        className="transition-all mx-auto w-1 h-1 rounded group-hover:h-5 bg-[oklch(0.5_0.05_var(--hue))] group-hover:bg-[var(--primary)] outline outline-4 z-50 outline-[var(--card-bg)] group-hover:outline-[var(--btn-plain-bg-hover)] group-active:outline-[var(--btn-plain-bg-active)]"
+                      ></div>
+                    </div>
+                    <div
+                      className="w-[70%] md:max-w-[65%] md:w-[65%] text-left font-bold group-hover:translate-x-1 transition-all group-hover:text-[var(--primary)] text-75 pr-8 whitespace-nowrap overflow-ellipsis overflow-hidden"
+                    >
+                      {item.title}
+                    </div>
+                    <div
+                      className="hidden md:block md:w-[15%] text-left text-sm transition whitespace-nowrap overflow-ellipsis overflow-hidden text-30"
+                    >
+                      {Array.isArray(item.tags) && item.tags.map((tag, index) => (
+                        <span key={index}>#{tag} </span>
+                      ))}
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          )
+        })}
       </div>
     </Layout>
   )

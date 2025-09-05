@@ -112,7 +112,7 @@ export class Parser {
         toc: tocContent, // 使用生成的 TOC
         created_timestamp: new Date(frontMatter.created_time || Date.now()).getTime(),
         updated_timestamp: new Date(frontMatter.updated_time || Date.now()).getTime(),
-        url: frontMatter.url || `/${type}/${frontMatter.alias || titleToUrl(frontMatter.title || basename(filePath, '.md'))}`,
+        url: `${frontMatter.url || titleToUrl(frontMatter.title || basename(filePath, '.md'))}`,
         symbolsCount: symbolsCount(mdContent),
         authorIds: Array.isArray(frontMatter.authors) ? frontMatter.authors :
                   frontMatter.authors ? [frontMatter.authors] : [getDefaultAuthorId()],

@@ -9,6 +9,15 @@
     "uploadPath": "uploads"
   },
 
+  "recordSettings": {
+    "icpNumber": "浙ICP备13002567号-4",
+    "icpLink": "https://beian.miit.gov.cn/",
+    "policeNumber": "",
+    "policeLink": "",
+    "recordText": "",
+    "showRecord": true
+  },
+
   "siteSetting": {
     "baseUrl": "http://localhost:3060",
     "siteName": "轻盈的鱼",

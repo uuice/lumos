@@ -194,8 +194,83 @@ async function runServerInDevMode(port: number, dataPath: string) {
   let serverProcess: any;
   let watchers: any[] = [];
 
+  // 检查端口是否被占用的函数
+  const isPortInUse = async (port: number): Promise<boolean> => {
+    try {
+      // 尝试创建一个服务器来检查端口是否可用
+      const server = Bun.serve({
+        port,
+        fetch: () => new Response('test')
+      });
+      // 如果成功创建服务器，说明端口未被占用，关闭服务器
+      server.stop();
+      return false;
+    } catch (_error: unknown) {
+      // 如果端口被占用，会抛出错误
+      // 记录错误信息以便调试
+      console.error(`端口检查失败: ${_error instanceof Error ? _error.message : String(_error)}`);
+      return true;
+    }
+  };
+
+  // 杀死占用指定端口的进程
+  const killPortProcess = async (port: number): Promise<void> => {
+    try {
+      // 在 Unix/Linux/macOS 系统上使用 lsof 命令查找占用端口的进程
+      const { exitCode, stdout, stderr } = Bun.spawnSync([
+        'lsof',
+        '-ti',
+        `:${port}`
+      ]);
+
+      if (exitCode === 0 && stdout) {
+        const pid = parseInt(new TextDecoder().decode(stdout).trim());
+        if (!isNaN(pid)) {
+          console.log(`🔍 发现占用端口 ${port} 的进程 (PID: ${pid})，正在终止...`);
+          try {
+            process.kill(pid, 'SIGTERM');
+            // 等待一段时间让进程优雅关闭
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // 检查进程是否仍然存在
+            try {
+              process.kill(pid, 0); // 这不会发送信号，但会检查进程是否存在
+              // 如果进程仍然存在，强制终止
+              console.log(`⚠️  进程 ${pid} 仍未关闭，正在强制终止...`);
+              process.kill(pid, 'SIGKILL');
+            } catch (_error: unknown) {
+              // 进程已经不存在了
+              // 记录错误信息以便调试
+              console.error(`进程检查失败: ${_error instanceof Error ? _error.message : String(_error)}`);
+              console.log(`✅ 进程 ${pid} 已成功终止`);
+            }
+          } catch (killError) {
+            console.warn(`⚠️  无法终止进程 ${pid}:`, killError);
+          }
+        }
+      } else if (stderr) {
+        console.warn(`⚠️  检查端口占用时出错:`, new TextDecoder().decode(stderr));
+      }
+    } catch (error) {
+      console.warn(`⚠️  无法检查端口 ${port} 的占用情况:`, error);
+    }
+  };
+
   // 启动服务器的函数
   const startServer = async () => {
+    // 检查端口是否被占用
+    if (await isPortInUse(port)) {
+      console.log(`⚠️  端口 ${port} 已被占用，正在尝试清理...`);
+      await killPortProcess(port);
+
+      // 再次检查端口是否已被释放
+      if (await isPortInUse(port)) {
+        console.warn(`⚠️  端口 ${port} 仍然被占用，可能会导致启动失败`);
+      } else {
+        console.log(`✅ 端口 ${port} 已被释放`);
+      }
+    }
+
     const { spawn } = await import('bun')
     const child = spawn({
       cmd: ['bun', 'src/standalone-server.ts'],
@@ -290,8 +365,9 @@ async function runServerInDevMode(port: number, dataPath: string) {
                   process.kill(serverProcess.pid, 'SIGUSR1')
                 }
                 console.log('✅ 数据已更新')
-              } catch (error) {
-                console.error('❌ 更新数据失败:', error)
+              } catch (_error) {
+                console.error('❌ 更新数据失败:', _error)
+                // _error 变量已使用
               }
             }
           }

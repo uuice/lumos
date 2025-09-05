@@ -57,9 +57,9 @@ export const Footer: React.FC<FooterProps> = ({ currentYear, siteConfig, recordS
             className="transition link text-[var(--primary)] font-medium"
             target="_blank"
             rel="noopener noreferrer"
-            href="https://github.com/uuice/crispy"
+            href="https://github.com/uuice/lumos"
           >
-            Crispy
+            Lumos
           </a>
           Theme 移植自
           <a

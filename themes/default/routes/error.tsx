@@ -10,21 +10,21 @@ const ErrorPage: React.FC<{
   error?: string
   statusCode?: number
 }> = ({ data, error = '服务器内部错误', statusCode = 500 }) => (
-  <Layout title={`服务器错误 - ${statusCode}`} data={data}>
+  <Layout title={`${statusCode} 服务器错误`} data={data} showSidebar={false} showBanner={false}>
     <div className="min-h-[50vh] flex flex-col items-center justify-center text-center">
       <div className="max-w-md mx-auto">
-        <div className="text-9xl font-bold text-red-500 mb-4">{statusCode}</div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="text-9xl font-bold text-[var(--primary)] mb-4">{statusCode}</div>
+        <h1 className="text-2xl font-bold text-black/90 dark:text-white/90 mb-4">
           服务器错误
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">
+        <p className="text-black/60 dark:text-white/60 mb-8">
           {error || '抱歉，服务器遇到了一个意外错误，请稍后再试。'}
         </p>
         <div className="space-y-4">
           <div>
             <button
               onClick={() => window.location.reload()}
-              className="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors mr-4"
+              className="inline-flex items-center px-6 py-3 bg-[var(--btn-regular-bg)] text-[var(--btn-content)] rounded-[var(--radius-large)] hover:bg-[var(--btn-regular-bg-hover)] transition-colors border border-[var(--line-divider)] mr-4"
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -33,7 +33,7 @@ const ErrorPage: React.FC<{
             </button>
             <a
               href="/"
-              className="inline-flex items-center px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              className="inline-flex items-center px-6 py-3 bg-[var(--btn-regular-bg)] text-[var(--btn-content)] rounded-[var(--radius-large)] hover:bg-[var(--btn-regular-bg-hover)] transition-colors border border-[var(--line-divider)]"
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -41,7 +41,7 @@ const ErrorPage: React.FC<{
               返回首页
             </a>
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400 mt-8">
+          <div className="text-xs text-black/50 dark:text-white/50 mt-8">
             <p>如果问题持续存在，请联系管理员</p>
             <p className="mt-2">错误时间: {new Date().toLocaleString('zh-CN')}</p>
           </div>
@@ -53,29 +53,17 @@ const ErrorPage: React.FC<{
 
 export default async function handler(request: Request, params?: { error?: string, statusCode?: number }): Promise<Response> {
   try {
-    // 从全局状态获取数据
-    let data: DatabaseSchema | null = null
-    try {
-      data = (globalThis as any).__LUMOS_DATA__ as DatabaseSchema
-    } catch (err) {
-      console.error('无法获取数据:', err)
+    // 从全局状态获取数据   // 从全局状态获取数据
+    const data = (globalThis as any).__LUMOS_DATA__ as DatabaseSchema
+    if (!data) {
+      return new Response('Server not initialized', { status: 500 })
     }
 
-    // 如果数据不可用，使用最小化数据结构
-    const fallbackData: DatabaseSchema = {
-      posts: [],
-      pages: [],
-      authors: [],
-      categories: [],
-      tags: []
-    }
-
-    const finalData = data || fallbackData
     const error = params?.error || '服务器遇到了意外错误'
     const statusCode = params?.statusCode || 500
 
     const html = '<!DOCTYPE html>' + renderToString(
-      React.createElement(ErrorPage, { data: finalData, error, statusCode })
+      React.createElement(ErrorPage, { data, error, statusCode })
     )
 
     return new Response(html, {

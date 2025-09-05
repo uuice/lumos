@@ -109,6 +109,8 @@ export interface DatabaseSchema {
   authors: AUTHOR[]
   categories: CATEGORY[]
   tags: TAG[]
+  postCategories: POST_CATEGORY[]
+  postTags: POST_TAG[]
   [key: string]: unknown | any
 }
 

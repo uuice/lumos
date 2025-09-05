@@ -18,17 +18,17 @@
       ],
       "excerpt": "Angular 中的单例 Service通过@NgModule()装饰器来声明一个service时， 会与整个应用的生命周期保持一致， 属于单利service （单例模式）。Angular 中的非单例 Service通过@Component()装饰器来声明一个service时，会成为一个非单例的se",
       "published": true,
-      "content": "<h3 id=\"toc-133f92\">Angular 中的单例 Service / Angular singleton Service</h3>\n<p>通过<code>@NgModule()</code>装饰器来声明一个service时， 会与整个应用的生命周期保持一致， 属于单例service （单例模式）。</p>\n<!-- more -->\n\n<h3 id=\"toc-348874\">Angular 中的非单例 Service / Non-singleton Service in Angular</h3>\n<p>通过<code>@Component()</code>装饰器来声明一个service时，会成为一个非单例的service， 生命周期与component 一致， 当Angular销毁组件实例时，Angular将同时销毁与之绑定的service实例。</p>\n<p>非单例service 拥有ngOnDestroy()生命周期， 因此可以通过创建一个非单例的service来取消订阅可观察对象。</p>\n<h3 id=\"toc-51894b\">创建DestroyService / Create DestroyService</h3>\n<pre><code class=\"hljs lang-javascript\"><span class=\"hljs-keyword\">import</span> { <span class=\"hljs-title class_\">Injectable</span>, <span class=\"hljs-title class_\">OnDestroy</span> } <span class=\"hljs-keyword\">from</span> <span class=\"hljs-string\">&#x27;@angular/core&#x27;</span>;\n<span class=\"hljs-keyword\">import</span> { <span class=\"hljs-title class_\">Subject</span> } <span class=\"hljs-keyword\">from</span> <span class=\"hljs-string\">&#x27;rxjs&#x27;</span>;\n\n@<span class=\"hljs-title class_\">Injectable</span>()\n<span class=\"hljs-keyword\">export</span> <span class=\"hljs-keyword\">class</span> <span class=\"hljs-title class_\">DestroyService</span> <span class=\"hljs-keyword\">extends</span> <span class=\"hljs-title class_ inherited__\">Subject</span>&lt;<span class=\"hljs-keyword\">void</span>&gt; implements <span class=\"hljs-title class_\">OnDestroy</span> {\n  <span class=\"hljs-title function_\">ngOnDestroy</span>(): <span class=\"hljs-keyword\">void</span> {\n    <span class=\"hljs-variable language_\">this</span>.<span class=\"hljs-title function_\">next</span>();\n    <span class=\"hljs-variable language_\">this</span>.<span class=\"hljs-title function_\">complete</span>();\n  }\n}\n</code></pre>\n<h3 id=\"toc-8cb489\">使用方法 / How to use</h3>\n<pre><code class=\"hljs lang-javascript\">@<span class=\"hljs-title class_\">Component</span>({\n  <span class=\"hljs-attr\">providers</span>: [<span class=\"hljs-title class_\">DestroyService</span>]\n})\n\n<span class=\"hljs-title function_\">constructor</span>(<span class=\"hljs-params\"> private destroy$: DestroyService </span>) {}\n\nsome$.<span class=\"hljs-title function_\">pipe</span>( <span class=\"hljs-title function_\">takeUntil</span>(<span class=\"hljs-variable language_\">this</span>.<span class=\"hljs-property\">destroy$</span>)).<span class=\"hljs-title function_\">subscribe</span>(...)\n</code></pre>\n<h3 id=\"toc-1f84c1\">可能的问题 / Memory Leaks</h3>\n<p>当有多个操作符时，应该始终保证takeUntil是序列中的最后一个操作符， 不然会有内存泄漏的可能。</p>\n<p>To avoid problems with memory leaks, the general rule is that takeUntil should be the last operator in the sequence\n// 内容修改测试</p>\n",
-      "mdContent": "\n### Angular 中的单例 Service / Angular singleton Service\n\n通过`@NgModule()`装饰器来声明一个service时， 会与整个应用的生命周期保持一致， 属于单例service （单例模式）。\n\n<!-- more -->\n\n### Angular 中的非单例 Service / Non-singleton Service in Angular\n\n通过`@Component()`装饰器来声明一个service时，会成为一个非单例的service， 生命周期与component 一致， 当Angular销毁组件实例时，Angular将同时销毁与之绑定的service实例。\n\n非单例service 拥有ngOnDestroy()生命周期， 因此可以通过创建一个非单例的service来取消订阅可观察对象。\n\n### 创建DestroyService / Create DestroyService\n\n```javascript\nimport { Injectable, OnDestroy } from '@angular/core';\nimport { Subject } from 'rxjs';\n\n@Injectable()\nexport class DestroyService extends Subject<void> implements OnDestroy {\n  ngOnDestroy(): void {\n    this.next();\n    this.complete();\n  }\n}\n\n```\n\n### 使用方法 / How to use\n\n```javascript\n@Component({\n  providers: [DestroyService]\n})\n\nconstructor( private destroy$: DestroyService ) {}\n\nsome$.pipe( takeUntil(this.destroy$)).subscribe(...)\n```\n\n### 可能的问题 / Memory Leaks\n\n当有多个操作符时，应该始终保证takeUntil是序列中的最后一个操作符， 不然会有内存泄漏的可能。\n\nTo avoid problems with memory leaks, the general rule is that takeUntil should be the last operator in the sequence\n// 内容修改测试\n",
+      "content": "<h3 id=\"toc-133f92\">Angular 中的单例 Service / Angular singleton Service</h3>\n<p>通过<code>@NgModule()</code>装饰器来声明一个service时， 会与整个应用的生命周期保持一致， 属于单例service （单例模式）。</p>\n<!-- more -->\n\n<h3 id=\"toc-348874\">Angular 中的非单例 Service / Non-singleton Service in Angular</h3>\n<p>通过<code>@Component()</code>装饰器来声明一个service时，会成为一个非单例的service， 生命周期与component 一致， 当Angular销毁组件实例时，Angular将同时销毁与之绑定的service实例。</p>\n<p>非单例service 拥有ngOnDestroy()生命周期， 因此可以通过创建一个非单例的service来取消订阅可观察对象。</p>\n<h3 id=\"toc-51894b\">创建DestroyService / Create DestroyService</h3>\n<pre><code class=\"hljs lang-javascript\"><span class=\"hljs-keyword\">import</span> { <span class=\"hljs-title class_\">Injectable</span>, <span class=\"hljs-title class_\">OnDestroy</span> } <span class=\"hljs-keyword\">from</span> <span class=\"hljs-string\">&#x27;@angular/core&#x27;</span>;\n<span class=\"hljs-keyword\">import</span> { <span class=\"hljs-title class_\">Subject</span> } <span class=\"hljs-keyword\">from</span> <span class=\"hljs-string\">&#x27;rxjs&#x27;</span>;\n\n@<span class=\"hljs-title class_\">Injectable</span>()\n<span class=\"hljs-keyword\">export</span> <span class=\"hljs-keyword\">class</span> <span class=\"hljs-title class_\">DestroyService</span> <span class=\"hljs-keyword\">extends</span> <span class=\"hljs-title class_ inherited__\">Subject</span>&lt;<span class=\"hljs-keyword\">void</span>&gt; implements <span class=\"hljs-title class_\">OnDestroy</span> {\n  <span class=\"hljs-title function_\">ngOnDestroy</span>(): <span class=\"hljs-keyword\">void</span> {\n    <span class=\"hljs-variable language_\">this</span>.<span class=\"hljs-title function_\">next</span>();\n    <span class=\"hljs-variable language_\">this</span>.<span class=\"hljs-title function_\">complete</span>();\n  }\n}\n</code></pre>\n<h3 id=\"toc-8cb489\">使用方法 / How to use</h3>\n<pre><code class=\"hljs lang-javascript\">@<span class=\"hljs-title class_\">Component</span>({\n  <span class=\"hljs-attr\">providers</span>: [<span class=\"hljs-title class_\">DestroyService</span>]\n})\n\n<span class=\"hljs-title function_\">constructor</span>(<span class=\"hljs-params\"> private destroy$: DestroyService </span>) {}\n\nsome$.<span class=\"hljs-title function_\">pipe</span>( <span class=\"hljs-title function_\">takeUntil</span>(<span class=\"hljs-variable language_\">this</span>.<span class=\"hljs-property\">destroy$</span>)).<span class=\"hljs-title function_\">subscribe</span>(...)\n</code></pre>\n<h3 id=\"toc-1f84c1\">可能的问题 / Memory Leaks</h3>\n<p>当有多个操作符时，应该始终保证takeUntil是序列中的最后一个操作符， 不然会有内存泄漏的可能。</p>\n<p>To avoid problems with memory leaks, the general rule is that takeUntil should be the last operator in the sequence</p>\n",
+      "mdContent": "\n### Angular 中的单例 Service / Angular singleton Service\n\n通过`@NgModule()`装饰器来声明一个service时， 会与整个应用的生命周期保持一致， 属于单例service （单例模式）。\n\n<!-- more -->\n\n### Angular 中的非单例 Service / Non-singleton Service in Angular\n\n通过`@Component()`装饰器来声明一个service时，会成为一个非单例的service， 生命周期与component 一致， 当Angular销毁组件实例时，Angular将同时销毁与之绑定的service实例。\n\n非单例service 拥有ngOnDestroy()生命周期， 因此可以通过创建一个非单例的service来取消订阅可观察对象。\n\n### 创建DestroyService / Create DestroyService\n\n```javascript\nimport { Injectable, OnDestroy } from '@angular/core';\nimport { Subject } from 'rxjs';\n\n@Injectable()\nexport class DestroyService extends Subject<void> implements OnDestroy {\n  ngOnDestroy(): void {\n    this.next();\n    this.complete();\n  }\n}\n\n```\n\n### 使用方法 / How to use\n\n```javascript\n@Component({\n  providers: [DestroyService]\n})\n\nconstructor( private destroy$: DestroyService ) {}\n\nsome$.pipe( takeUntil(this.destroy$)).subscribe(...)\n```\n\n### 可能的问题 / Memory Leaks\n\n当有多个操作符时，应该始终保证takeUntil是序列中的最后一个操作符， 不然会有内存泄漏的可能。\n\nTo avoid problems with memory leaks, the general rule is that takeUntil should be the last operator in the sequence\n",
       "toc": "<ul>\n<li><a href=\"#toc-133f92\">Angular 中的单例 Service / Angular singleton Service</a></li>\n<li><a href=\"#toc-348874\">Angular 中的非单例 Service / Non-singleton Service in Angular</a></li>\n<li><a href=\"#toc-51894b\">创建DestroyService / Create DestroyService</a></li>\n<li><a href=\"#toc-8cb489\">使用方法 / How to use</a></li>\n<li><a href=\"#toc-1f84c1\">可能的问题 / Memory Leaks</a></li>\n</ul>\n",
       "created_timestamp": 1677667592000,
       "updated_timestamp": 1677667592000,
-      "url": "/post/tong-guo-takeuntil-qu-xiao-ding-yue-ke-guan-cha-dui-xiang",
-      "symbolsCount": 927,
+      "url": "tong-guo-takeuntil-qu-xiao-ding-yue-ke-guan-cha-dui-xiang",
+      "symbolsCount": 919,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
       ],
-      "wordCount": 1072,
+      "wordCount": 1062,
       "readingTime": 6
     },
     {
@@ -51,7 +51,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-7c31fc\">完整代码</a></li>\n<li><a href=\"#toc-5ad7f5\">结果</a></li>\n</ul>\n",
       "created_timestamp": 1668793990000,
       "updated_timestamp": 1668793990000,
-      "url": "/post/jiang-bu-er-biao-da-shi-zhuan-cheng-json-ge-shi",
+      "url": "jiang-bu-er-biao-da-shi-zhuan-cheng-json-ge-shi",
       "symbolsCount": 1958,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -81,7 +81,7 @@
       "toc": "",
       "created_timestamp": 1661509822000,
       "updated_timestamp": 1661509822000,
-      "url": "/post/pnpm-install-bao-cuo",
+      "url": "pnpm-install-bao-cuo",
       "symbolsCount": 185,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -110,7 +110,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-58e525\">修改 ~/.bash_profile</a></li>\n<li><a href=\"#toc-b6dff4\">新增环境变量</a><ul>\n<li><a href=\"#toc-de21ab\">使用宝塔面板的服务器</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-9a72cf\">生效</a></li>\n</ul>\n",
       "created_timestamp": 1661509144000,
       "updated_timestamp": 1661509144000,
-      "url": "/post/linux-npm-g-quan-ju-an-zhuang-de-ming-ling-zhao-bu-dao",
+      "url": "linux-npm-g-quan-ju-an-zhuang-de-ming-ling-zhao-bu-dao",
       "symbolsCount": 281,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -141,7 +141,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-291011\">获取DOM</a></li>\n<li><a href=\"#toc-fd30cc\">获取组件实例</a></li>\n</ul>\n",
       "created_timestamp": 1656499072000,
       "updated_timestamp": 1656499072000,
-      "url": "/post/zai-directive-zhong-huo-qu-zu-jian-dom-yi-ji-shi-li",
+      "url": "zai-directive-zhong-huo-qu-zu-jian-dom-yi-ji-shi-li",
       "symbolsCount": 581,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -169,7 +169,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-5a2a5b\">安装yarn</a></li>\n<li><a href=\"#yarn\">yarn</a></li>\n<li><a href=\"#npm\">npm</a></li>\n</ul>\n",
       "created_timestamp": 1587162921000,
       "updated_timestamp": 1587162921000,
-      "url": "/post/yarn-ampamp-npm-she-zhi-jing-xiang-yuan",
+      "url": "yarn-ampamp-npm-she-zhi-jing-xiang-yuan",
       "symbolsCount": 1448,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -197,7 +197,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-44405d\">通过视频url，获取缩略图</a></li>\n</ul>\n",
       "created_timestamp": 1561040526000,
       "updated_timestamp": 1561040526000,
-      "url": "/post/tong-guo-shi-pin-url-huo-qu-suo-lve-tu",
+      "url": "tong-guo-shi-pin-url-huo-qu-suo-lve-tu",
       "symbolsCount": 671,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -225,7 +225,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-e5fb87\">什么是“被污染”的 canvas?</a></li>\n<li><a href=\"#toc-020feb\">如何在canvas中使用跨越图片</a></li>\n<li><a href=\"#toc-f4e9b1\">例如通过url获取base64图片，代码如下</a></li>\n</ul>\n",
       "created_timestamp": 1524086617000,
       "updated_timestamp": 1524086617000,
-      "url": "/post/bei-wu-ran-de-canvas",
+      "url": "bei-wu-ran-de-canvas",
       "symbolsCount": 830,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -253,7 +253,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-4f9b67\">安装redis</a></li>\n<li><a href=\"#toc-33d81c\">启动服务</a></li>\n<li><a href=\"#toc-83b1df\">添加开机启动项</a></li>\n<li><a href=\"#toc-a7948a\">redis配置</a></li>\n</ul>\n",
       "created_timestamp": 1524086594000,
       "updated_timestamp": 1524086594000,
-      "url": "/post/koa2-redis-shi-yong-bi-ji",
+      "url": "koa2-redis-shi-yong-bi-ji",
       "symbolsCount": 192,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -281,7 +281,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-ed69b1\">观察者模式</a></li>\n<li><a href=\"#toc-8627bc\">基本的代码框架</a></li>\n<li><a href=\"#toc-480c21\">实例</a></li>\n<li><a href=\"#toc-a88cff\">完整的代码</a></li>\n</ul>\n",
       "created_timestamp": 1521040533000,
       "updated_timestamp": 1521040533000,
-      "url": "/post/javascript-guan-cha-zhe-mo-shi-de-jian-dan-shi-xian",
+      "url": "javascript-guan-cha-zhe-mo-shi-de-jian-dan-shi-xian",
       "symbolsCount": 1578,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -309,7 +309,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-b541c6\">什么是柯里化</a></li>\n<li><a href=\"#toc-e2fb44\">js中柯里化的基本实现</a></li>\n<li><a href=\"#toc-f50a54\">通过柯里化实现阶乘的函数</a></li>\n<li><a href=\"#toc-1b7d1d\">上面的柯里化函数只能调用一次，下面对他进行改造可以调用多次</a></li>\n</ul>\n",
       "created_timestamp": 1521038746000,
       "updated_timestamp": 1521038746000,
-      "url": "/post/javascript-han-shu-shi-bian-cheng-zhi-ke-li-hua-currying",
+      "url": "javascript-han-shu-shi-bian-cheng-zhi-ke-li-hua-currying",
       "symbolsCount": 1006,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -337,7 +337,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-e6969a\">准备及布局设置</a></li>\n<li><a href=\"#toc-19b223\">本例可以做一些进一步的优化</a></li>\n</ul>\n",
       "created_timestamp": 1520680923000,
       "updated_timestamp": 1520680923000,
-      "url": "/post/html5-canvas-shou-ji-jiu-gong-ge-shou-shi-mi-ma-jie-suo-zhi-chi-nn-ge-dian",
+      "url": "html5-canvas-shou-ji-jiu-gong-ge-shou-shi-mi-ma-jie-suo-zhi-chi-nn-ge-dian",
       "symbolsCount": 2635,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -366,7 +366,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-00452a\">X-Frame-Options是什么？</a></li>\n<li><a href=\"#toc-3c05a1\">使用X-Frame-Options</a></li>\n<li><a href=\"#toc-171f7b\">服务器配置</a></li>\n<li><a href=\"#toc-5f33f1\">配置 nginx</a></li>\n<li><a href=\"#toc-170914\">配置 IIS</a></li>\n<li><a href=\"#toc-0d98c7\">其他</a></li>\n</ul>\n",
       "created_timestamp": 1496764814000,
       "updated_timestamp": 1496764814000,
-      "url": "/post/x-frame-options-xiang-ying-tou",
+      "url": "x-frame-options-xiang-ying-tou",
       "symbolsCount": 907,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -394,7 +394,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-4843fb\">使用类库</a></li>\n</ul>\n",
       "created_timestamp": 1493820343000,
       "updated_timestamp": 1493820343000,
-      "url": "/post/nodejs-cai-ji-lian-shou",
+      "url": "nodejs-cai-ji-lian-shou",
       "symbolsCount": 1261,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -422,7 +422,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-ecace5\">什么是requestAnimationFrame</a></li>\n<li><a href=\"#toc-ddcf3f\">例如：</a></li>\n<li><a href=\"#toc-52b8c1\">优点</a></li>\n<li><a href=\"#toc-ec0964\">使用方法</a></li>\n<li><a href=\"#toc-c11b90\">兼容性</a></li>\n</ul>\n",
       "created_timestamp": 1493806002000,
       "updated_timestamp": 1493806002000,
-      "url": "/post/web-dong-hua-you-hua-requestanimationframe",
+      "url": "web-dong-hua-you-hua-requestanimationframe",
       "symbolsCount": 1869,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -450,7 +450,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-450c58\">需要关注的几个点</a></li>\n<li><a href=\"#toc-72aa4d\">代码如下</a></li>\n</ul>\n",
       "created_timestamp": 1493504202000,
       "updated_timestamp": 1493504202000,
-      "url": "/post/canvas-shi-xian-yuan-xing-jin-du-tiao",
+      "url": "canvas-shi-xian-yuan-xing-jin-du-tiao",
       "symbolsCount": 2480,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -479,7 +479,7 @@
       "toc": "",
       "created_timestamp": 1493500383000,
       "updated_timestamp": 1493500383000,
-      "url": "/post/liu-lan-qi-zhi-ding-nei-he-fang-wen",
+      "url": "liu-lan-qi-zhi-ding-nei-he-fang-wen",
       "symbolsCount": 67,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -507,7 +507,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-cba1f6\">PX特点</a></li>\n<li><a href=\"#toc-37eebb\">EM特点</a></li>\n<li><a href=\"#toc-8e786e\">rem特点</a></li>\n<li><a href=\"#toc-84672b\">个人建议</a></li>\n</ul>\n",
       "created_timestamp": 1493499981000,
       "updated_timestamp": 1493499981000,
-      "url": "/post/shen-ru-fen-xi-css-zhong-dan-wei-px-he-emrem-de-qu-bie",
+      "url": "shen-ru-fen-xi-css-zhong-dan-wei-px-he-emrem-de-qu-bie",
       "symbolsCount": 482,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -535,7 +535,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-04a6ee\">什么是placeholder</a></li>\n<li><a href=\"#toc-9c8b5f\">placeholder兼容性解决</a></li>\n</ul>\n",
       "created_timestamp": 1493499651000,
       "updated_timestamp": 1493499651000,
-      "url": "/post/rang-liu-lan-qi-jian-rong-placeholder",
+      "url": "rang-liu-lan-qi-jian-rong-placeholder",
       "symbolsCount": 568,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -563,7 +563,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-4b4d0f\">callback的作用</a></li>\n</ul>\n",
       "created_timestamp": 1493499493000,
       "updated_timestamp": 1493499493000,
-      "url": "/post/jquery-sheng-shi-san-ji-lian-dong",
+      "url": "jquery-sheng-shi-san-ji-lian-dong",
       "symbolsCount": 1555,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -591,7 +591,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-05102a\">项目创建</a></li>\n<li><a href=\"#toc-000d55\">代码修改自动重启</a></li>\n<li><a href=\"#toc-188768\">全局设置</a></li>\n<li><a href=\"#toc-aae641\">通用方法列表 (大部分抄袭thinkjs)</a></li>\n<li><a href=\"#toc-415823\">数据库操作（mysql）</a></li>\n<li><a href=\"#toc-5bd6e3\">使用nunjucks模板引擎</a></li>\n<li><a href=\"#toc-56ad29\">使用nunjucks模板标签（用于cms，文章，新闻展示等）</a></li>\n<li><a href=\"#toc-ddaedc\">页面中使用</a></li>\n<li><a href=\"#toc-eb85c0\">使用log4js进行日志记录</a></li>\n<li><a href=\"#toc-4a6b89\">socket通讯</a></li>\n<li><a href=\"#toc-0d98c7\">其他</a></li>\n</ul>\n",
       "created_timestamp": 1493499150000,
       "updated_timestamp": 1493499150000,
-      "url": "/post/express-shi-jian",
+      "url": "express-shi-jian",
       "symbolsCount": 6927,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -619,7 +619,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-b6724c\">原理</a></li>\n<li><a href=\"#toc-3e9100\">实现方式</a></li>\n<li><a href=\"#toc-afda0a\">这里有几个问题</a></li>\n<li><a href=\"#toc-ff0abc\">3、跳转用301还是302</a></li>\n<li><a href=\"#toc-6c9ae3\">用法：</a></li>\n</ul>\n",
       "created_timestamp": 1493499134000,
       "updated_timestamp": 1493499134000,
-      "url": "/post/duan-url-xi-tong-she-ji",
+      "url": "duan-url-xi-tong-she-ji",
       "symbolsCount": 613,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -647,7 +647,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-6483e3\">关于我</a></li>\n<li><a href=\"#toc-b868c8\">我的主要技术栈包括</a></li>\n</ul>\n",
       "created_timestamp": 1493391850000,
       "updated_timestamp": 1493391850000,
-      "url": "/page/about",
+      "url": "about",
       "symbolsCount": 465,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -680,7 +680,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-779598\">Lumos - 基于 Bun 的高性能静态博客生成器</a><ul>\n<li><a href=\"#toc-6df5e0\">📚 相关文档</a></li>\n<li><a href=\"#toc-58f301\">🎯 项目概述</a><ul>\n<li><a href=\"#toc-57ae37\">核心价值</a></li>\n<li><a href=\"#toc-62b37e\">适用场景</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-0b8008\">🚀 核心特性</a><ul>\n<li><a href=\"#toc-a378b1\">极速性能</a></li>\n<li><a href=\"#toc-44838c\">现代化技术栈</a></li>\n<li><a href=\"#toc-8552b2\">开发体验</a></li>\n<li><a href=\"#toc-ebf95d\">扩展能力</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-44614a\">🏗️ 项目架构</a><ul>\n<li><a href=\"#toc-90030e\">核心组件</a><ul>\n<li><a href=\"#toc-26c55c\">1. 数据生成器 (DataGenerator)</a></li>\n<li><a href=\"#toc-65c0be\">2. 文件解析器 (Parser)</a></li>\n<li><a href=\"#toc-307eb9\">3. HTTP 服务器 (LumosServer)</a></li>\n<li><a href=\"#toc-71c98d\">4. 布局组件 (Layout)</a></li>\n<li><a href=\"#toc-a5ae54\">5. Bundler HTML 系统</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-a1c40d\">插件系统架构</a><ul>\n<li><a href=\"#toc-2af444\">核心概念</a></li>\n<li><a href=\"#toc-484bc6\">生命周期钩子</a></li>\n<li><a href=\"#toc-4e530c\">插件配置</a></li>\n<li><a href=\"#toc-f42010\">创建插件</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-b84798\">主题系统架构</a><ul>\n<li><a href=\"#toc-7c62d4\">主题结构</a></li>\n<li><a href=\"#toc-5af700\">主题配置</a></li>\n<li><a href=\"#toc-24522c\">创建主题</a><ul>\n<li><a href=\"#toc-4c87fa\">1. 创建主题目录结构</a></li>\n<li><a href=\"#toc-a3e09a\">2. 创建布局组件</a></li>\n<li><a href=\"#toc-7a21a8\">3. 创建路由页面</a></li>\n<li><a href=\"#toc-0e7d36\">4. 配置主题</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-732485\">主题继承</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-b50650\">路由系统</a><ul>\n<li><a href=\"#toc-327555\">前台页面路由</a></li>\n<li><a href=\"#toc-b46466\">动态路由特性</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-0fea7c\">数据结构</a><ul>\n<li><a href=\"#toc-fd6737\">核心实体</a></li>\n<li><a href=\"#toc-fcbca3\">文章结构</a></li>\n</ul>\n</li>\n</ul>\n</li>\n<li><a href=\"#toc-271987\">📦 Bundler HTML 页面 (高优先级)</a><ul>\n<li><a href=\"#toc-b3fbd1\">工作原理</a></li>\n<li><a href=\"#toc-0d08a0\">优先级说明</a></li>\n<li><a href=\"#toc-7efcb0\">使用场景</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-48ada1\">🛠️ 技术栈详解</a><ul>\n<li><a href=\"#toc-5045dc\">运行时环境</a></li>\n<li><a href=\"#toc-40d75c\">前端技术</a></li>\n<li><a href=\"#toc-9198a2\">构建工具</a></li>\n<li><a href=\"#toc-832705\">内容处理</a></li>\n<li><a href=\"#toc-1209e3\">数据存储</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-bb08cb\">🚀 使用场景</a><ul>\n<li><a href=\"#toc-9cfd28\">个人博客</a></li>\n<li><a href=\"#toc-94cc0c\">技术文档</a></li>\n<li><a href=\"#toc-66a0c6\">企业网站</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-e8a427\">🔧 开发工作流</a><ul>\n<li><a href=\"#toc-325269\">1. 内容创建</a></li>\n<li><a href=\"#toc-f4782b\">2. 开发调试</a></li>\n<li><a href=\"#toc-76b8db\">3. 构建部署</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-fb5d8c\">📊 性能优势</a><ul>\n<li><a href=\"#toc-c96de5\">启动性能</a></li>\n<li><a href=\"#toc-261bdc\">构建性能</a></li>\n<li><a href=\"#toc-e103f1\">运行时性能</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-384590\">🌟 项目亮点</a><ul>\n<li><a href=\"#toc-d03ead\">1. 现代化架构</a></li>\n<li><a href=\"#toc-dcf4ba\">2. 开发体验</a></li>\n<li><a href=\"#toc-c59be6\">3. 性能优化</a></li>\n<li><a href=\"#toc-33e59c\">4. 扩展性</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-510bed\">🎯 适用人群</a></li>\n<li><a href=\"#toc-6c5f63\">🔮 未来规划</a></li>\n</ul>\n</li>\n</ul>\n",
       "created_timestamp": 1756893369000,
       "updated_timestamp": 1756893369000,
-      "url": "/page/lumos-ji-yu-bun-de-gao-xing-neng-jing-tai-bo-ke-sheng-cheng-qi",
+      "url": "lumos-ji-yu-bun-de-gao-xing-neng-jing-tai-bo-ke-sheng-cheng-qi",
       "symbolsCount": 6390,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -714,7 +714,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-ad82c3\">Lumos CLI 使用指南</a><ul>\n<li><a href=\"#toc-6df5e0\">📚 相关文档</a></li>\n<li><a href=\"#toc-e2e73b\">📋 安装</a></li>\n<li><a href=\"#toc-3c90b4\">🚀 快速开始</a><ul>\n<li><a href=\"#toc-a81881\">工作流程示例</a><ul>\n<li><a href=\"#toc-3f3604\">1. 初始化项目</a></li>\n<li><a href=\"#toc-02606b\">2. 创建内容</a></li>\n<li><a href=\"#toc-aa06bb\">3. 生成数据</a></li>\n<li><a href=\"#toc-20ed8d\">4. 启动开发服务器</a></li>\n<li><a href=\"#toc-32405e\">5. 构建项目</a></li>\n</ul>\n</li>\n</ul>\n</li>\n<li><a href=\"#toc-a91441\">🛠️ 命令详解</a><ul>\n<li><a href=\"#toc-5c75f0\">new 命令</a><ul>\n<li><a href=\"#toc-f2b0b4\">语法</a></li>\n<li><a href=\"#toc-3d0a2d\">参数</a></li>\n<li><a href=\"#toc-ea15ae\">选项</a></li>\n<li><a href=\"#toc-1a63ac\">示例</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-03d0cd\">gen 命令</a><ul>\n<li><a href=\"#toc-f2b0b4\">语法</a></li>\n<li><a href=\"#toc-1a63ac\">示例</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-bd28de\">server 命令</a><ul>\n<li><a href=\"#toc-f2b0b4\">语法</a></li>\n<li><a href=\"#toc-ea15ae\">选项</a></li>\n<li><a href=\"#toc-1a63ac\">示例</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-601847\">build 命令</a><ul>\n<li><a href=\"#toc-f2b0b4\">语法</a></li>\n<li><a href=\"#toc-1a63ac\">示例</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-b0b13f\">assets 命令</a><ul>\n<li><a href=\"#toc-f2b0b4\">语法</a></li>\n<li><a href=\"#toc-1a63ac\">示例</a></li>\n</ul>\n</li>\n</ul>\n</li>\n<li><a href=\"#toc-5945d5\">📁 生成的文件结构</a><ul>\n<li><a href=\"#toc-3097c7\">文章 (Post)</a></li>\n<li><a href=\"#toc-b645b3\">页面 (Page)</a></li>\n<li><a href=\"#toc-5118b3\">作者 (Author)</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-3d4a3f\">📄 模板结构</a></li>\n<li><a href=\"#toc-4c8c34\">🎨 自定义模板</a></li>\n<li><a href=\"#toc-4f2328\">⚙️ 技术特性</a></li>\n<li><a href=\"#toc-6b48b0\">🔧 高级用法</a><ul>\n<li><a href=\"#toc-a7fb7a\">使用 package.json 脚本</a></li>\n<li><a href=\"#toc-fcaf1b\">命令组合使用</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-ee8670\">🎯 推荐使用方式</a></li>\n</ul>\n</li>\n</ul>\n",
       "created_timestamp": 1756835855000,
       "updated_timestamp": 1756835855000,
-      "url": "/page/lumos-cli-usage-jiao-cheng",
+      "url": "lumos-cli-usage-jiao-cheng",
       "symbolsCount": 4317,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -748,7 +748,7 @@
       "toc": "<ul>\n<li><a href=\"#toc-1d5784\">🛠️ Lumos 二次开发教程</a><ul>\n<li><a href=\"#toc-c455c6\">📚 相关资源</a></li>\n<li><a href=\"#toc-c2f851\">🎯 学习目标</a></li>\n<li><a href=\"#toc-c893bf\">🚀 开发环境搭建</a><ul>\n<li><a href=\"#toc-e078f0\">📋 前置要求</a></li>\n<li><a href=\"#toc-883dda\">⚙️ 环境配置</a></li>\n<li><a href=\"#toc-b92b5c\">🔧 开发工具配置</a><ul>\n<li><a href=\"#toc-0c7fbe\">VS Code 推荐插件</a></li>\n<li><a href=\"#toc-b2b126\">调试配置</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-19e995\">🚀 Bun 特有功能</a><ul>\n<li><a href=\"#toc-2d81ed\">1. 使用 Bun 的 FileSystemRouter</a></li>\n<li><a href=\"#toc-c5a415\">2. 使用 Bun 的文件 API</a></li>\n<li><a href=\"#toc-a7baa8\">3. 使用 Bun 的 HTTP 服务器</a></li>\n</ul>\n</li>\n</ul>\n</li>\n<li><a href=\"#toc-364a74\">🏗️ 项目架构深度解析</a><ul>\n<li><a href=\"#toc-1dac02\">📂 核心目录结构</a></li>\n<li><a href=\"#toc-a585ed\">🔧 核心模块说明</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-343d9a\">⚛️ React 组件开发</a><ul>\n<li><a href=\"#toc-c589e7\">🧩 组件架构</a><ul>\n<li><a href=\"#toc-13d766\">基础组件结构</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-25618a\">🎨 自定义布局组件</a><ul>\n<li><a href=\"#toc-e0998d\">创建新的布局组件</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-3503dd\">🔧 组件开发最佳实践</a><ul>\n<li><a href=\"#toc-c47362\">1. 类型安全</a></li>\n<li><a href=\"#toc-e1064c\">2. 样式管理</a></li>\n<li><a href=\"#toc-686417\">3. 条件渲染</a></li>\n</ul>\n</li>\n</ul>\n</li>\n<li><a href=\"#toc-3fce07\">🛣️ 路由系统扩展</a><ul>\n<li><a href=\"#toc-1cc648\">📍 创建新的页面路由</a><ul>\n<li><a href=\"#toc-8d5a9c\">1. 静态路由</a></li>\n<li><a href=\"#toc-d446dd\">2. 动态路由</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-16c4b6\">🔌 API 接口开发</a><ul>\n<li><a href=\"#toc-d246cb\">创建自定义 API</a></li>\n</ul>\n</li>\n</ul>\n</li>\n<li><a href=\"#toc-16139c\">🔌 插件系统开发</a><ul>\n<li><a href=\"#toc-4cc7fc\">🧩 插件架构</a><ul>\n<li><a href=\"#toc-05e25d\">插件接口定义</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-d252a7\">🛠️ 创建自定义插件</a><ul>\n<li><a href=\"#toc-569c00\">1. 基础插件结构</a></li>\n<li><a href=\"#toc-014afc\">2. 插件配置</a></li>\n<li><a href=\"#toc-798cd4\">3. 高级插件示例</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-ea52c1\">🔧 插件开发最佳实践</a><ul>\n<li><a href=\"#toc-412f92\">1. 错误处理</a></li>\n<li><a href=\"#toc-2a2cc7\">2. 性能优化</a></li>\n<li><a href=\"#toc-9aaea5\">3. 配置管理</a></li>\n</ul>\n</li>\n</ul>\n</li>\n<li><a href=\"#toc-a5d892\">🎨 主题系统开发</a><ul>\n<li><a href=\"#toc-39b27f\">🧩 主题架构</a><ul>\n<li><a href=\"#toc-525c30\">主题目录结构</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-ba50e5\">🎨 创建自定义主题</a><ul>\n<li><a href=\"#toc-4c87fa\">1. 创建主题目录结构</a></li>\n<li><a href=\"#toc-a3e09a\">2. 创建布局组件</a></li>\n<li><a href=\"#toc-7a21a8\">3. 创建路由页面</a></li>\n<li><a href=\"#toc-0e7d36\">4. 配置主题</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-29a4ba\">🎨 主题开发最佳实践</a><ul>\n<li><a href=\"#toc-170f32\">1. 样式组织</a></li>\n<li><a href=\"#toc-5cc338\">2. 响应式设计</a></li>\n<li><a href=\"#toc-fdae81\">3. 主题继承</a></li>\n</ul>\n</li>\n</ul>\n</li>\n<li><a href=\"#toc-38686e\">📊 数据使用</a><ul>\n<li><a href=\"#toc-edc843\">🔍 在组件中使用数据</a><ul>\n<li><a href=\"#toc-23be8f\">1. 获取全局数据</a></li>\n<li><a href=\"#toc-e583f9\">2. 在组件中处理数据</a></li>\n</ul>\n</li>\n</ul>\n</li>\n<li><a href=\"#toc-9e2bc4\">🧪 测试与调试</a><ul>\n<li><a href=\"#toc-ebc7f0\">🔍 基本测试</a><ul>\n<li><a href=\"#toc-31a26e\">1. 组件测试</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-eba436\">🐛 调试技巧</a><ul>\n<li><a href=\"#toc-da9f41\">1. 开发模式调试</a></li>\n<li><a href=\"#toc-391598\">2. 服务器调试</a></li>\n</ul>\n</li>\n</ul>\n</li>\n<li><a href=\"#toc-6a2067\">🚀 部署</a><ul>\n<li><a href=\"#toc-4cfaea\">📦 基本部署</a><ul>\n<li><a href=\"#toc-89f3b8\">1. 构建项目</a></li>\n<li><a href=\"#toc-270c02\">2. 环境变量配置</a></li>\n<li><a href=\"#toc-0fdc0e\">3. 简单部署</a></li>\n<li><a href=\"#toc-7c1807\">4. Bun 特有的部署优势</a></li>\n</ul>\n</li>\n</ul>\n</li>\n<li><a href=\"#toc-68dc60\">📚 最佳实践</a><ul>\n<li><a href=\"#toc-6d53a1\">🎯 开发规范</a><ul>\n<li><a href=\"#toc-665301\">1. 代码组织</a></li>\n<li><a href=\"#toc-dab5c8\">2. 命名规范</a></li>\n<li><a href=\"#toc-8b1d33\">3. 错误处理</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-2856f2\">🔧 维护指南</a><ul>\n<li><a href=\"#toc-58cd3c\">1. 版本管理</a></li>\n<li><a href=\"#toc-fb3803\">2. 代码提交</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-9cc599\">🚀 Bun 开发最佳实践</a><ul>\n<li><a href=\"#toc-f39481\">1. 使用 Bun 的包管理器</a></li>\n<li><a href=\"#toc-d5722e\">2. 利用 Bun 的性能优势</a></li>\n<li><a href=\"#toc-34eec4\">3. Bun 特有的类型支持</a></li>\n</ul>\n</li>\n</ul>\n</li>\n<li><a href=\"#toc-cca050\">🎉 总结</a><ul>\n<li><a href=\"#toc-be4bb2\">🚀 Bun 的优势</a></li>\n</ul>\n</li>\n<li><a href=\"#toc-69b008\">🤝 社区支持</a></li>\n<li><a href=\"#toc-c707be\">📄 许可证</a></li>\n</ul>\n</li>\n</ul>\n",
       "created_timestamp": 1756835855000,
       "updated_timestamp": 1756835855000,
-      "url": "/page/lumos-er-ci-kai-fa-jiao-cheng",
+      "url": "lumos-er-ci-kai-fa-jiao-cheng",
       "symbolsCount": 16347,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -774,7 +774,7 @@
       "toc": "",
       "created_timestamp": 1736356223000,
       "updated_timestamp": 1736356223000,
-      "url": "/author/uuice",
+      "url": "uuice",
       "symbolsCount": 0,
       "authorIds": [
         "b2c46a46-f8d7-5a0c-8e28-09bf3b946cae"
@@ -787,55 +787,55 @@
       "id": "1e432a95-9d87-506d-9d69-29f572bcda29",
       "title": "linux",
       "description": "Category: linux",
-      "url": "/category/linux"
+      "url": "linux"
     },
     {
       "id": "cb0ef58a-2349-5585-a770-5a56ff01172e",
       "title": "nodejs",
       "description": "Category: nodejs",
-      "url": "/category/nodejs"
+      "url": "nodejs"
     },
     {
       "id": "efdf3ce5-1571-50d5-a4a3-52d6865d8efe",
       "title": "css",
       "description": "Category: css",
-      "url": "/category/css"
+      "url": "css"
     },
     {
       "id": "31bf0413-abf9-5a2c-801c-e6da2b0cbda4",
       "title": "javascript",
       "description": "Category: javascript",
-      "url": "/category/javascript"
+      "url": "javascript"
     },
     {
       "id": "87c0a1b1-3341-5a5e-a503-a693a57e9e6c",
       "title": "angular",
       "description": "Category: angular",
-      "url": "/category/angular"
+      "url": "angular"
     },
     {
       "id": "f34a5161-9ece-596b-9ee6-cdc51d6fd112",
       "title": "notes",
       "description": "Category: notes",
-      "url": "/category/notes"
+      "url": "notes"
     },
     {
       "id": "bc64f47c-2587-56c8-9bf6-a74272c64e47",
       "title": "html",
       "description": "Category: html",
-      "url": "/category/html"
+      "url": "html"
     },
     {
       "id": "d89b25df-4af3-58d5-9be1-9494ab6f4c6e",
       "title": "canvas",
       "description": "Category: canvas",
-      "url": "/category/canvas"
+      "url": "canvas"
     },
     {
       "id": "c581f028-58b0-582c-b82e-7d98fe65818c",
       "title": "http",
       "description": "Category: http",
-      "url": "/category/http"
+      "url": "http"
     }
   ],
   "tags": [
@@ -843,31 +843,31 @@
       "id": "f4da7d3e-4e37-56db-8f2a-638c4ff1528c",
       "title": "pnpm",
       "description": "Tag: pnpm",
-      "url": "/tag/pnpm"
+      "url": "pnpm"
     },
     {
       "id": "a0f08da6-205f-5a5a-a661-801ccecd30eb",
       "title": "Rxjs",
       "description": "Tag: Rxjs",
-      "url": "/tag/rxjs"
+      "url": "rxjs"
     },
     {
       "id": "05667c6a-3d6e-5faa-a8e5-bef445acd918",
       "title": "Angular",
       "description": "Tag: Angular",
-      "url": "/tag/angular"
+      "url": "angular"
     },
     {
       "id": "e4428283-c10b-570e-ab7f-0d5c789ff1a6",
       "title": "angular",
       "description": "Tag: angular",
-      "url": "/tag/angular"
+      "url": "angular"
     },
     {
       "id": "c9c512c9-3e0a-59e9-9f25-87a7f34c15ad",
       "title": "directive",
       "description": "Tag: directive",
-      "url": "/tag/directive"
+      "url": "directive"
     }
   ],
   "postCategories": [
@@ -1033,6 +1033,14 @@
       "region": "",
       "domain": "",
       "uploadPath": "uploads"
+    },
+    "recordSettings": {
+      "icpNumber": "浙ICP备13002567号-4",
+      "icpLink": "https://beian.miit.gov.cn/",
+      "policeNumber": "",
+      "policeLink": "",
+      "recordText": "",
+      "showRecord": true
     },
     "siteSetting": {
       "baseUrl": "http://localhost:3060",

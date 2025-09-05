@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface Tag {
-  value: string;
+  url: string;
   title: string;
 }
 
@@ -21,8 +21,8 @@ export const Tags: React.FC<TagsProps> = ({ tags }) => {
         <div className="flex gap-2 flex-wrap">
           {tags.map((t) => (
             <a
-              key={t.value}
-              href={`/tags/${t.value}`}
+              key={t.url}
+              href={`/tags/${t.url}`}
               aria-label={`View all posts with the ${t.title} tag`}
               className="btn-regular h-8 text-sm px-3 rounded-lg"
             >

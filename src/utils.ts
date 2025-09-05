@@ -9,6 +9,7 @@ import highlight from 'highlight.js'
 import md5 from 'md5'
 import pinyin from 'pinyin'
 import type { ARTICLE } from './types.ts'
+import escapeRegExp from 'lodash/escapeRegExp'
 
 // Lumos 专用的 namespace UUID
 export const LUMOS_NAMESPACE = '6ba7b810-9dad-11d1-80b4-00c04fd430c8'
@@ -424,4 +425,35 @@ export async function getInlineCSS(basePath: string, cssPath: string = 'css/outp
     console.warn(`警告: 无法读取 CSS 文件:`, error)
     return ''
   }
+}
+
+
+/**
+ * Highlight matched keyword in text with <mark> tag
+ */
+function highlightText(text: string, keyword: string): string {
+  if (!text || !keyword) return text
+  const pattern = keyword.split(/\s+/).filter(Boolean).map(escapeRegExp).join('|')
+  return text.replace(new RegExp(pattern, 'gi'), (match) => `<mark>${match}</mark>`)
+}
+
+/**
+ * Merge and deduplicate flexsearch results, and highlight matched fields
+ * @param raw flexsearch raw result
+ * @param keyword search keyword
+ */
+export function mergeAndHighlightFlexsearchResults(raw: any[], keyword: string): any[] {
+  const map = new Map<string, any>()
+  for (const fieldResult of raw) {
+    const field = fieldResult.field
+    for (const item of fieldResult.result) {
+      if (!map.has(item.id)) {
+        map.set(item.id, { ...item.doc, _highlight: {} })
+      }
+      if (item.doc && item.doc[field]) {
+        map.get(item.id)._highlight[field] = highlightText(item.doc[field], keyword)
+      }
+    }
+  }
+  return Array.from(map.values())
 }

@@ -1,16 +1,11 @@
 import React from 'react';
 
 export const ScrollToTop: React.FC = () => {
-  const backToTop = () => {
-    window.scroll({ top: 0, behavior: 'smooth' });
-  };
-
   return (
     <div className="back-to-top-wrapper hidden lg:block">
       <div
         id="back-to-top-btn"
-        className="back-to-top-btn hide flex items-center rounded-2xl overflow-hidden transition"
-        onClick={backToTop}
+        className="back-to-top-btn  flex items-center rounded-2xl overflow-hidden transition"
       >
         <button aria-label="Back to Top" className="btn-card h-[3.75rem] w-[3.75rem]">
           <svg

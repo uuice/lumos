@@ -39,7 +39,7 @@ export class DataGenerator {
             id: generateNamespaceUUID(`category:${catName}`),
             title: catName,
             description: `Category: ${catName}`,
-            url: `/category/${titleToUrl(catName) || 'category'}`
+            url: `${titleToUrl(catName)}`
           })
         }
       })
@@ -61,7 +61,7 @@ export class DataGenerator {
             id: generateNamespaceUUID(`tag:${tagName}`),
             title: tagName,
             description: `Tag: ${tagName}`,
-            url: `/tag/${titleToUrl(tagName) || 'tag'}`
+            url: `${titleToUrl(tagName)}`
           })
         }
       })

@@ -1,5 +1,6 @@
 import { Document, Charset } from 'flexsearch'
 import { DatabaseSchema, LIST_POST_ITEM, POST } from '../../types.ts'
+import { mergeAndHighlightFlexsearchResults } from '../../utils.ts'
 
 // Cache index and documents in module scope
 let postIndex: Document | null = null
@@ -35,7 +36,7 @@ function buildIndex(data: DatabaseSchema): void {
     const docToAdd = {
       id: post.id,
       title: post.title || '',
-      abstract: post.excerpt || ''
+      excerpt: post.excerpt || ''
     }
     postIndex.add(docToAdd)
   }
@@ -58,21 +59,9 @@ export default async function handler(request: Request): Promise<Response> {
     if (!q) {
       return Response.json({ q, results: [] })
     }
-
     // Search across all indexed fields; normalize results
-    const searchResult = postIndex!.search(q) as Array<{ field: string, result: Array<string | number> }>
-    const idSet = new Set<string>()
-    for (const group of Array.isArray(searchResult) ? searchResult : []) {
-      for (const id of group.result || []) {
-        idSet.add(String(id))
-        if (idSet.size >= 20) break
-      }
-      if (idSet.size >= 20) break
-    }
-    const results: LIST_POST_ITEM[] = Array.from(idSet)
-      .map(id => documents!.get(id))
-      .filter(Boolean) as LIST_POST_ITEM[]
-
+    const raw = await postIndex!.searchAsync({ query: q, enrich: true })
+    const results = mergeAndHighlightFlexsearchResults(raw, q)
     return Response.json({ q, results })
   } catch (error) {
     console.error('搜索接口错误:', error)

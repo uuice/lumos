@@ -220,7 +220,7 @@ $(function () {
           titleContainer.html(_highlight.title || item.title || '')
 
           const abstractContainer = $('<div></div>')
-          abstractContainer.html(_highlight.abstract || item.abstract || '')
+          abstractContainer.html(_highlight.excerpt || item.excerpt || '')
 
           // 构建搜索结果项
           var resultItem = $(`
@@ -352,5 +352,12 @@ $(function () {
   // pjax 完成后重新高亮代码
   $(document).on('pjax:end', function () {
     if (window.hljs) hljs.highlightAll()
+  })
+})
+
+
+$(function () {
+  $('#back-to-top-btn').click(function () {
+    window.scroll({ top: 0, behavior: 'smooth' });
   })
 })

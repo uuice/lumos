@@ -1,6 +1,7 @@
 import React from 'react';
 import { POST } from '../../../../src/types';
-
+import { titleToUrl } from '../../../../src/utils';
+import dayjs from 'dayjs';
 interface MetadataProps {
   item: POST;
 }
@@ -27,7 +28,7 @@ export const Metadata: React.FC<MetadataProps> = ({ item }) => {
           </svg>
         </div>
         <span className="text-50 text-sm font-medium">
-          {item.create_time}
+          {dayjs(item.created_time).format('YYYY-MM-DD')}
         </span>
       </div>
 
@@ -53,7 +54,7 @@ export const Metadata: React.FC<MetadataProps> = ({ item }) => {
         {item.categories && item.categories.map((c, index) => (
             <React.Fragment key={c}>
           <a
-            href={`/categories/${c}`}
+            href={`/categories/${titleToUrl(c)}`}
             aria-label={`View all posts in the ${c} category`}
             className="link-lg transition text-50 text-sm font-medium hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap"
           >
@@ -85,7 +86,7 @@ export const Metadata: React.FC<MetadataProps> = ({ item }) => {
           {item.tags && item.tags.map((tag, index) => (
             <React.Fragment key={tag}>
               <a
-                href={`/tags/${tag}`}
+                href={`/tags/${titleToUrl(tag)}`}
                 aria-label={`View all posts with the ${tag} tag`}
                 className="link-lg transition text-50 text-sm font-medium hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap"
               >

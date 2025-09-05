@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface Category {
-  alias: string;
+  url: string;
   title: string;
   article_count: number;
 }
@@ -20,7 +20,7 @@ export const Categories: React.FC<CategoriesProps> = ({ categories }) => {
       </div>
       <div id="categories" className="collapse-wrapper px-4 overflow-hidden">
         {categories.map((c) => (
-          <a key={c.alias} href={`/categories/${c.alias}`} aria-label={c.title}>
+          <a key={c.url} href={`/categories/${c.url}`} aria-label={c.title}>
             <button
               className="w-full h-10 rounded-lg bg-none hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition-all pl-2 hover:pl-3 text-neutral-700 hover:text-[var(--primary)] dark:text-neutral-300 dark:hover:text-[var(--primary)]"
             >

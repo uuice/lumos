@@ -63,20 +63,19 @@ const CategoryPage: React.FC<{
   </Layout>
 )
 
-export default async function handler(request: Request, params: { alias: string }): Promise<Response> {
+export default async function handler(request: Request, params: { url: string }): Promise<Response> {
   try {
     const data = (globalThis as any).__LUMOS_DATA__ as DatabaseSchema
     if (!data) {
       return new Response('Server not initialized', { status: 500 })
     }
 
-    const categoryAlias = decodeURIComponent(params.alias)
+    const url = decodeURIComponent(params.url)
 
     // 查找分类 - 支持按 alias 或 title 查找
-    const category = data.categories?.find(cat =>
-      cat.url === categoryAlias)
+    const category = data.categories?.find(cat => cat.url === url)
 
-    const categoryName = category?.title || categoryAlias
+    const categoryName = category?.title || ''
     console.log(category)
 
     // 查找该分类下的文章
