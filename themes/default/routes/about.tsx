@@ -24,7 +24,7 @@ const AboutPage: React.FC<{ data: DatabaseSchema }> = ({ data }) => {
   }
 
   return (
-    <Layout title="关于" data={data}>
+    <Layout title="关于" data={data} toc={page.toc}>
       <div className="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
         <div className="card-base z-10 px-9 py-6 relative w-full">
           {/* word count and reading time */}

@@ -27,13 +27,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ categories, tags }) => {
     >
       <div className="flex flex-col w-full gap-4 mb-4">
         <Profile />
-        <div
-          id="sidebar-sticky"
-          className="transition-all duration-700 flex flex-col w-full gap-4 sticky top-4"
-        >
-          <Categories categories={categories} />
-          <Tags tags={tags} />
-        </div>
+      </div>
+      <div
+        id="sidebar-sticky"
+        className="transition-all duration-700 flex flex-col w-full gap-4 sticky top-4"
+      >
+        <Categories categories={categories} />
+        <Tags tags={tags} />
       </div>
     </div>
   );

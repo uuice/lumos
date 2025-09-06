@@ -361,3 +361,34 @@ $(function () {
     window.scroll({ top: 0, behavior: 'smooth' });
   })
 })
+
+
+// 添加 TOC 链接平滑滚动功能
+$(function () {
+  // 使用事件委托处理动态添加的 TOC 链接
+  $(document).on('click', '#toc-lists a', function (e) {
+    // 阻止默认的跳转行为
+    e.preventDefault();
+
+    // 获取目标元素的 ID
+    var targetId = this.getAttribute('href');
+
+    // 如果 href 是锚点链接（以 # 开头）
+    if (targetId && targetId.startsWith('#')) {
+      // 查找目标元素
+      var targetElement = document.getElementById(targetId.substring(1));
+
+      if (targetElement) {
+        // 计算目标位置（考虑固定头部的高度）
+        var headerHeight = document.querySelector('header') ? document.querySelector('header').offsetHeight : 0;
+        var targetPosition = targetElement.offsetTop + headerHeight;
+
+        // 使用平滑滚动
+        window.scrollTo({
+          top: targetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }
+  });
+});

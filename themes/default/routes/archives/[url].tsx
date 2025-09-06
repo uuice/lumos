@@ -9,7 +9,7 @@ import dayjs from 'dayjs'
 
 // 文章详情组件
 const PostDetailPage: React.FC<{ data: DatabaseSchema, post: POST, previousArticle: POST | null, nextArticle: POST | null }> = ({ data, post, previousArticle, nextArticle }) => (
-  <Layout title={post.title} data={data}>
+  <Layout title={post.title} data={data} toc={post.toc}>
     <div className="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4">
       <div id="post-container" className="card-base z-10 px-6 md:px-9 pt-6 pb-4 relative w-full">
         {/* word count and reading time */}

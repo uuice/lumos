@@ -6,7 +6,6 @@ import { Sidebar } from './sidebar'
 import { Footer } from './footer'
 import { ParticleEffect } from './particle-effect'
 import { ScrollToTop } from './scroll-to-top'
-import { TOC } from './toc'
 
 // 定义 Sidebar 所需的数据类型
 interface SidebarCategory {
@@ -30,11 +29,13 @@ export const Layout: React.FC<{
   baseUrl?: string
   showSidebar?: boolean // 添加这个新属性
   showBanner?: boolean // 添加这个新属性
+  toc?: string
 }> = ({
   children,
   data,
   showSidebar = true, // 默认显示侧边栏
   showBanner = true, // 默认显示 banner
+  toc,
 }) => {
   // 获取站点配置
   const siteSetting: any = data.settingJsonConfig.siteSetting || {};
@@ -263,7 +264,7 @@ export const Layout: React.FC<{
                 <div id="toc" className="w-full h-full transition-swup-fade">
                   <div className="h-8 w-full"></div>
                   {/* TOC 组件 */}
-                  <TOC />
+                  { typeof toc === 'string' && toc ?  <div className="toc-lists" id="toc-lists" dangerouslySetInnerHTML={{ __html: toc }}></div> : null }
                   <div className="h-8 w-full"></div>
                 </div>
               </div>

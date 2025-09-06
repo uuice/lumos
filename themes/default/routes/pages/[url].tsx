@@ -9,7 +9,7 @@ import dayjs from 'dayjs'
 
 // 页面详情组件
 const PageDetailPage: React.FC<{ data: DatabaseSchema, page: PAGE }> = ({ data, page }) => (
-  <Layout title={page.title} data={data}>
+  <Layout title={page.title} data={data} toc={page.toc}>
     <div className="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
       <div className="card-base z-10 px-9 py-6 relative w-full">
         {/* word count and reading time */}
