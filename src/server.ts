@@ -22,6 +22,9 @@ export interface ServerOptions {
   basePath?: string
 }
 
+// 添加导入routes API并设置服务器实例
+import { setServerInstance } from './routes/api/routes.ts';
+
 export class LumosServer {
   private data: DatabaseSchema | null = null
   private port: number
@@ -450,6 +453,9 @@ export class LumosServer {
         fetch: (request) => this.handleRequest(request)
       })
 
+      // 设置服务器实例供API路由使用
+      setServerInstance(this);
+
       console.log(`🚀 Lumos 服务器已启动 (使用 FileSystemRouter)`)
       console.log(`📡 监听端口: ${this.port}`)
       console.log(`🌐 访问地址: http://localhost:${this.port}`)
@@ -478,5 +484,14 @@ export class LumosServer {
     } else {
       console.log('🛑 服务器实例不存在')
     }
+  }
+
+  // 添加获取路由器的方法
+  getThemeRouter() {
+    return this._themeRouter;
+  }
+
+  getApiRouter() {
+    return this._apiRouter;
   }
 }
