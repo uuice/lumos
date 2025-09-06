@@ -1,6 +1,7 @@
 ---
 id: ae642236-22f8-5905-94c8-27b338c18dd0
 title: Lumos - 基于 Bun 的高性能静态博客生成器
+alias: lumos-introduce
 cover:
 created_time: 2025-09-03 09:56:09
 updated_time: 2025-09-03 09:56:09

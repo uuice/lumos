@@ -42,6 +42,9 @@ export const Head: React.FC<HeadProps> = ({ siteSetting }) => {
           <a aria-label="About" href="/about" className="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95">
             <div className="flex items-center">关于</div>
           </a>
+          <a aria-label="About" href="/pages/lumos-introduce" className="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95">
+            <div className="flex items-center">Lumos</div>
+          </a>
           <a aria-label="GitHub" href="https://github.com/uuice/" target="_blank" rel="noopener noreferrer" className="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95">
             <div className="flex items-center">
               GitHub
@@ -131,6 +134,14 @@ export const Head: React.FC<HeadProps> = ({ siteSetting }) => {
           <a href="/about/" className="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8 hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition">
             <div className="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]">
               关于
+            </div>
+            <svg width="1em" height="1em" viewBox="0 0 24 24" className="transition text-[1.25rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">
+              <use href="#ai:material-symbols:chevron-right-rounded"></use>
+            </svg>
+          </a>
+          <a href="/pages/lumos-introduce" className="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8 hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition">
+            <div className="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]">
+              Lumos
             </div>
             <svg width="1em" height="1em" viewBox="0 0 24 24" className="transition text-[1.25rem] text-[var(--primary)]" data-icon="material-symbols:chevron-right-rounded">
               <use href="#ai:material-symbols:chevron-right-rounded"></use>

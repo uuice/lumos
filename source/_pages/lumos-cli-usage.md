@@ -2,6 +2,7 @@
 id: 9f6e9823-1c61-418f-b1dd-32d790636e16
 title: Lumos CLI USAGE 教程
 cover:
+alias: lumos-cli-usage
 created_time: 2025-09-02 17:57:35
 updated_time: 2025-09-02 17:57:35
 categories: ['开发教程', '技术文档']

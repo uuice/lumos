@@ -24,6 +24,10 @@
     "test-all-hooks-plugin": {
       "enabled": true,
       "options": {}
+    },
+    "md-path-transform-plugin": {
+      "enabled": true,
+      "options": {}
     }
   }
 }

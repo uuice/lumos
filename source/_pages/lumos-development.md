@@ -1,6 +1,7 @@
 ---
 id: 083f745a-5764-50b7-b88c-54945b081c87
 title: Lumos 二次开发教程
+alias: lumos-development
 cover:
 created_time: 2025-09-02 17:57:35
 updated_time: 2025-09-02 17:57:35
