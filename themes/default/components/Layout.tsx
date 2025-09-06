@@ -37,7 +37,7 @@ export const Layout: React.FC<{
   showBanner = true, // 默认显示 banner
 }) => {
   // 获取站点配置
-  const siteConfig: any = data.settingJsonConfig.siteConfig || {};
+  const siteSetting: any = data.settingJsonConfig.siteSetting || {};
   // 获取站点配置
   const recordSettings: any = data.settingJsonConfig.recordSettings || {};
   // 准备侧边栏数据
@@ -54,22 +54,23 @@ export const Layout: React.FC<{
     title: tag.title
   }));
 
+
   return (
     <html lang="en" className="bg-[var(--page-bg)] transition text-[14px] md:text-[16px]">
       <head>
-      <title>{ siteConfig.siteName }</title>
+      <title>{ siteSetting.siteName }</title>
     <meta charSet="UTF-8" />
-    <meta name="description" content="{ siteConfig.siteDescription }" />
-    <meta name="author" content="uuice" />
-    <meta property="og:site_name" content="{ siteConfig.siteName }" />
-    <meta property="og:url" content="{ siteConfig.baseUrl}" />
-    <meta property="og:title" content="{ siteConfig.siteName }" />
-    <meta property="og:description" content="{ siteConfig.siteDescription }" />
+    <meta name="description" content={siteSetting.siteDescription || "默认描述"} />
+    <meta name="author" content={siteSetting.author || "默认作者"} />
+    <meta property="og:site_name" content={siteSetting.siteName} />
+    <meta property="og:url" content={siteSetting.baseUrl || ""} />
+    <meta property="og:title" content={siteSetting.siteName} />
+    <meta property="og:description" content={siteSetting.siteDescription || ""} />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="{ siteConfig.baseUrl}" />
-    <meta name="twitter:title" content="{ siteConfig.siteName }" />
-    <meta name="twitter:description" content="{ siteConfig.siteDescription }" />
+    <meta property="twitter:url" content={siteSetting.baseUrl || ""} />
+    <meta name="twitter:title" content={siteSetting.siteName} />
+    <meta name="twitter:description" content={siteSetting.siteDescription || ""} />
     <meta name="viewport" content="width=device-width" />
         <link
           rel="icon"
@@ -119,31 +120,6 @@ export const Layout: React.FC<{
           sizes="192x192"
           media="(prefers-color-scheme: dark)"
         />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function () {
-                var theme = localStorage.getItem('theme') || 'auto'
-                switch (theme) {
-                  case 'light':
-                    document.documentElement.classList.remove('dark')
-                    break
-                  case 'dark':
-                    document.documentElement.classList.add('dark')
-                    break
-                  case 'auto':
-                    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                      document.documentElement.classList.add('dark')
-                    } else {
-                      document.documentElement.classList.remove('dark')
-                    }
-                }
-                var hue = localStorage.getItem('hue') || 280
-                document.documentElement.style.setProperty('--hue', hue)
-              })()
-            `
-          }}
-        />
         <script src="/assets/javascript/jquery-3.7.1.min.js"></script>
 
         {/* pjax 支持 */}
@@ -153,8 +129,8 @@ export const Layout: React.FC<{
         <link
           rel="alternate"
           type="application/rss+xml"
-          title={siteConfig.siteName}
-          href={`${siteConfig.baseUrl}/rss.xml`}
+          title={siteSetting.siteName}
+          href={`${siteSetting.baseUrl}/rss.xml`}
         />
         <link rel="stylesheet" href="/assets/styles/style.css" />
       </head>
@@ -167,7 +143,7 @@ export const Layout: React.FC<{
         >
           <div id="navbar-wrapper" className="pointer-events-auto sticky top-0 transition-all">
             {/* 头部组件 */}
-            <Head siteConfig={siteConfig} />
+            <Head siteSetting={siteSetting} />
           </div>
         </div>
 
@@ -263,7 +239,7 @@ export const Layout: React.FC<{
               {/* 底部组件 */}
               <Footer
                 currentYear={new Date().getFullYear()}
-                siteConfig={siteConfig}
+                siteSetting={siteSetting}
                 recordSettings={recordSettings}
               />
             </div>

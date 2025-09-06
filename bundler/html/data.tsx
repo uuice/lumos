@@ -90,6 +90,7 @@ const ShowDataPage: React.FC = () => {
                 <th>标题</th>
                 <th>分类</th>
                 <th>标签</th>
+                <th>URL</th>
                 <th>发布时间</th>
                 <th>状态</th>
               </tr>
@@ -100,6 +101,7 @@ const ShowDataPage: React.FC = () => {
                   <td>{post.title}</td>
                   <td>{post.categories?.join(', ') || '-'}</td>
                   <td>{post.tags?.join(', ') || '-'}</td>
+                  <td>{post.url || '-'}</td>
                   <td>{post.date ? new Date(post.date).toLocaleDateString() : '-'}</td>
                   <td>{post.published ? '已发布' : '草稿'}</td>
                 </tr>

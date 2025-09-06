@@ -2,15 +2,15 @@ import React from 'react';
 import { Search } from './search';
 import { Settings } from './settings';
 
-interface SiteConfig {
+interface SiteSetting {
   siteName: string;
 }
 
 interface HeadProps {
-  siteConfig: SiteConfig;
+  siteSetting: SiteSetting;
 }
 
-export const Head: React.FC<HeadProps> = ({ siteConfig }) => {
+export const Head: React.FC<HeadProps> = ({ siteSetting }) => {
   return (
     <div id="navbar" className="z-50 onload-animation">
       <div className="absolute h-8 left-0 right-0 -top-8 bg-[var(--card-bg)] transition"></div>
@@ -23,7 +23,7 @@ export const Head: React.FC<HeadProps> = ({ siteConfig }) => {
               </symbol>
               <use href="#ai:material-symbols:home-outline-rounded"></use>
             </svg>
-            {siteConfig.siteName}
+            {siteSetting.siteName}
           </div>
         </a>
         <div className="hidden md:flex">

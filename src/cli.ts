@@ -326,11 +326,7 @@ async function runServerInDevMode(port: number, dataPath: string) {
 
     // 使用 Bun 的文件监听 API
     const watchDirs = [
-      'source/_posts',
-      'source/_pages',
-      'source/_authors',
-      'source/_jsons',
-      'source/_ymls',
+      'source/',
       `themes/${themeName}`,
     ]
 

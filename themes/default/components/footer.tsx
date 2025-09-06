@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface SiteConfig {
+interface SiteSetting {
   siteName: string;
 }
 
@@ -15,11 +15,11 @@ interface RecordSettings {
 
 interface FooterProps {
   currentYear: number;
-  siteConfig: SiteConfig;
+  siteSetting: SiteSetting;
   recordSettings?: RecordSettings;
 }
 
-export const Footer: React.FC<FooterProps> = ({ currentYear, siteConfig, recordSettings }) => {
+export const Footer: React.FC<FooterProps> = ({ currentYear, siteSetting, recordSettings }) => {
   return (
     <div className="footer col-span-2 onload-animation">
       <div
