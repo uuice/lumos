@@ -186,7 +186,7 @@ export const Layout: React.FC<{
                 className="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"
               ></div>
               <img
-                src="/assets/images/demo-banner.png"
+                src="/assets/images/demo-banner.jpg"
                 alt="Banner of the blog"
                 style={{ objectPosition: 'center' }}
                 width="1344"
