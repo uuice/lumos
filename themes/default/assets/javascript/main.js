@@ -342,9 +342,9 @@ $(function () {
   // 只对所有 a 标签启用 pjax，排除外部链接和带 target 的链接
   $(document).pjax(
     'a:not([target="_blank"]):not([href^="#"]):not([href^="http"]):not([download])',
-    '#swup-container',
+    '#pjax-container',
     {
-      fragment: '#swup-container',
+      fragment: '#pjax-container',
       timeout: 8000
     }
   )
@@ -354,7 +354,6 @@ $(function () {
     if (window.hljs) hljs.highlightAll()
   })
 })
-
 
 $(function () {
   $('#back-to-top-btn').click(function () {
