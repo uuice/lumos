@@ -125,6 +125,50 @@ lumos build
 bun run src/cli.ts build
 ```
 
+#### 6. 构建 Bundler HTML 文件
+
+使用 `lumos` 命令：
+
+```bash
+# 构建 HTML 文件
+lumos html-gen
+
+# 监听 HTML 文件变化并重新构建
+lumos html-gen -w
+```
+
+使用 `bun run` 命令：
+
+```bash
+# 构建 HTML 文件
+bun run src/cli.ts html-gen
+
+# 监听 HTML 文件变化并重新构建
+bun run src/cli.ts html-gen -w
+```
+
+#### 7. 构建 主题 CSS 文件
+
+使用 `lumos` 命令：
+
+```bash
+# 构建 CSS 文件
+lumos css
+
+# 监听 CSS 文件变化
+lumos css -w
+```
+
+使用 `bun run` 命令：
+
+```bash
+# 构建 CSS 文件
+bun run src/cli.ts css
+
+# 监听 CSS 文件变化
+bun run src/cli.ts css -w
+```
+
 ## 🛠️ 命令详解
 
 ### new 命令
@@ -423,6 +467,110 @@ bun run src/cli.ts assets
    bun run src/cli.ts assets
    ```
 
+### Bundler html-gen 命令
+
+构建 HTML 文件，支持监听模式重新构建。
+
+#### 语法
+
+使用 `lumos` 命令：
+
+```bash
+lumos html-gen [options]
+```
+
+使用 `bun run` 命令：
+
+```bash
+bun run src/cli.ts html-gen [options]
+```
+
+#### 选项
+
+- `-w, --watch`: 启用监听模式，监听 HTML 文件变化并重新构建
+
+#### 示例
+
+1. **构建 HTML 文件**
+
+   使用 `lumos` 命令：
+
+   ```bash
+   lumos html-gen
+   ```
+
+   使用 `bun run` 命令：
+
+   ```bash
+   bun run src/cli.ts html-gen
+   ```
+
+2. **监听 HTML 文件变化并重新构建**
+
+   使用 `lumos` 命令：
+
+   ```bash
+   lumos html-gen -w
+   ```
+
+   使用 `bun run` 命令：
+
+   ```bash
+   bun run src/cli.ts html-gen -w
+   ```
+
+### css 命令
+
+构建 CSS 文件，支持监听模式。
+
+#### 语法
+
+使用 `lumos` 命令：
+
+```bash
+lumos css [options]
+```
+
+使用 `bun run` 命令：
+
+```bash
+bun run src/cli.ts css [options]
+```
+
+#### 选项
+
+- `-w, --watch`: 启用监听模式，监听 CSS 文件变化
+
+#### 示例
+
+1. **构建 主题 CSS 文件**
+
+   使用 `lumos` 命令：
+
+   ```bash
+   lumos css
+   ```
+
+   使用 `bun run` 命令：
+
+   ```bash
+   bun run src/cli.ts css
+   ```
+
+2. **监听 主题 CSS 文件变化**
+
+   使用 `lumos` 命令：
+
+   ```bash
+   lumos css -w
+   ```
+
+   使用 `bun run` 命令：
+
+   ```bash
+   bun run src/cli.ts css -w
+   ```
+
 ## 📁 生成的文件结构
 
 ### 文章 (Post)
@@ -495,6 +643,18 @@ bun run gen
 
 # 构建项目
 bun run build
+
+# 构建 Bundler HTML 文件
+bun run build:html
+
+# 监听 Bundler HTML 文件变化并重新构建
+bun run dev:html
+
+# 构建 主题CSS 文件
+bun run build:css
+
+# 监听 主题CSS 文件变化
+bun run build:css:watch
 ```
 
 ### 命令组合使用
@@ -506,7 +666,13 @@ bun run build
 lumos gen && lumos server
 
 # 构建项目并处理资源
-lumos build && lumos assets
+bun run src/cli.ts build && bun run src/cli.ts assets
+
+# 构建 Bundler HTML 文件并监听变化
+lumos html-gen && lumos html-gen -w
+
+# 构建 主题 CSS 文件并监听变化
+lumos css && lumos css -w
 ```
 
 使用 `bun run` 命令：
@@ -517,6 +683,12 @@ bun run src/cli.ts gen && bun run src/cli.ts server
 
 # 构建项目并处理资源
 bun run src/cli.ts build && bun run src/cli.ts assets
+
+# 构建 Bundler HTML 文件并监听变化
+bun run src/cli.ts html-gen && bun run src/cli.ts html-gen -w
+
+# 构建 主题 CSS 文件并监听变化
+bun run src/cli.ts css && bun run src/cli.ts css -w
 ```
 
 ## 🎯 推荐使用方式

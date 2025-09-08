@@ -4,6 +4,11 @@ import { newCommand } from './commands/new.ts'
 import { DataGenerator } from './generator.ts'
 import { join } from 'path'
 import { ensureAssetsDir } from './utils.ts'
+import { buildHtmlFiles, startHtmlDevServer } from './bundler-html.ts'
+import { exec } from "child_process";
+import { promisify } from "util";
+
+const execAsync = promisify(exec);
 
 interface CLIOptions {
   [key: string]: string | boolean | number | undefined
@@ -58,6 +63,12 @@ Lumos - 基于 Bun 的静态博客生成器
   server                  启动开发服务器
   build                   构建项目 (生成数据 + 处理资源)
   assets                  处理资源文件
+  html-gen                构建 HTML 文件
+    选项:
+      -w, --watch         监听 HTML 文件变化并重新构建
+  css                     构建 CSS 文件
+    选项:
+      -w, --watch         监听 CSS 文件变化
   new <type> <title>      创建新的文章、页面或作者
     类型: post, page, author
     选项:
@@ -65,7 +76,7 @@ Lumos - 基于 Bun 的静态博客生成器
   help                    显示帮助信息
 
 选项:
-  -p, --port <port>       服务器端口 (默认: 3060）)
+  -p, --port <port>       服务器端口 (默认: 3060）
   -w, --watch             监听文件变化
   -h, --help              显示帮助信息
   -v, --version           显示版本信息
@@ -74,6 +85,10 @@ Lumos - 基于 Bun 的静态博客生成器
   lumos gen               # 生成数据文件
   lumos build             # 构建项目
   lumos assets            # 处理资源文件
+  lumos html-gen          # 构建 Bundler HTML 文件
+  lumos html-gen -w       # 监听 Bundler HTML 文件变化并重新构建
+  lumos css               # 构建 主题CSS 文件
+  lumos css -w            # 监听 主题CSS 文件变化
   lumos server            # 启动服务器
   lumos server -p 8080    # 在端口 8080 启动服务器
   lumos server -w         # 启动服务器并监听文件变化
@@ -135,6 +150,38 @@ async function buildCommand() {
     process.exit(1)
   }
 }
+
+// HTML 构建命令
+async function htmlGenCommand(options: CLIOptions = {}) {
+  const isWatchMode = options.watch || options.w;
+
+  if (isWatchMode) {
+    const { watchHtmlFiles } = await import('./bundler-html.ts');
+    await watchHtmlFiles();
+  } else {
+    await buildHtmlFiles();
+  }
+}
+
+// CSS 构建命令
+async function buildCssCommand(options: CLIOptions = {}) {
+  const isWatchMode = options.watch || options.w;
+
+  try {
+    if (isWatchMode) {
+      console.log('正在启动 CSS 监听模式...');
+      await execAsync('bun run build:css:watch');
+    } else {
+      console.log('正在构建 CSS 文件...');
+      await execAsync('bun run build:css');
+      console.log('✅ CSS 构建完成!');
+    }
+  } catch (error) {
+    console.error('❌ CSS 构建失败:', error);
+    process.exit(1);
+  }
+}
+
 async function serverCommand(options: CLIOptions) {
   const port = parseInt((options.port || options.p || '3060') as string)
   const dataPath = join(process.cwd(), 'data.json')
@@ -464,6 +511,14 @@ async function main() {
 
       case 'assets':
         await assetsCommand()
+        break
+
+      case 'html-gen':
+        await htmlGenCommand(options)
+        break
+
+      case 'css':
+        await buildCssCommand(options)
         break
 
       case 'new': {

@@ -109,7 +109,31 @@ lumos build
 lumos assets
 ```
 
-### 5. 使用 PM2 部署（生产环境）
+### 5. 构建 Bundler HTML 文件
+
+```bash
+# 构建 Bundler HTML 文件
+lumos html-gen
+
+# 监听 Bundler HTML 文件变化并重新构建
+lumos html-gen -w
+# 或
+lumos html-gen --watch
+```
+
+### 6. 构建 CSS 文件
+
+```bash
+# 构建 主题CSS 文件
+lumos css
+
+# 监听 主题CSS 文件变化
+lumos css -w
+# 或
+lumos css --watch
+```
+
+### 7. 使用 PM2 部署（生产环境）
 
 Lumos 支持使用 PM2 进行生产环境部署，确保应用的高可用性和自动重启。
 
@@ -584,7 +608,7 @@ Lumos 支持使用 Bun 的 HTML bundling 功能创建页面，这种方式的优
 ### 工作原理
 
 1. 在 `bundler/html/` 目录中创建 HTML 文件和相关的 TypeScript/JSX 组件
-2. 运行 `bun run build:html` 命令构建这些页面
+2. 运行 `lumos html-gen` 命令构建这些页面
 3. 构建后的页面会被放置在 `bundler/dist/` 目录中
 4. 服务器会优先检查请求的路径是否在 `bundler/dist/` 目录中存在对应文件
 5. 如果存在，则直接返回该文件，不会经过主题路由处理
@@ -658,8 +682,17 @@ bun run fix
 # 构建 CSS
 bun run build:css
 
+# 监听 CSS 文件变化
+bun run build:css:watch
+
 # TypeScript 编译
 bun run tsc
+
+# 构建 HTML 文件
+bun run build:html
+
+# 监听 HTML 文件变化并重新构建
+bun run dev:html
 ```
 
 ### 工作流
