@@ -317,6 +317,15 @@ $(function () {
         $panel.addClass('float-panel-closed')
       }
     }
+
+
+    // 关闭 menus 面板
+    if (
+      !$(event.target).closest('#nav-menu-panel').length
+    ) {
+      // 关闭 menus 面板
+      $('#nav-menu-panel').addClass('float-panel-closed')
+    }
   })
 
   // 阻止点击面板内部冒泡到 document
