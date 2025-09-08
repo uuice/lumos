@@ -327,6 +327,8 @@ async function runServerInDevMode(port: number, dataPath: string) {
     // 使用 Bun 的文件监听 API
     const watchDirs = [
       'source/',
+      'src/',
+      'plugins/',
       `themes/${themeName}`,
     ]
 
@@ -350,6 +352,14 @@ async function runServerInDevMode(port: number, dataPath: string) {
             // 如果是主题目录的文件变化，重启服务器
             if (dir.startsWith(`themes/${themeName}`)) {
               console.log('🔄 主题文件发生变化，正在重启服务器...')
+              await restartServer()
+            } else if (dir.startsWith('src/')) {
+              // 如果是src目录的文件变化，重启服务器
+              console.log('🔄 src文件发生变化，正在重启服务器...')
+              await restartServer()
+            } else if (dir.startsWith('plugins/')) {
+              // 如果是src目录的文件变化，重启服务器
+              console.log('🔄 plugin文件发生变化，正在重启服务器...')
               await restartServer()
             } else {
               // 内容文件变化，重新生成数据

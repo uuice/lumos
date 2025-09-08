@@ -9,7 +9,7 @@ export async function handle404(request: Request): Promise<Response> {
     const notFoundPath = join(process.cwd(), 'src/routes/404.tsx')
     const notFoundModule = await import(notFoundPath)
     const handler = notFoundModule.default
-    
+
     if (handler) {
       return await handler(request)
     }
@@ -59,7 +59,7 @@ export async function handleError(request: Request, errorMessage: string, status
     const errorPath = join(process.cwd(), 'src/routes/error.tsx')
     const errorModule = await import(errorPath)
     const handler = errorModule.default
-    
+
     if (handler) {
       return await handler(request, { error: errorMessage, statusCode })
     }
