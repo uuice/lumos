@@ -207,6 +207,8 @@ export class LumosServer {
         const possiblePaths = [
           // 直接使用请求的路径
           join(distDir, pathname.substring(1)),
+          // 尝试查找 index.html
+          join(distDir, pathname, 'index.html'),
           // 如果路径以 / 结尾，尝试查找 index.html
           join(distDir, pathname.substring(1), 'index.html'),
           // 如果路径不以 .html 结尾，尝试添加 .html 扩展名
