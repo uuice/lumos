@@ -200,7 +200,7 @@ Lumos 使用 React + TypeScript 构建组件系统，所有组件都支持 SSR �
 #### 基础组件结构
 
 ```typescript
-// src/components/MyComponent.tsx
+// themes/my-theme/components/MyComponent.tsx
 import * as React from 'react'
 import { DatabaseSchema } from '../types.ts'
 
@@ -229,7 +229,7 @@ export const MyComponent: React.FC<MyComponentProps> = ({
 #### 创建新的布局组件
 
 ```typescript
-// src/components/CustomLayout.tsx
+// themes/my-theme/components/CustomLayout.tsx
 import * as React from 'react'
 import { DatabaseSchema } from '../types.ts'
 
@@ -351,7 +351,7 @@ return (
 #### 1. 静态路由
 
 ```typescript
-// src/routes/my-custom-page.tsx
+// themes/my-theme/routes/my-custom-page.tsx
 import * as React from 'react'
 import { renderToString } from 'react-dom/server'
 import { DatabaseSchema } from '../types.ts'
@@ -390,7 +390,7 @@ export default async function handler(_request: Request): Promise<Response> {
 #### 2. 动态路由
 
 ```typescript
-// src/routes/custom/[slug].tsx
+// themes/my-theme/routes/custom/[slug].tsx
 import * as React from 'react'
 import { renderToString } from 'react-dom/server'
 import { DatabaseSchema } from '../types.ts'
