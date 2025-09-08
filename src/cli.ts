@@ -61,6 +61,8 @@ Lumos - 基于 Bun 的静态博客生成器
 命令:
   gen                     生成 data.json 数据文件
   server                  启动开发服务器
+      选项:
+      -w, --watch         监听 主题、src目录、插件目录变化并重新启动开发服务器
   build                   构建项目 (生成数据 + 处理资源)
   assets                  处理资源文件
   html-gen                构建 HTML 文件
