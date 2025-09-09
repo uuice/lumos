@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 export const Profile: React.FC = () => {
   return (
@@ -8,9 +8,7 @@ export const Profile: React.FC = () => {
         href="/about"
         className="group block relative mx-auto mt-1 lg:mx-0 lg:mt-0 mb-3 max-w-[12rem] lg:max-w-none overflow-hidden rounded-xl active:scale-95"
       >
-        <div
-          className="absolute transition pointer-events-none group-hover:bg-black/30 group-active:bg-black/50 w-full h-full z-50 flex items-center justify-center"
-        >
+        <div className="absolute transition pointer-events-none group-hover:bg-black/30 group-active:bg-black/50 w-full h-full z-50 flex items-center justify-center">
           <svg
             width="1.13em"
             height="1em"
@@ -27,9 +25,7 @@ export const Profile: React.FC = () => {
           </svg>
         </div>
         <div className="mx-auto lg:w-full h-full lg:mt-0 overflow-hidden relative">
-          <div
-            className="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"
-          ></div>
+          <div className="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
           <img
             src="/assets/images/avatar.jpg"
             alt="Author"
@@ -43,7 +39,9 @@ export const Profile: React.FC = () => {
         </div>
       </a>
       <div className="px-2">
-        <div className="font-bold text-xl text-center mb-1 dark:text-neutral-50 transition">轻盈的鱼</div>
+        <div className="font-bold text-xl text-center mb-1 dark:text-neutral-50 transition">
+          轻盈的鱼
+        </div>
         <div className="h-1 w-5 bg-[var(--primary)] mx-auto rounded-full mb-2 transition"></div>
         <div className="text-center text-neutral-400 mb-2.5 transition">
           幻想变成轻盈的鱼， 畅游在自由的海洋
@@ -56,7 +54,12 @@ export const Profile: React.FC = () => {
             target="_blank"
             className="btn-regular rounded-lg h-10 w-10 active:scale-90"
           >
-            <svg width="0.97em" height="1em" className="text-[1.5rem]" data-icon="fa6-brands:github">
+            <svg
+              width="0.97em"
+              height="1em"
+              className="text-[1.5rem]"
+              data-icon="fa6-brands:github"
+            >
               <symbol id="ai:fa6-brands:github" viewBox="0 0 496 512">
                 <path
                   fill="currentColor"
@@ -69,5 +72,5 @@ export const Profile: React.FC = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

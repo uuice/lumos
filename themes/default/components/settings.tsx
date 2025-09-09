@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 export const Settings: React.FC = () => {
   return (
@@ -8,7 +8,12 @@ export const Settings: React.FC = () => {
         className="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90"
         id="display-settings-switch"
       >
-        <svg width="1em" height="1em" className="text-[1.25rem]" data-icon="material-symbols:palette-outline">
+        <svg
+          width="1em"
+          height="1em"
+          className="text-[1.25rem]"
+          data-icon="material-symbols:palette-outline"
+        >
           <symbol id="ai:material-symbols:palette-outline" viewBox="0 0 24 24">
             <path
               fill="currentColor"
@@ -24,9 +29,7 @@ export const Settings: React.FC = () => {
         className="float-panel absolute transition-all w-80 right-4 px-4 py-4 float-panel-closed"
       >
         <div className="flex flex-row gap-2 mb-3 items-center justify-between">
-          <div
-            className="flex gap-2 font-bold text-lg text-neutral-900 dark:text-neutral-100 transition relative ml-3 before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)] before:absolute before:-left-3 before:top-[0.33rem]"
-          >
+          <div className="flex gap-2 font-bold text-lg text-neutral-900 dark:text-neutral-100 transition relative ml-3 before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)] before:absolute before:-left-3 before:top-[0.33rem]">
             Theme Color
             <button
               aria-label="Reset to Default"
@@ -59,9 +62,7 @@ export const Settings: React.FC = () => {
             </div>
           </div>
         </div>
-        <div
-          className="w-full h-6 px-1 bg-[oklch(0.80_0.10_0)] dark:bg-[oklch(0.70_0.10_0)] rounded select-none"
-        >
+        <div className="w-full h-6 px-1 bg-[oklch(0.80_0.10_0)] dark:bg-[oklch(0.70_0.10_0)] rounded select-none">
           <input
             type="range"
             min="0"
@@ -75,5 +76,5 @@ export const Settings: React.FC = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

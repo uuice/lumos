@@ -5,10 +5,10 @@ import { DataGenerator } from './generator.ts'
 import { join } from 'path'
 import { ensureAssetsDir } from './utils.ts'
 import { buildHtmlFiles } from './bundler-html.ts'
-import { exec } from "child_process";
-import { promisify } from "util";
+import { exec } from 'child_process'
+import { promisify } from 'util'
 
-const execAsync = promisify(exec);
+const execAsync = promisify(exec)
 
 interface CLIOptions {
   [key: string]: string | boolean | number | undefined

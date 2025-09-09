@@ -107,7 +107,7 @@ export class PluginManager {
     for (const plugin of this.plugins) {
       if (plugin.onGenerateEnd) {
         try {
-          result = await plugin.onGenerateEnd(result) || result
+          result = (await plugin.onGenerateEnd(result)) || result
         } catch (error) {
           console.warn(`警告: 插件 ${plugin.name} 的 onGenerateEnd 钩子执行失败:`, error)
         }
@@ -117,12 +117,16 @@ export class PluginManager {
   }
 
   // 执行文件解析钩子
-  async executeParseFile(filePath: string, content: string, type: 'post' | 'page' | 'author'): Promise<string> {
+  async executeParseFile(
+    filePath: string,
+    content: string,
+    type: 'post' | 'page' | 'author'
+  ): Promise<string> {
     let result = content
     for (const plugin of this.plugins) {
       if (plugin.onParseFile) {
         try {
-          result = await plugin.onParseFile(filePath, result, type) || result
+          result = (await plugin.onParseFile(filePath, result, type)) || result
         } catch (error) {
           console.warn(`警告: 插件 ${plugin.name} 的 onParseFile 钩子执行失败:`, error)
         }
@@ -137,7 +141,7 @@ export class PluginManager {
     for (const plugin of this.plugins) {
       if (plugin.onRender) {
         try {
-          result = await plugin.onRender(result, data) || result
+          result = (await plugin.onRender(result, data)) || result
         } catch (error) {
           console.warn(`警告: 插件 ${plugin.name} 的 onRender 钩子执行失败:`, error)
         }

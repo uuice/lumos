@@ -1,4 +1,4 @@
-import { CommentDB, Comment } from "./db.ts";
+import { Comment, CommentDB } from './db.ts'
 
 // 获取评论接口
 export async function getComments(request: Request): Promise<Response> {

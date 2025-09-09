@@ -2,15 +2,14 @@
 
 // bundler-html.ts - 合并的 HTML 构建和开发服务器功能
 
-import { exec } from "child_process";
-import { promisify } from "util";
-import fs from "fs/promises";
-import path from "path";
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import { existsSync, statSync } from 'fs';
+import { exec } from 'child_process'
+import { promisify } from 'util'
+import fs from 'fs/promises'
+import path, { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
+import { existsSync, statSync } from 'fs'
 
-const execAsync = promisify(exec);
+const execAsync = promisify(exec)
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

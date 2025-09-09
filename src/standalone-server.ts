@@ -19,19 +19,19 @@ async function startServer() {
   })
 
   // 监听退出信号
-  const signals = ['SIGINT', 'SIGTERM'];
+  const signals = ['SIGINT', 'SIGTERM']
   for (const signal of signals) {
     process.on(signal, async () => {
-      console.log(`收到信号 ${signal}，正在关闭子进程服务器...`);
+      console.log(`收到信号 ${signal}，正在关闭子进程服务器...`)
       try {
-        await server.stop();
-        console.log('子进程服务器已关闭');
-        process.exit(0);
+        await server.stop()
+        console.log('子进程服务器已关闭')
+        process.exit(0)
       } catch (error) {
-        console.error('关闭子进程服务器时出错:', error);
-        process.exit(1);
+        console.error('关闭子进程服务器时出错:', error)
+        process.exit(1)
       }
-    });
+    })
   }
 
   await server.start()

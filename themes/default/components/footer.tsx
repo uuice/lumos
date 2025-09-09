@@ -1,36 +1,35 @@
-import React from 'react';
+import React from 'react'
 
 interface SiteSetting {
-  siteName: string;
+  siteName: string
 }
 
 interface RecordSettings {
-  showRecord?: boolean;
-  icpNumber?: string;
-  icpLink?: string;
-  policeNumber?: string;
-  policeLink?: string;
-  recordText?: string;
+  showRecord?: boolean
+  icpNumber?: string
+  icpLink?: string
+  policeNumber?: string
+  policeLink?: string
+  recordText?: string
 }
 
 interface FooterProps {
-  currentYear: number;
-  siteSetting: SiteSetting;
-  recordSettings?: RecordSettings;
+  currentYear: number
+  siteSetting: SiteSetting
+  recordSettings?: RecordSettings
 }
 
 export const Footer: React.FC<FooterProps> = ({ currentYear, siteSetting, recordSettings }) => {
   return (
     <div className="footer col-span-2 onload-animation">
-      <div
-        className="transition border-t border-black/10 dark:border-white/15 my-10 border-dashed mx-32"
-      ></div>
-      <div
-        className="transition border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/15 rounded-2xl mb-12 flex flex-col items-center justify-center px-6"
-      >
+      <div className="transition border-t border-black/10 dark:border-white/15 my-10 border-dashed mx-32"></div>
+      <div className="transition border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/15 rounded-2xl mb-12 flex flex-col items-center justify-center px-6">
         <div className="transition text-50 text-sm text-center">
           &copy; <span id="copyright-year">{currentYear}</span> 轻盈的鱼. All Rights Reserved. /
-          <a className="transition link text-[var(--primary)] font-medium" target="_blank" href="/rss.xml"
+          <a
+            className="transition link text-[var(--primary)] font-medium"
+            target="_blank"
+            href="/rss.xml"
           >
             RSS
           </a>
@@ -97,7 +96,7 @@ export const Footer: React.FC<FooterProps> = ({ currentYear, siteSetting, record
               </>
             )}
             {recordSettings.recordText && (
-              <span className="transition link text-[var(--primary)] font-medium" >
+              <span className="transition link text-[var(--primary)] font-medium">
                 {recordSettings.recordText}
               </span>
             )}
@@ -105,5 +104,5 @@ export const Footer: React.FC<FooterProps> = ({ currentYear, siteSetting, record
         )}
       </div>
     </div>
-  );
-};
+  )
+}

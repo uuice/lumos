@@ -1,4 +1,4 @@
-import { DatabaseSchema, POST, PAGE, CATEGORY, TAG } from '../../../src/types.ts'
+import { CATEGORY, DatabaseSchema, PAGE, POST, TAG } from '../../../src/types.ts'
 import { Builder } from 'xml2js'
 
 /**

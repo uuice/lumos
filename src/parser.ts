@@ -1,31 +1,25 @@
 import matter from 'gray-matter'
 import yaml from 'js-yaml'
-import { join, basename } from 'path'
+import { basename, join } from 'path'
+import { ARTICLE, AUTHOR, JSON_OBJ, PAGE, POST } from './types.ts'
 import {
-  ARTICLE,
-  POST,
-  PAGE,
-  AUTHOR,
-  JSON_OBJ
-} from './types.ts'
-import {
-  generateNamespaceUUID,
-  generatePostId,
-  generatePageId,
-  generateAuthorId,
-  getDefaultAuthorId,
   DEFAULT_AUTHOR_ALIAS,
   formatDate,
-  titleToUrl,
-  symbolsCount,
+  generateAuthorId,
   generateExcerpt,
+  generateNamespaceUUID,
+  generatePageId,
+  generatePostId,
+  getDefaultAuthorId,
+  getFileMD5,
   getFilesByExtension,
+  isCacheValid,
   markdownToHtml,
   markdownToToc,
-  getFileMD5,
   readCache,
   saveCache,
-  isCacheValid
+  symbolsCount,
+  titleToUrl
 } from './utils.ts'
 import { PluginManager } from './plugin-manager.ts'
 
@@ -39,7 +33,10 @@ export class Parser {
   }
 
   // 解析 Markdown 文件为 ARTICLE 对象（支持缓存）
-  async parseMarkdownFile(filePath: string, type: 'post' | 'page' | 'author'): Promise<ARTICLE | null> {
+  async parseMarkdownFile(
+    filePath: string,
+    type: 'post' | 'page' | 'author'
+  ): Promise<ARTICLE | null> {
     try {
       // 计算文件 MD5
       const fileHash = await getFileMD5(filePath)
@@ -101,10 +98,16 @@ export class Parser {
         date: frontMatter.date || frontMatter.created_time || formatDate(),
         updated_time: frontMatter.updated_time || formatDate(),
         updated: frontMatter.updated || frontMatter.updated_time || formatDate(),
-        categories: Array.isArray(frontMatter.categories) ? frontMatter.categories :
-                   frontMatter.categories ? [frontMatter.categories] : [],
-        tags: Array.isArray(frontMatter.tags) ? frontMatter.tags :
-              frontMatter.tags ? [frontMatter.tags] : [],
+        categories: Array.isArray(frontMatter.categories)
+          ? frontMatter.categories
+          : frontMatter.categories
+            ? [frontMatter.categories]
+            : [],
+        tags: Array.isArray(frontMatter.tags)
+          ? frontMatter.tags
+          : frontMatter.tags
+            ? [frontMatter.tags]
+            : [],
         excerpt: frontMatter.excerpt || generateExcerpt(htmlContent),
         published: frontMatter.published !== false,
         content: htmlContent,
@@ -114,8 +117,11 @@ export class Parser {
         updated_timestamp: new Date(frontMatter.updated_time || Date.now()).getTime(),
         url: `${frontMatter.url || titleToUrl(frontMatter.alias || frontMatter.title || basename(filePath, '.md'))}`,
         symbolsCount: symbolsCount(mdContent),
-        authorIds: Array.isArray(frontMatter.authors) ? frontMatter.authors :
-                  frontMatter.authors ? [frontMatter.authors] : [getDefaultAuthorId()],
+        authorIds: Array.isArray(frontMatter.authors)
+          ? frontMatter.authors
+          : frontMatter.authors
+            ? [frontMatter.authors]
+            : [getDefaultAuthorId()],
         // 保留其他自定义字段
         ...frontMatter
       }

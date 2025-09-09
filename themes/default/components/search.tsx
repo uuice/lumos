@@ -1,7 +1,6 @@
-import React from 'react';
+import React from 'react'
 
 export const Search: React.FC = () => {
-
   return (
     <>
       <div
@@ -26,7 +25,11 @@ export const Search: React.FC = () => {
           id="search-input"
           className="transition-all pl-10 text-sm bg-transparent !outline-none !border-none !shadow-none h-full w-40 active:w-60 focus:w-60 text-black/50 dark:text-white/50"
           placeholder="Search"
-          style={{ outline: 'none !important', boxShadow: 'none !important', border: 'none !important' }}
+          style={{
+            outline: 'none !important',
+            boxShadow: 'none !important',
+            border: 'none !important'
+          }}
         />
       </div>
       <button
@@ -76,14 +79,17 @@ export const Search: React.FC = () => {
             id="search-input-inside"
             placeholder="Search"
             className="pl-10 absolute inset-0 text-sm bg-transparent !outline-none !border-none !shadow-none focus:w-60 text-black/50 dark:text-white/50"
-            style={{ outline: 'none !important', boxShadow: 'none !important', border: 'none !important' }}
-
+            style={{
+              outline: 'none !important',
+              boxShadow: 'none !important',
+              border: 'none !important'
+            }}
           />
         </div>
         <div id="search-results" className="mt-2">
-        {/* <!-- 搜索结果将在这里动态生成 --> */}
+          {/* <!-- 搜索结果将在这里动态生成 --> */}
         </div>
       </div>
     </>
-  );
-};
+  )
+}

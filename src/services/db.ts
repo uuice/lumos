@@ -1,4 +1,4 @@
-import { Database } from "bun:sqlite";
+import { Database } from 'bun:sqlite'
 
 // 创建或连接到 SQLite 数据库
 const db = new Database("sqlite.db");

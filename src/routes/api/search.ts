@@ -1,4 +1,4 @@
-import { Document, Charset } from 'flexsearch'
+import { Charset, Document } from 'flexsearch'
 import { DatabaseSchema, LIST_POST_ITEM, POST } from '../../types.ts'
 import { mergeAndHighlightFlexsearchResults } from '../../utils.ts'
 
@@ -14,7 +14,7 @@ function buildIndex(data: DatabaseSchema): void {
   // Build a Document index with CJK support as requested
 
   postIndex = new Document({
-     document: {
+    document: {
       id: 'id',
       index: ['title', 'abstract'],
       store: true
@@ -68,5 +68,3 @@ export default async function handler(request: Request): Promise<Response> {
     return Response.json({ error: 'Failed to search' }, { status: 500 })
   }
 }
-
-

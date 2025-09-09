@@ -1,26 +1,29 @@
-import React from 'react';
+import React from 'react'
 
 interface Item {
-  content?: string;
+  content?: string
 }
 
 interface WordCountReadingTimeProps {
-  item: Item;
+  item: Item
 }
 
 // Simple word count function
 const wordCount = (text: string = ''): number => {
-  return text.trim().split(/\s+/).filter(word => word.length > 0).length;
-};
+  return text
+    .trim()
+    .split(/\s+/)
+    .filter(word => word.length > 0).length
+}
 
 // Function to format number with 2 decimal places
 const toFixed = (num: number, digits: number): string => {
-  return num.toFixed(digits);
-};
+  return num.toFixed(digits)
+}
 
 export const WordCountReadingTime: React.FC<WordCountReadingTimeProps> = ({ item }) => {
-  const words = wordCount(item.content || '');
-  const readingTime = toFixed(words / 60, 2);
+  const words = wordCount(item.content || '')
+  const readingTime = toFixed(words / 60, 2)
 
   return (
     <div
@@ -31,5 +34,5 @@ export const WordCountReadingTime: React.FC<WordCountReadingTimeProps> = ({ item
       <div style={{ '--coverWidth': '28%' } as React.CSSProperties}>|</div>
       <div style={{ '--coverWidth': '28%' } as React.CSSProperties}>{readingTime} 分钟</div>
     </div>
-  );
-};
+  )
+}

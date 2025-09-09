@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
 
-import { Plugin } from '../src/types.ts';
-import { DataGenerator } from '../src/generator.ts';
-import { Parser } from '../src/parser.ts';
-import { PluginManager } from '../src/plugin-manager.ts';
-import { join } from 'path';
+import { Plugin } from '../src/types.ts'
+import { DataGenerator } from '../src/generator.ts'
+import { Parser } from '../src/parser.ts'
+import { PluginManager } from '../src/plugin-manager.ts'
+import { join } from 'path'
 
 /**
  * 测试所有插件钩子的完整功能插件

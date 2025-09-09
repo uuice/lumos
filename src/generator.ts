@@ -1,16 +1,9 @@
 import { Parser } from './parser.ts'
+import { CATEGORY, DatabaseSchema, POST, POST_CATEGORY, POST_TAG, TAG } from './types.ts'
 import {
-  DatabaseSchema,
-  POST,
-  CATEGORY,
-  TAG,
-  POST_CATEGORY,
-  POST_TAG
-} from './types.ts'
-import {
+  DEFAULT_AUTHOR_ALIAS,
   generateNamespaceUUID,
   getDefaultAuthorId,
-  DEFAULT_AUTHOR_ALIAS,
   titleToUrl
 } from './utils.ts'
 import { PluginManager } from './plugin-manager.ts'
@@ -71,10 +64,7 @@ export class DataGenerator {
   }
 
   // 生成文章-分类关联
-  private generatePostCategoryRelations(
-    posts: POST[],
-    categories: CATEGORY[]
-  ): POST_CATEGORY[] {
+  private generatePostCategoryRelations(posts: POST[], categories: CATEGORY[]): POST_CATEGORY[] {
     const relations: POST_CATEGORY[] = []
     const categoryNameMap = new Map(categories.map(cat => [cat.title, cat.id]))
 
@@ -97,10 +87,7 @@ export class DataGenerator {
   }
 
   // 生成文章-标签关联
-  private generatePostTagRelations(
-    posts: POST[],
-    tags: TAG[]
-  ): POST_TAG[] {
+  private generatePostTagRelations(posts: POST[], tags: TAG[]): POST_TAG[] {
     const relations: POST_TAG[] = []
     const tagNameMap = new Map(tags.map(tag => [tag.title, tag.id]))
 
@@ -135,12 +122,16 @@ export class DataGenerator {
 
     // 解析 Markdown 文件
     const { posts, pages, authors } = await this.parser.parseAllMarkdownFiles()
-    console.log(`解析完成: ${posts.length} 篇文章, ${pages.length} 个页面, ${authors.length} 个作者`)
+    console.log(
+      `解析完成: ${posts.length} 篇文章, ${pages.length} 个页面, ${authors.length} 个作者`
+    )
 
     // 解析配置文件
     const jsonConfigs = await this.parser.parseAllJsonFiles()
     const yamlConfigs = await this.parser.parseAllYamlFiles()
-    console.log(`解析配置文件: ${Object.keys(jsonConfigs).length} 个JSON, ${Object.keys(yamlConfigs).length} 个YAML`)
+    console.log(
+      `解析配置文件: ${Object.keys(jsonConfigs).length} 个JSON, ${Object.keys(yamlConfigs).length} 个YAML`
+    )
 
     // 提取分类和标签
     const categories = this.extractCategories(posts)
@@ -155,27 +146,32 @@ export class DataGenerator {
     let data: DatabaseSchema = {
       posts: posts.sort((a, b) => b.created_timestamp - a.created_timestamp),
       pages: pages.sort((a, b) => a.title.localeCompare(b.title)),
-      authors: authors.length > 0 ? authors : [{
-        id: getDefaultAuthorId(),
-        title: 'Default Author',
-        alias: DEFAULT_AUTHOR_ALIAS,
-        cover: '',
-        created_time: new Date().toISOString(),
-        updated_time: new Date().toISOString(),
-        categories: [],
-        tags: [],
-        excerpt: 'Default author for the blog',
-        published: true,
-        content: '<p>Default author for the blog</p>',
-        mdContent: 'Default author for the blog',
-        toc: '',
-        created_timestamp: Date.now(),
-        updated_timestamp: Date.now(),
-        url: '/author/default',
-        symbolsCount: 0,
-        authorIds: [],
-        isDefault: true
-      }],
+      authors:
+        authors.length > 0
+          ? authors
+          : [
+              {
+                id: getDefaultAuthorId(),
+                title: 'Default Author',
+                alias: DEFAULT_AUTHOR_ALIAS,
+                cover: '',
+                created_time: new Date().toISOString(),
+                updated_time: new Date().toISOString(),
+                categories: [],
+                tags: [],
+                excerpt: 'Default author for the blog',
+                published: true,
+                content: '<p>Default author for the blog</p>',
+                mdContent: 'Default author for the blog',
+                toc: '',
+                created_timestamp: Date.now(),
+                updated_timestamp: Date.now(),
+                url: '/author/default',
+                symbolsCount: 0,
+                authorIds: [],
+                isDefault: true
+              }
+            ],
       categories,
       tags,
       postCategories,
@@ -185,7 +181,7 @@ export class DataGenerator {
     }
 
     // 执行生成结束钩子
-    data = await this.pluginManager.executeGenerateEnd(data) || data
+    data = (await this.pluginManager.executeGenerateEnd(data)) || data
 
     return data
   }

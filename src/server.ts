@@ -2,18 +2,21 @@ import { join } from 'path'
 import { DatabaseSchema } from './types.ts'
 import { PluginManager } from './plugin-manager.ts'
 import { ThemeManager } from './theme-manager.ts'
-import { BunFile } from 'bun';
+import { BunFile } from 'bun'
+// 添加导入routes API并设置服务器实例
+import { setServerInstance } from './routes/api/routes.ts'
+import { buildResponseHeaders } from './utils.ts'
 
 // 定义配置接口
 interface LumosConfig {
-  theme: string;
+  theme: string
   cache?: {
     staticAssets?: {
-      maxAge?: number;
-      enabled?: boolean;
-    };
-  };
-  plugins: Record<string, any>;
+      maxAge?: number
+      enabled?: boolean
+    }
+  }
+  plugins: Record<string, any>
 }
 
 export interface ServerOptions {
@@ -21,10 +24,6 @@ export interface ServerOptions {
   dataPath: string
   basePath?: string
 }
-
-// 添加导入routes API并设置服务器实例
-import { setServerInstance } from './routes/api/routes.ts';
-import { buildResponseHeaders } from './utils.ts';
 
 export class LumosServer {
   private data: DatabaseSchema | null = null
@@ -73,16 +72,16 @@ export class LumosServer {
 
   // 获取静态资源缓存配置
   private getStaticAssetCacheConfig(): { enabled: boolean; maxAge: number } {
-    const defaultConfig = { enabled: true, maxAge: 31536000 }; // 默认1年缓存
+    const defaultConfig = { enabled: true, maxAge: 31536000 } // 默认1年缓存
 
     if (!this.config?.cache?.staticAssets) {
-      return defaultConfig;
+      return defaultConfig
     }
 
     return {
       enabled: this.config.cache.staticAssets.enabled ?? defaultConfig.enabled,
       maxAge: this.config.cache.staticAssets.maxAge ?? defaultConfig.maxAge
-    };
+    }
   }
 
   // 加载数据
@@ -133,7 +132,7 @@ export class LumosServer {
     if (pathname.startsWith('/assets/')) {
       try {
         // 获取缓存配置
-        const cacheConfig = this.getStaticAssetCacheConfig();
+        const cacheConfig = this.getStaticAssetCacheConfig()
 
         // 首先尝试从主题目录加载资源
         let filePath = join(this.themeManager.getAssetsPath(), pathname.replace('/assets/', ''))
@@ -176,7 +175,7 @@ export class LumosServer {
     if (!pathname.startsWith('/api/') && !pathname.startsWith('/assets/')) {
       try {
         const themePath = join(this.basePath, 'bundler')
-        const distDir = join(themePath, 'dist');
+        const distDir = join(themePath, 'dist')
 
         // 构建可能的文件路径列表
         const possiblePaths = [
@@ -186,34 +185,34 @@ export class LumosServer {
           join(distDir, pathname.substring(1), 'index.html'),
           // 如果路径不以 .html 结尾，尝试添加 .html 扩展名
           pathname.endsWith('.html') ? '' : join(distDir, pathname.substring(1) + '.html')
-        ].filter(path => path.length > 0); // 过滤掉空路径
+        ].filter(path => path.length > 0) // 过滤掉空路径
 
         // 查找第一个存在的文件
-        let filePath: string | null = null;
-        let file: BunFile | null = null;
+        let filePath: string | null = null
+        let file: BunFile | null = null
 
         for (const path of possiblePaths) {
-          const candidateFile = Bun.file(path);
+          const candidateFile = Bun.file(path)
           if (await candidateFile.exists()) {
-            filePath = path;
-            file = candidateFile;
-            break;
+            filePath = path
+            file = candidateFile
+            break
           }
         }
 
         // 如果找到了存在的文件
         if (filePath && file) {
           // 获取缓存配置
-          const cacheConfig = this.getStaticAssetCacheConfig();
+          const cacheConfig = this.getStaticAssetCacheConfig()
           // 构建响应头
           const headers: Record<string, string> = await buildResponseHeaders(filePath, cacheConfig)
 
           return new Response(file, {
             headers
-          });
+          })
         }
       } catch (error) {
-        console.error('dist目录静态文件处理错误:', error);
+        console.error('dist目录静态文件处理错误:', error)
       }
     }
 
@@ -266,7 +265,10 @@ export class LumosServer {
       return await this.handle404()
     } catch (error) {
       console.error('请求处理错误:', error)
-      return await this.handleError(error instanceof Error ? error.message : 'Internal Server Error', 500)
+      return await this.handleError(
+        error instanceof Error ? error.message : 'Internal Server Error',
+        500
+      )
     }
   }
 
@@ -328,7 +330,10 @@ export class LumosServer {
       const handler = errorModule.default
 
       if (handler) {
-        return await handler(new Request('http://localhost/error'), { error: errorMessage, statusCode })
+        return await handler(new Request('http://localhost/error'), {
+          error: errorMessage,
+          statusCode
+        })
       }
     } catch (error) {
       console.error('错误页面加载失败:', error)
@@ -375,7 +380,7 @@ export class LumosServer {
   async start(): Promise<void> {
     try {
       // 加载配置
-      await this.loadConfig();
+      await this.loadConfig()
 
       // 加载插件
       await this.pluginManager.loadPluginConfig()
@@ -392,11 +397,11 @@ export class LumosServer {
 
       this.serverInstance = Bun.serve({
         port: this.port,
-        fetch: (request) => this.handleRequest(request)
+        fetch: request => this.handleRequest(request)
       })
 
       // 设置服务器实例供API路由使用
-      setServerInstance(this);
+      setServerInstance(this)
 
       console.log(`🚀 Lumos 服务器已启动 (使用 FileSystemRouter)`)
       console.log(`📡 监听端口: ${this.port}`)
@@ -405,7 +410,7 @@ export class LumosServer {
       console.log(`🎨 静态资源: ${this.themeManager.getAssetsPath()}/*`)
       console.log(`🎨 当前主题: ${this.themeManager.getThemeName()}`)
       // 显示缓存配置信息
-      const cacheConfig = this.getStaticAssetCacheConfig();
+      const cacheConfig = this.getStaticAssetCacheConfig()
       if (cacheConfig.enabled) {
         console.log(`📚 静态资源缓存已启用`)
       } else {
@@ -430,10 +435,10 @@ export class LumosServer {
 
   // 添加获取路由器的方法
   getThemeRouter() {
-    return this._themeRouter;
+    return this._themeRouter
   }
 
   getApiRouter() {
-    return this._apiRouter;
+    return this._apiRouter
   }
 }

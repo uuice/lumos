@@ -1,7 +1,7 @@
 import { join } from 'path'
-import { mkdir, writeFile, stat } from 'fs/promises'
-import { generatePostId, generatePageId, generateAuthorId, formatDate } from '../utils.ts'
-import { PostTemplate, PageTemplate, AuthorTemplate } from '../../templates/index.ts'
+import { mkdir, stat, writeFile } from 'fs/promises'
+import { formatDate, generateAuthorId, generatePageId, generatePostId } from '../utils.ts'
+import { AuthorTemplate, PageTemplate, PostTemplate } from '../../templates/index.ts'
 
 export interface NewCommandOptions {
   path?: string

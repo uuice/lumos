@@ -1,9 +1,10 @@
-import React from 'react';
-import { POST } from '../../../../src/types';
-import { titleToUrl } from '../../../../src/utils';
-import dayjs from 'dayjs';
+import React from 'react'
+import { POST } from '../../../../src/types'
+import { titleToUrl } from '../../../../src/utils'
+import dayjs from 'dayjs'
+
 interface MetadataProps {
-  item: POST;
+  item: POST
 }
 
 export const Metadata: React.FC<MetadataProps> = ({ item }) => {
@@ -51,27 +52,33 @@ export const Metadata: React.FC<MetadataProps> = ({ item }) => {
           </svg>
         </div>
         <div className="flex flex-row flex-nowrap items-center">
-        {item.categories && item.categories.map((c, index) => (
-            <React.Fragment key={c}>
-          <a
-            href={`/categories/${titleToUrl(c)}`}
-            aria-label={`View all posts in the ${c} category`}
-            className="link-lg transition text-50 text-sm font-medium hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap"
-          >
-            {c}
-            </a>
-            {index < item.categories.length - 1 && (
-                <div className="mx-1.5 text-[var(--meta-divider)] text-sm">/</div>
-              )}
-          </React.Fragment>
-           ))}
+          {item.categories &&
+            item.categories.map((c, index) => (
+              <React.Fragment key={c}>
+                <a
+                  href={`/categories/${titleToUrl(c)}`}
+                  aria-label={`View all posts in the ${c} category`}
+                  className="link-lg transition text-50 text-sm font-medium hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap"
+                >
+                  {c}
+                </a>
+                {index < item.categories.length - 1 && (
+                  <div className="mx-1.5 text-[var(--meta-divider)] text-sm">/</div>
+                )}
+              </React.Fragment>
+            ))}
         </div>
       </div>
 
       {/* tags */}
       <div className="items-center hidden md:flex">
         <div className="meta-icon">
-          <svg width="1em" height="1em" className="text-xl" data-icon="material-symbols:tag-rounded">
+          <svg
+            width="1em"
+            height="1em"
+            className="text-xl"
+            data-icon="material-symbols:tag-rounded"
+          >
             <symbol id="ai:material-symbols:tag-rounded" viewBox="0 0 24 24">
               <path
                 fill="currentColor"
@@ -83,22 +90,23 @@ export const Metadata: React.FC<MetadataProps> = ({ item }) => {
         </div>
         <div className="flex flex-row flex-nowrap items-center">
           <div className="hidden mx-1.5 text-[var(--meta-divider)] text-sm">/</div>
-          {item.tags && item.tags.map((tag, index) => (
-            <React.Fragment key={tag}>
-              <a
-                href={`/tags/${titleToUrl(tag)}`}
-                aria-label={`View all posts with the ${tag} tag`}
-                className="link-lg transition text-50 text-sm font-medium hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap"
-              >
-                {tag}
-              </a>
-              {index < item.tags.length - 1 && (
-                <div className="mx-1.5 text-[var(--meta-divider)] text-sm">/</div>
-              )}
-            </React.Fragment>
-          ))}
+          {item.tags &&
+            item.tags.map((tag, index) => (
+              <React.Fragment key={tag}>
+                <a
+                  href={`/tags/${titleToUrl(tag)}`}
+                  aria-label={`View all posts with the ${tag} tag`}
+                  className="link-lg transition text-50 text-sm font-medium hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap"
+                >
+                  {tag}
+                </a>
+                {index < item.tags.length - 1 && (
+                  <div className="mx-1.5 text-[var(--meta-divider)] text-sm">/</div>
+                )}
+              </React.Fragment>
+            ))}
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

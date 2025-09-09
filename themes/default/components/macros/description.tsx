@@ -1,8 +1,8 @@
-import React from 'react';
-import { POST } from '../../../../src/types';
+import React from 'react'
+import { POST } from '../../../../src/types'
 
 interface DescriptionProps {
-  item: POST;
+  item: POST
 }
 
 export const Description: React.FC<DescriptionProps> = ({ item }) => {
@@ -13,5 +13,5 @@ export const Description: React.FC<DescriptionProps> = ({ item }) => {
     >
       {item.excerpt}
     </div>
-  );
-};
+  )
+}

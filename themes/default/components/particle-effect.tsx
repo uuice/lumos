@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 export const ParticleEffect: React.FC = () => {
   return (
@@ -25,5 +25,5 @@ export const ParticleEffect: React.FC = () => {
 
       <canvas id="particle-canvas" className="particle-canvas"></canvas>
     </>
-  );
-};
+  )
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 export const ScrollToTop: React.FC = () => {
   return (
@@ -25,5 +25,5 @@ export const ScrollToTop: React.FC = () => {
         </button>
       </div>
     </div>
-  );
-};
+  )
+}

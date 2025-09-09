@@ -28,7 +28,9 @@ export class TemplateRenderer {
   // 简化的渲染方法，主要用于向后兼容
   render(templateName: string, _props: unknown = {}): string {
     console.warn(`TemplateRenderer.render() is deprecated. Use route-specific components instead.`)
-    throw new Error(`Template rendering should now be handled in route files. Template: ${templateName}`)
+    throw new Error(
+      `Template rendering should now be handled in route files. Template: ${templateName}`
+    )
   }
 
   // 废弃的方法，保留用于兼容性

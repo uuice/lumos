@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { DatabaseSchema, CATEGORY, TAG, POST_CATEGORY } from '../../../src/types.ts'
+import { CATEGORY, DatabaseSchema, POST_CATEGORY, TAG } from '../../../src/types.ts'
 // 导入所有需要的组件
 import { Head } from './head'
 import { Sidebar } from './sidebar'
@@ -35,44 +35,45 @@ export const Layout: React.FC<{
   data,
   showSidebar = true, // 默认显示侧边栏
   showBanner = true, // 默认显示 banner
-  toc,
+  toc
 }) => {
   // 获取站点配置
-  const siteSetting: any = data.settingJsonConfig.siteSetting || {};
+  const siteSetting: any = data.settingJsonConfig.siteSetting || {}
   // 获取站点配置
-  const recordSettings: any = data.settingJsonConfig.recordSettings || {};
+  const recordSettings: any = data.settingJsonConfig.recordSettings || {}
   // 准备侧边栏数据
   const categories: SidebarCategory[] = (data.categories || []).map((category: CATEGORY) => {
     return {
       url: category.url,
       title: category.title,
-      article_count: data.postCategories.filter((postCategory: POST_CATEGORY) => postCategory.categoryId === category.id).length
+      article_count: data.postCategories.filter(
+        (postCategory: POST_CATEGORY) => postCategory.categoryId === category.id
+      ).length
     }
-  });
+  })
 
   const tags: SidebarTag[] = (data.tags || []).map((tag: TAG) => ({
     url: tag.url,
     title: tag.title
-  }));
-
+  }))
 
   return (
     <html lang="en" className="bg-[var(--page-bg)] transition text-[14px] md:text-[16px]">
       <head>
-      <title>{ siteSetting.siteName }</title>
-    <meta charSet="UTF-8" />
-    <meta name="description" content={siteSetting.siteDescription || "默认描述"} />
-    <meta name="author" content={siteSetting.author || "默认作者"} />
-    <meta property="og:site_name" content={siteSetting.siteName} />
-    <meta property="og:url" content={siteSetting.baseUrl || ""} />
-    <meta property="og:title" content={siteSetting.siteName} />
-    <meta property="og:description" content={siteSetting.siteDescription || ""} />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={siteSetting.baseUrl || ""} />
-    <meta name="twitter:title" content={siteSetting.siteName} />
-    <meta name="twitter:description" content={siteSetting.siteDescription || ""} />
-    <meta name="viewport" content="width=device-width" />
+        <title>{siteSetting.siteName}</title>
+        <meta charSet="UTF-8" />
+        <meta name="description" content={siteSetting.siteDescription || '默认描述'} />
+        <meta name="author" content={siteSetting.author || '默认作者'} />
+        <meta property="og:site_name" content={siteSetting.siteName} />
+        <meta property="og:url" content={siteSetting.baseUrl || ''} />
+        <meta property="og:title" content={siteSetting.siteName} />
+        <meta property="og:description" content={siteSetting.siteDescription || ''} />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={siteSetting.baseUrl || ''} />
+        <meta name="twitter:title" content={siteSetting.siteName} />
+        <meta name="twitter:description" content={siteSetting.siteDescription || ''} />
+        <meta name="viewport" content="width=device-width" />
         <link
           rel="icon"
           href="/assets/favicon/favicon-light-32.png"
@@ -159,9 +160,7 @@ export const Layout: React.FC<{
               id="banner"
               className="object-cover h-full transition duration-700 opacity-100 scale-100 overflow-hidden relative"
             >
-              <div
-                className="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"
-              ></div>
+              <div className="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
               <img
                 src="/assets/images/demo-banner.jpg"
                 alt="Banner of the blog"
@@ -178,7 +177,10 @@ export const Layout: React.FC<{
 
         {/* 将主内容区域和TOC区域包装在一个共同的容器中，以便PJAX可以同时更新它们 */}
         <div id="pjax-container">
-          <div className={`absolute w-full z-30 pointer-events-none ${showBanner ? '' : 'pt-0'}`} style={{ top: showBanner ? 'calc(35vh - 3.5rem)' : '0' }}>
+          <div
+            className={`absolute w-full z-30 pointer-events-none ${showBanner ? '' : 'pt-0'}`}
+            style={{ top: showBanner ? 'calc(35vh - 3.5rem)' : '0' }}
+          >
             {/* The pointer-events-none here prevent blocking the click event of the TOC */}
             <div className="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
               <div
@@ -201,7 +203,10 @@ export const Layout: React.FC<{
                       className="text-white/75 text-[1.25rem] mr-1"
                       data-icon="material-symbols:copyright-outline-rounded"
                     >
-                      <symbol id="ai:material-symbols:copyright-outline-rounded" viewBox="0 0 24 24">
+                      <symbol
+                        id="ai:material-symbols:copyright-outline-rounded"
+                        viewBox="0 0 24 24"
+                      >
                         <path
                           fill="currentColor"
                           d="M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m-2-4h4q.425 0 .713-.288T15 15v-1q0-.425-.288-.712T14 13t-.712.288T13 14h-2v-4h2q0 .425.288.713T14 11t.713-.288T15 10V9q0-.425-.288-.712T14 8h-4q-.425 0-.712.288T9 9v6q0 .425.288.713T10 16"
@@ -266,7 +271,13 @@ export const Layout: React.FC<{
                   <div id="toc" className="w-full h-full transition-swup-fade">
                     <div className="h-8 w-full"></div>
                     {/* TOC 组件 */}
-                    { typeof toc === 'string' && toc ?  <div className="toc-lists" id="toc-lists" dangerouslySetInnerHTML={{ __html: toc }}></div> : null }
+                    {typeof toc === 'string' && toc ? (
+                      <div
+                        className="toc-lists"
+                        id="toc-lists"
+                        dangerouslySetInnerHTML={{ __html: toc }}
+                      ></div>
+                    ) : null}
                     <div className="h-8 w-full"></div>
                   </div>
                 </div>
@@ -279,13 +290,15 @@ export const Layout: React.FC<{
         <div
           id="page-height-extend"
           className="hidden h-[300vh]"
-          style={{
-            '--bannerOffset': '15vh',
-            '--banner-height-home': '65vh',
-            '--banner-height': '35vh',
-            '--configHue': '280',
-            '--page-width': '75rem'
-          } as React.CSSProperties}
+          style={
+            {
+              '--bannerOffset': '15vh',
+              '--banner-height-home': '65vh',
+              '--banner-height': '35vh',
+              '--configHue': '280',
+              '--page-width': '75rem'
+            } as React.CSSProperties
+          }
         ></div>
       </body>
     </html>

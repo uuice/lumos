@@ -1,7 +1,7 @@
 // 分类页面路由 - /categories/[alias]
 import * as React from 'react'
 import { renderToString } from 'react-dom/server'
-import { DatabaseSchema, POST  } from '../../../../src/types.ts'
+import { DatabaseSchema, POST } from '../../../../src/types.ts'
 import { Layout } from '../../components/Layout.tsx'
 
 // 分类页面组件

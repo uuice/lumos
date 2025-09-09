@@ -1,22 +1,22 @@
-import React from 'react';
-import { Profile } from './profile';
-import { Categories } from './categories';
-import { Tags } from './tags';
+import React from 'react'
+import { Profile } from './profile'
+import { Categories } from './categories'
+import { Tags } from './tags'
 
 interface Category {
-  url: string;
-  title: string;
-  article_count: number;
+  url: string
+  title: string
+  article_count: number
 }
 
 interface Tag {
-  url: string;
-  title: string;
+  url: string
+  title: string
 }
 
 interface SidebarProps {
-  categories: Category[];
-  tags: Tag[];
+  categories: Category[]
+  tags: Tag[]
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ categories, tags }) => {
@@ -36,5 +36,5 @@ export const Sidebar: React.FC<SidebarProps> = ({ categories, tags }) => {
         <Tags tags={tags} />
       </div>
     </div>
-  );
-};
+  )
+}
