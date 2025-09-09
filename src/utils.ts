@@ -10,6 +10,124 @@ import md5 from 'md5'
 import pinyin from 'pinyin'
 import type { ARTICLE } from './types.ts'
 import escapeRegExp from 'lodash/escapeRegExp'
+import type { BunFile } from 'bun'
+
+/**
+ * 根据文件扩展名获取MIME类型
+ * @param extension 文件扩展名（包含或不包含点号）
+ * @returns MIME类型字符串
+ */
+export function getMimeType(extension: string): string {
+  // 确保扩展名不包含点号
+  const ext = extension.startsWith('.') ? extension.slice(1) : extension
+
+  // 常见MIME类型映射
+  const mimeTypes: Record<string, string> = {
+    // 文本
+    'html': 'text/html',
+    'htm': 'text/html',
+    'css': 'text/css',
+    'js': 'text/javascript',
+    'mjs': 'text/javascript',
+    'json': 'application/json',
+    'xml': 'application/xml',
+    'txt': 'text/plain',
+    'md': 'text/markdown',
+
+    // 图片
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'gif': 'image/gif',
+    'webp': 'image/webp',
+    'svg': 'image/svg+xml',
+    'ico': 'image/x-icon',
+
+    // 字体
+    'woff': 'font/woff',
+    'woff2': 'font/woff2',
+    'ttf': 'font/ttf',
+    'otf': 'font/otf',
+    'eot': 'application/vnd.ms-fontobject',
+
+    // 音视频
+    'mp3': 'audio/mpeg',
+    'mp4': 'video/mp4',
+    'webm': 'video/webm',
+    'ogg': 'audio/ogg',
+
+    // 其他
+    'pdf': 'application/pdf',
+    'zip': 'application/zip',
+    'gz': 'application/gzip'
+  }
+
+  return mimeTypes[ext.toLowerCase()] || 'application/octet-stream'
+}
+
+/**
+ * 查找文件，首先在主要路径查找，如果不存在则在备用路径查找
+ * @param primaryPath 主要查找路径
+ * @param fallbackPath 备用查找路径
+ * @param relativePath 相对路径
+ * @returns 找到的文件信息或null
+ */
+export async function findFile(primaryPath: string, fallbackPath: string, relativePath: string): Promise<{ filePath: string; file: BunFile } | null> {
+  // 首先尝试从主要路径加载
+  let filePath = join(primaryPath, relativePath)
+  let file = Bun.file(filePath)
+
+  // 如果主要路径中没有该资源，则从备用路径加载
+  if (!(await file.exists())) {
+    filePath = join(fallbackPath, relativePath)
+    file = Bun.file(filePath)
+
+    if (!(await file.exists())) {
+      return null
+    }
+  }
+
+  return { filePath, file }
+}
+
+/**
+ * 构建HTTP响应头，包括内容类型和缓存控制
+ * @param filePath 文件路径
+ * @param cacheConfig 缓存配置
+ * @returns HTTP响应头对象
+ */
+export async function buildResponseHeaders(filePath: string, cacheConfig: { enabled: boolean; maxAge: number }): Promise<Record<string, string>> {
+  const ext = extname(filePath)
+  const contentType = getMimeType(ext)
+
+  // 获取文件 md5 和最后修改时间
+  let etag = ''
+  let lastModified = ''
+  try {
+    const file = Bun.file(filePath)
+    if (await file.exists()) {
+      // 计算 md5
+      const buffer = await file.arrayBuffer()
+      etag = createHash('md5').update(Buffer.from(buffer)).digest('hex')
+      // 获取最后修改时间
+      lastModified = file.lastModified ? new Date(file.lastModified).toUTCString() : ''
+    }
+  } catch { /* ignore error */ }
+
+  // 构建响应头
+  const headers: Record<string, string> = {
+    'Content-Type': contentType
+  }
+  if (etag) headers['ETag'] = etag
+  if (lastModified) headers['Last-Modified'] = lastModified
+
+  // 如果启用了缓存，则添加缓存控制头
+  if (cacheConfig.enabled) {
+    headers['Cache-Control'] = `public, max-age=${cacheConfig.maxAge}`
+  }
+
+  return headers
+}
 
 // Lumos 专用的 namespace UUID
 export const LUMOS_NAMESPACE = '6ba7b810-9dad-11d1-80b4-00c04fd430c8'

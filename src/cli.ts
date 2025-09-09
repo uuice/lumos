@@ -4,7 +4,7 @@ import { newCommand } from './commands/new.ts'
 import { DataGenerator } from './generator.ts'
 import { join } from 'path'
 import { ensureAssetsDir } from './utils.ts'
-import { buildHtmlFiles, startHtmlDevServer } from './bundler-html.ts'
+import { buildHtmlFiles } from './bundler-html.ts'
 import { exec } from "child_process";
 import { promisify } from "util";
 

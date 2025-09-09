@@ -1,4 +1,4 @@
-import { join, extname } from 'path'
+import { join } from 'path'
 import { DatabaseSchema } from './types.ts'
 import { PluginManager } from './plugin-manager.ts'
 import { ThemeManager } from './theme-manager.ts'
@@ -24,6 +24,7 @@ export interface ServerOptions {
 
 // 添加导入routes API并设置服务器实例
 import { setServerInstance } from './routes/api/routes.ts';
+import { buildResponseHeaders } from './utils.ts';
 
 export class LumosServer {
   private data: DatabaseSchema | null = null
@@ -145,34 +146,8 @@ export class LumosServer {
         }
 
         if (await file.exists()) {
-          // 根据文件扩展名设置Content-Type
-          const ext = extname(pathname).toLowerCase()
-          const contentTypes: { [key: string]: string } = {
-            '.css': 'text/css',
-            '.js': 'application/javascript',
-            '.png': 'image/png',
-            '.jpg': 'image/jpeg',
-            '.jpeg': 'image/jpeg',
-            '.gif': 'image/gif',
-            '.svg': 'image/svg+xml',
-            '.ico': 'image/x-icon',
-            '.woff': 'font/woff',
-            '.woff2': 'font/woff2',
-            '.ttf': 'font/ttf',
-            '.eot': 'application/vnd.ms-fontobject'
-          }
-
-          const contentType = contentTypes[ext] || 'application/octet-stream'
-
           // 构建响应头
-          const headers: Record<string, string> = {
-            'Content-Type': contentType
-          };
-
-          // 如果启用了缓存，则添加缓存控制头
-          if (cacheConfig.enabled) {
-            headers['Cache-Control'] = `public, max-age=${cacheConfig.maxAge}`;
-          }
+          const headers: Record<string, string> = await buildResponseHeaders(filePath, cacheConfig)
 
           return new Response(file, {
             headers
@@ -228,43 +203,10 @@ export class LumosServer {
 
         // 如果找到了存在的文件
         if (filePath && file) {
-          // 根据文件扩展名设置Content-Type
-          const ext = extname(filePath).toLowerCase();
-          const contentTypes: { [key: string]: string } = {
-            '.html': 'text/html',
-            '.htm': 'text/html',
-            '.css': 'text/css',
-            '.js': 'application/javascript',
-            '.png': 'image/png',
-            '.jpg': 'image/jpeg',
-            '.jpeg': 'image/jpeg',
-            '.gif': 'image/gif',
-            '.svg': 'image/svg+xml',
-            '.ico': 'image/x-icon',
-            '.woff': 'font/woff',
-            '.woff2': 'font/woff2',
-            '.ttf': 'font/ttf',
-            '.eot': 'application/vnd.ms-fontobject',
-            '.json': 'application/json',
-            '.txt': 'text/plain',
-            '.xml': 'application/xml',
-            '.pdf': 'application/pdf'
-          }
-
-          const contentType = contentTypes[ext] || 'application/octet-stream';
-
           // 获取缓存配置
           const cacheConfig = this.getStaticAssetCacheConfig();
-
           // 构建响应头
-          const headers: Record<string, string> = {
-            'Content-Type': contentType
-          };
-
-          // 如果启用了缓存，则添加缓存控制头
-          if (cacheConfig.enabled) {
-            headers['Cache-Control'] = `public, max-age=${cacheConfig.maxAge}`;
-          }
+          const headers: Record<string, string> = await buildResponseHeaders(filePath, cacheConfig)
 
           return new Response(file, {
             headers
