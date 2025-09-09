@@ -96,7 +96,7 @@ const PostDetailPage: React.FC<{ data: DatabaseSchema, post: POST, previousArtic
           <div
             className="btn-card rounded-2xl w-full h-[3.75rem] max-w-full px-4 flex items-center !justify-start gap-4"
           >
-            <svg
+            {/* <svg
               width="1em"
               height="1em"
               viewBox="0 0 24 24"
@@ -104,7 +104,9 @@ const PostDetailPage: React.FC<{ data: DatabaseSchema, post: POST, previousArtic
               data-icon="material-symbols:chevron-left-rounded"
             >
               <use href="#ai:material-symbols:chevron-left-rounded"></use>
-            </svg>
+            </svg> */}
+            <svg width="1em" height="1em" className="text-[2rem] text-[var(--primary)]" data-icon="material-symbols:chevron-left-rounded">   <symbol id="ai:material-symbols:chevron-left-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="m10.8 12l3.9 3.9q.275.275.275.7t-.275.7t-.7.275t-.7-.275l-4.6-4.6q-.15-.15-.212-.325T8.425 12t.063-.375t.212-.325l4.6-4.6q.275-.275.7-.275t.7.275t.275.7t-.275.7z"></path></symbol><use href="#ai:material-symbols:chevron-left-rounded"></use>  </svg>
+
             <div
               className="overflow-hidden transition overflow-ellipsis whitespace-nowrap max-w-[calc(100%_-_3rem)] text-black/75 dark:text-white/75"
             >
@@ -117,7 +119,7 @@ const PostDetailPage: React.FC<{ data: DatabaseSchema, post: POST, previousArtic
           <div
             className="btn-card rounded-2xl w-full h-[3.75rem] max-w-full px-4 flex items-center !justify-start gap-4 opacity-50"
           >
-            <svg
+            {/* <svg
               width="1em"
               height="1em"
               viewBox="0 0 24 24"
@@ -125,7 +127,9 @@ const PostDetailPage: React.FC<{ data: DatabaseSchema, post: POST, previousArtic
               data-icon="material-symbols:chevron-left-rounded"
             >
               <use href="#ai:material-symbols:chevron-left-rounded"></use>
-            </svg>
+              </svg> */}
+
+              <svg width="1em" height="1em"  className="text-[2rem] text-black/30 dark:text-white/30" data-icon="material-symbols:chevron-left-rounded">   <symbol id="ai:material-symbols:chevron-left-rounded" viewBox="0 0 24 24"><path fill="currentColor" d="m10.8 12l3.9 3.9q.275.275.275.7t-.275.7t-.7.275t-.7-.275l-4.6-4.6q-.15-.15-.212-.325T8.425 12t.063-.375t.212-.325l4.6-4.6q.275-.275.7-.275t.7.275t.275.7t-.275.7z"></path></symbol><use href="#ai:material-symbols:chevron-left-rounded"></use>  </svg>
             <div
               className="overflow-hidden transition overflow-ellipsis whitespace-nowrap max-w-[calc(100%_-_3rem)] text-black/30 dark:text-white/30"
             >
