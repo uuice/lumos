@@ -161,16 +161,23 @@ export const Layout: React.FC<{
               className="object-cover h-full transition duration-700 opacity-100 scale-100 overflow-hidden relative"
             >
               <div className="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
-              <img
-                src="/assets/images/demo-banner.jpg"
-                alt="Banner of the blog"
-                style={{ objectPosition: 'center' }}
-                width="1344"
-                height="896"
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover"
-              />
+              {/* 使用 picture 元素支持 WebP 格式 */}
+              <picture>
+                <source
+                  srcSet="/assets/images-webp/demo-banner.webp"
+                  type="image/webp"
+                />
+                <img
+                  src="/assets/images/demo-banner.jpg"
+                  alt="Banner of the blog"
+                  style={{ objectPosition: 'center' }}
+                  width="1344"
+                  height="896"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover"
+                />
+              </picture>
             </div>
           </div>
         )}
@@ -189,11 +196,8 @@ export const Layout: React.FC<{
               >
                 {/* Banner image credit - 根据 showBanner 属性决定是否显示 */}
                 {showBanner && (
-                  <a
-                    href=""
+                  <button
                     id="banner-credit"
-                    target="_blank"
-                    rel="noopener noreferrer"
                     aria-label="Visit image source"
                     className="group onload-animation transition-all absolute flex justify-center items-center rounded-full px-3 right-4 -top-[3.25rem] bg-black/60 hover:bg-black/70 h-9 hover:pr-9 active:bg-black/80"
                   >
@@ -229,7 +233,7 @@ export const Layout: React.FC<{
                       </symbol>
                       <use href="#ai:fa6-solid:arrow-up-right-from-square"></use>
                     </svg>
-                  </a>
+                  </button>
                 )}
 
                 {/* 侧边栏组件 - 根据 showSidebar 属性决定是否显示 */}

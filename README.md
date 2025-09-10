@@ -170,6 +170,52 @@ PM2 配置文件 `ecosystem.config.cjs` 已经包含在项目中，可以根据�
 - 端口: 默认 3000
 - 日志文件: 存储在 `logs` 目录中
 
+### 8. WebP 图片转换
+
+Lumos 提供了内置的 WebP 图片转换功能，可以将 JPEG、PNG 等格式的图片批量转换为更高效的 WebP 格式，以提升网站加载速度和用户体验。
+
+```bash
+
+# 将单个图片转换为 WebP 格式
+
+lumos webp ./images/avatar.jpg ./webp-images/avatar.webp --quality=85
+
+# 批量转换目录中的所有图片
+
+lumos webp ./images ./webp-images --quality=80 --compression=6
+
+```
+
+#### 参数说明
+
+- `输入路径`: 要转换的图片文件或目录路径
+- `输出路径`: 转换后 WebP 图片的保存路径
+- `--quality`: WebP 图片质量（1-100，默认 80）
+- `--compression`: WebP 压缩级别（0-6，默认 6）
+
+#### 支持的图片格式
+
+- JPEG / JPG
+- PNG
+- TIFF
+- GIF
+- BMP
+
+#### 使用示例
+
+```bash
+# 转换单个图片
+lumos webp ./assets/images/logo.png ./assets/images-webp/logo.webp
+
+# 批量转换整个目录
+lumos webp ./themes/default/assets/images ./themes/default/assets/images-webp
+
+# 高质量转换
+lumos webp ./images ./webp-images --quality=95 --compression=4
+```
+
+转换后的 WebP 图片体积通常比原图小 25-35%，同时保持相近的视觉质量，有助于提升网站性能。
+
 ### 快速开始
 
 ```bash

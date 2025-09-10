@@ -26,16 +26,23 @@ export const Profile: React.FC = () => {
         </div>
         <div className="mx-auto lg:w-full h-full lg:mt-0 overflow-hidden relative">
           <div className="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
-          <img
-            src="/assets/images/avatar.jpg"
-            alt="Author"
-            style={{ objectPosition: 'center' }}
-            width="512"
-            height="512"
-            loading="lazy"
-            decoding="async"
-            className="w-full h-full object-cover"
-          />
+          {/* 使用 picture 元素支持 WebP 格式 */}
+          <picture>
+            <source 
+              srcSet="/assets/images-webp/avatar.webp" 
+              type="image/webp" 
+            />
+            <img
+              src="/assets/images/avatar.jpg"
+              alt="Author"
+              style={{ objectPosition: 'center' }}
+              width="512"
+              height="512"
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover"
+            />
+          </picture>
         </div>
       </a>
       <div className="px-2">

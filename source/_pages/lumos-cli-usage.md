@@ -571,6 +571,88 @@ bun run src/cli.ts css [options]
    bun run src/cli.ts css -w
    ```
 
+### webp 命令
+
+将图片转换为 WebP 格式，以减小文件体积并提升网站加载速度。
+
+#### 语法
+
+使用 `lumos` 命令：
+
+```bash
+lumos webp <input> <output> [options]
+```
+
+使用 `bun run` 命令：
+
+```bash
+bun run src/cli.ts webp <input> <output> [options]
+```
+
+#### 参数
+
+- `<input>`: 输入图片文件或目录路径
+- `<output>`: 输出 WebP 图片文件或目录路径
+
+#### 选项
+
+- `--quality <number>`: WebP 图片质量（1-100，默认: 80）
+- `--compression <number>`: WebP 压缩级别（0-6，默认: 6）
+
+#### 支持的图片格式
+
+- JPEG / JPG
+- PNG
+- TIFF
+- GIF
+- BMP
+
+#### 示例
+
+1. **转换单个图片**
+
+   使用 `lumos` 命令：
+
+   ```bash
+   lumos webp ./assets/images/logo.png ./assets/images-webp/logo.webp --quality=85
+   ```
+
+   使用 `bun run` 命令：
+
+   ```bash
+   bun run src/cli.ts webp ./assets/images/logo.png ./assets/images-webp/logo.webp --quality=85
+   ```
+
+2. **批量转换目录中的所有图片**
+
+   使用 `lumos` 命令：
+
+   ```bash
+   lumos webp ./themes/default/assets/images ./themes/default/assets/images-webp --quality=80
+   ```
+
+   使用 `bun run` 命令：
+
+   ```bash
+   bun run src/cli.ts webp ./themes/default/assets/images ./themes/default/assets/images-webp --quality=80
+   ```
+
+3. **高质量转换**
+
+   使用 `lumos` 命令：
+
+   ```bash
+   lumos webp ./images ./webp-images --quality=95 --compression=4
+   ```
+
+   使用 `bun run` 命令：
+
+   ```bash
+   bun run src/cli.ts webp ./images ./webp-images --quality=95 --compression=4
+   ```
+
+WebP 图片通常比原图小 25-35%，同时保持相近的视觉质量，有助于提升网站性能。
+
 ## 📁 生成的文件结构
 
 ### 文章 (Post)

@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 
 import { newCommand } from './commands/new.ts'
+import { webpCommand } from './commands/webp.ts'
 import { DataGenerator } from './generator.ts'
 import { join } from 'path'
 import { ensureAssetsDir } from './utils.ts'
@@ -75,6 +76,11 @@ Lumos - 基于 Bun 的静态博客生成器
     类型: post, page, author
     选项:
       -p, --path <path>   指定子目录路径
+  webp <input> <output>   将图片转换为 WebP 格式
+    支持格式: jpg, jpeg, png, tiff, gif, bmp
+    选项:
+      --quality <number>   WebP 质量 (默认: 80)
+      --compression <number> WebP 压缩级别 (默认: 6)
   help                    显示帮助信息
 
 选项:
@@ -97,6 +103,8 @@ Lumos - 基于 Bun 的静态博客生成器
   lumos new post "Hello World"
   lumos new page "About Me" -p "info"
   lumos new author "John Doe"
+  lumos webp ./images ./webp-images --quality=85
+  lumos webp ./images/avatar.jpg ./webp-images/avatar.webp --quality=90
   `)
 }
 
@@ -540,6 +548,11 @@ async function main() {
         break
       }
 
+      case 'webp': {
+        await webpCommand(restArgs, options as any )
+        break
+      }
+
       case 'help':
         showHelp()
         break
@@ -563,4 +576,4 @@ if (import.meta.main) {
   })
 }
 
-export { main, newCommand }
+export { main, newCommand, webpCommand }
