@@ -1,0 +1,15 @@
+services:
+  lumos:
+    build: .
+    container_name: lumos-blog
+    ports:
+      - "3060:3060"
+    environment:
+      NODE_ENV: production
+      PORT: "3060"
+    # volumes: []
+    # volumes:
+    #  - "./source:/app/source"
+    #  - "./themes:/app/themes"
+    #  - "./data.json:/app/data.json"
+    restart: unless-stopped

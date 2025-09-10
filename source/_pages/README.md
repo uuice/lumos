@@ -109,13 +109,13 @@ lumos build
 lumos assets
 ```
 
-### 5. 构建 HTML 文件
+### 5. 构建 Bundler HTML 文件
 
 ```bash
 # 构建 Bundler HTML 文件
 lumos html-gen
 
-# 监听 HTML 文件变化并重新构建
+# 监听 Bundler HTML 文件变化并重新构建
 lumos html-gen -w
 # 或
 lumos html-gen --watch
@@ -124,10 +124,10 @@ lumos html-gen --watch
 ### 6. 构建 CSS 文件
 
 ```bash
-# 构建 CSS 文件
+# 构建 主题CSS 文件
 lumos css
 
-# 监听 CSS 文件变化
+# 监听 主题CSS 文件变化
 lumos css -w
 # 或
 lumos css --watch
@@ -169,6 +169,146 @@ PM2 配置文件 `ecosystem.config.cjs` 已经包含在项目中，可以根据�
 - 启动脚本: 使用 Bun 运行 `src/cli.ts server`
 - 端口: 默认 3000
 - 日志文件: 存储在 `logs` 目录中
+
+### 8. 使用 Docker 部署
+
+Lumos 支持使用 Docker 进行容器化部署，项目中已包含必要的 Docker 配置文件。
+
+#### 前提条件
+
+确保已安装 Docker 和 Docker Compose：
+
+- [Docker 安装指南](https://docs.docker.com/get-docker/)
+- [Docker Compose 安装指南](https://docs.docker.com/compose/install/)
+
+#### 使用 Docker Compose（推荐）
+
+项目根目录包含 `docker-compose.yml` 文件，可以使用 Docker Compose 一键启动应用：
+
+```bash
+# 构建镜像并启动容器（后台模式）
+docker-compose up --build -d
+
+# 查看容器状态
+docker-compose ps
+
+# 查看应用日志
+docker-compose logs -f
+
+# 停止容器
+docker-compose down
+```
+
+默认情况下，应用将在 http://localhost:3060 上运行。
+
+#### 使用 Docker CLI
+
+如果不使用 Docker Compose，也可以直接使用 Docker 命令行工具：
+
+```bash
+# 构建 Docker 镜像
+docker build -t lumos-blog .
+
+# 运行容器
+docker run -p 3060:3060 --name lumos-blog -d lumos-blog
+
+# 查看容器日志
+docker logs -f lumos-blog
+
+# 停止容器
+docker stop lumos-blog
+```
+
+#### 开发模式配置
+
+在 `docker-compose.yml` 文件中，提供了可选的开发模式配置。取消注释相应的卷挂载配置，可以实现本地文件变更与容器内文件的实时同步：
+
+```yaml
+# 取消注释以下行以启用开发模式卷挂载
+# volumes:
+#   - "./source:/app/source"
+#   - "./themes:/app/themes"
+#   - "./data.json:/app/data.json"
+```
+
+修改后，重启容器使配置生效：
+
+```bash
+docker-compose down
+docker-compose up --build -d
+```
+
+#### 环境变量配置
+
+Docker 部署支持以下环境变量配置：
+
+- `NODE_ENV`: 运行环境，默认为 `production`
+- `PORT`: 服务器端口，默认为 `3060`
+
+可以在 `docker-compose.yml` 文件中修改这些环境变量：
+
+```yaml
+environment:
+  NODE_ENV: production
+  PORT: "3060"
+```
+
+#### Dockerfile 说明
+
+项目中的 `Dockerfile` 使用了官方的 Bun 镜像作为基础镜像，并包含以下步骤：
+
+1. 安装项目依赖
+2. 生成数据文件
+3. 构建 TypeScript、CSS 和 HTML 文件
+4. 设置生产环境配置
+
+镜像构建过程会自动排除不必要的文件，这由 `.dockerignore` 文件控制。
+
+### 9. WebP 图片转换
+
+Lumos 提供了内置的 WebP 图片转换功能，可以将 JPEG、PNG 等格式的图片批量转换为更高效的 WebP 格式，以提升网站加载速度和用户体验。
+
+```bash
+
+# 将单个图片转换为 WebP 格式
+
+lumos webp ./images/avatar.jpg ./webp-images/avatar.webp --quality=85
+
+# 批量转换目录中的所有图片
+
+lumos webp ./images ./webp-images --quality=80 --compression=6
+
+```
+
+#### 参数说明
+
+- `输入路径`: 要转换的图片文件或目录路径
+- `输出路径`: 转换后 WebP 图片的保存路径
+- `--quality`: WebP 图片质量（1-100，默认 80）
+- `--compression`: WebP 压缩级别（0-6，默认 6）
+
+#### 支持的图片格式
+
+- JPEG / JPG
+- PNG
+- TIFF
+- GIF
+- BMP
+
+#### 使用示例
+
+```bash
+# 转换单个图片
+lumos webp ./assets/images/logo.png ./assets/images-webp/logo.webp
+
+# 批量转换整个目录
+lumos webp ./themes/default/assets/images ./themes/default/assets/images-webp
+
+# 高质量转换
+lumos webp ./images ./webp-images --quality=95 --compression=4
+```
+
+转换后的 WebP 图片体积通常比原图小 25-35%，同时保持相近的视觉质量，有助于提升网站性能。
 
 ### 快速开始
 
@@ -785,7 +925,7 @@ interface POST {
 - [ ] 多语言国际化
 - [ ] 评论系统集成
 - [ ] 性能监控和分析
-- [ ] Docker 容器化支持
+- [x] Docker 容器化支持
 
 ## 🤝 贡献
 
