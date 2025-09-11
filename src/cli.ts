@@ -53,7 +53,25 @@ async function parseArgs(args: string[]): Promise<{ command: string; subcommand?
 }
 
 function showHelp() {
-  console.log(`
+  // ANSI color codes
+  const colors = [
+    '\x1b[31m', // Red
+    '\x1b[32m', // Green
+    '\x1b[33m', // Yellow
+    '\x1b[34m', // Blue
+    '\x1b[35m', // Magenta
+    '\x1b[36m', // Cyan
+    '\x1b[91m', // Bright Red
+    '\x1b[92m', // Bright Green
+    '\x1b[93m', // Bright Yellow
+    '\x1b[94m', // Bright Blue
+    '\x1b[95m', // Bright Magenta
+    '\x1b[96m'  // Bright Cyan
+  ]
+  const reset = '\x1b[0m'
+  
+  // Split help text into lines
+  const helpText = `
 Lumos - 基于 Bun 的静态博客生成器
  ▄█       ███    █▄    ▄▄▄▄███▄▄▄▄    ▄██████▄     ▄████████
 ███       ███    ███ ▄██▀▀▀███▀▀▀██▄ ███    ███   ███    ███
@@ -113,7 +131,14 @@ Lumos - 基于 Bun 的静态博客生成器
   lumos new author "John Doe"
   lumos webp ./images ./webp-images --quality=85
   lumos webp ./images/avatar.jpg ./webp-images/avatar.webp --quality=90
-  `)
+  `
+  
+  // Print each line with a different color
+  const lines = helpText.trim().split('\n')
+  for (let i = 0; i < lines.length; i++) {
+    const color = colors[i % colors.length]
+    console.log(`${color}${lines[i]}${reset}`)
+  }
 }
 
 function showVersion() {
