@@ -198,7 +198,6 @@ $(function () {
       headers: {
       },
       success: function (res) {
-        debugger
         const data = res.results || []
         // 清空搜索结果容器
         $('#search-results').empty()

@@ -57,7 +57,7 @@ const AboutPage: React.FC<{ data: DatabaseSchema }> = ({ data }) => {
           >
             <div className="transition font-bold text-black/75 dark:text-white/75"></div>
             <a href="/about" className="link text-[var(--primary)]">
-              {(data as any).config?.url || 'http://localhost:3000'}/about
+              {(data as any).settingJsonConfig?.siteSetting?.baseUrl || 'http://localhost:3000'}/about
             </a>
             <div className="flex gap-6 mt-2">
               <div>

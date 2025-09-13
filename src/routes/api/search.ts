@@ -36,7 +36,8 @@ function buildIndex(data: DatabaseSchema): void {
     const docToAdd = {
       id: post.id,
       title: post.title || '',
-      excerpt: post.excerpt || ''
+      excerpt: post.excerpt || '',
+      url: post.url || ''
     }
     postIndex.add(docToAdd)
   }

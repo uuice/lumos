@@ -42,7 +42,7 @@ const PostDetailPage: React.FC<{ data: DatabaseSchema, post: POST, previousArtic
         >
           <div className="transition font-bold text-black/75 dark:text-white/75"></div>
           <a href={`/archives/${post.url}`} className="link text-[var(--primary)]">
-            {(data as any).config?.url || 'http://localhost:3000'}/archives/{post.url}
+            {(data as any).settingJsonConfig?.siteSetting?.baseUrl || 'http://localhost:3000'}/archives/{post.url}
           </a>
           <div className="flex gap-6 mt-2">
             <div>
