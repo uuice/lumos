@@ -8,6 +8,7 @@ import fs from 'fs/promises'
 import path, { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
 import { existsSync, statSync } from 'fs'
+import tailwindcssPlugin from './plugins/bun-plugin-tailwindcss'
 
 const execAsync = promisify(exec)
 
@@ -129,7 +130,8 @@ export async function buildHtmlFiles() {
         entry: "[dir]/[name].[ext]", // 保持子目录结构
         chunk: "[dir]/[name]-[hash].[ext]",
         asset: "[dir]/[name]-[hash].[ext]"
-      }
+      },
+      plugins: [tailwindcssPlugin()],
     });
 
     if (result.success) {
