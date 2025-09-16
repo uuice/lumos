@@ -199,7 +199,7 @@ docker-compose logs -f
 docker-compose down
 ```
 
-默认情况下，应用将在 http://localhost:3060 上运行。
+默认情况下，应用将在 <http://localhost:3060> 上运行。
 
 #### 使用 Docker CLI
 

@@ -18,7 +18,7 @@
         "pinyin": "^4.0.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
-        "react-router-dom": "^7.8.2",
+        "react-router": "^7.8.2",
         "sharp": "^0.34.3",
         "uuid": "^11.1.0",
         "xml2js": "^0.6.2",
@@ -955,8 +955,6 @@
     "react-is": ["react-is@16.13.1", "https://mirrors.cloud.tencent.com/npm/react-is/-/react-is-16.13.1.tgz", {}, "sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ=="],
 
     "react-router": ["react-router@7.8.2", "https://mirrors.cloud.tencent.com/npm/react-router/-/react-router-7.8.2.tgz", { "dependencies": { "cookie": "^1.0.1", "set-cookie-parser": "^2.6.0" }, "peerDependencies": { "react": ">=18", "react-dom": ">=18" }, "optionalPeers": ["react-dom"] }, "sha512-7M2fR1JbIZ/jFWqelpvSZx+7vd7UlBTfdZqf6OSdF9g6+sfdqJDAWcak6ervbHph200ePlu+7G8LdoiC3ReyAQ=="],
-
-    "react-router-dom": ["react-router-dom@7.8.2", "https://mirrors.cloud.tencent.com/npm/react-router-dom/-/react-router-dom-7.8.2.tgz", { "dependencies": { "react-router": "7.8.2" }, "peerDependencies": { "react": ">=18", "react-dom": ">=18" } }, "sha512-Z4VM5mKDipal2jQ385H6UBhiiEDlnJPx6jyWsTYoZQdl5TrjxEV2a9yl3Fi60NBJxYzOTGTTHXPi0pdizvTwow=="],
 
     "read-cache": ["read-cache@1.0.0", "https://mirrors.cloud.tencent.com/npm/read-cache/-/read-cache-1.0.0.tgz", { "dependencies": { "pify": "^2.3.0" } }, "sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA=="],
 
