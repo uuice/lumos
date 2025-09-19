@@ -17,6 +17,16 @@ interface LumosConfig {
     }
   }
   plugins: Record<string, any>
+  cors?: {
+    enabled: boolean
+    options: {
+      'Access-Control-Allow-Origin': string
+      'Access-Control-Allow-Methods': string
+      'Access-Control-Allow-Headers': string
+      'Access-Control-Max-Age': number
+      'Access-Control-Allow-Credentials': boolean
+    }
+  }
 }
 
 export interface ServerOptions {
@@ -57,7 +67,7 @@ export class LumosServer {
         // 默认配置
         this.config = {
           theme: 'default',
-          plugins: {}
+          plugins: {},
         }
       }
     } catch (error) {
@@ -232,6 +242,14 @@ export class LumosServer {
         if (handler) {
           // 调用路由处理器
           const response = await handler(request, apiMatch.params || {})
+          // api set cors from config
+          if (this.config!.cors && this.config!.cors.enabled) {
+            if (this.config!.cors.options) {
+              for (const [key, value] of Object.entries(this.config!.cors.options)) {
+                response.headers.set(key, value)
+              }
+            }
+          }
           return response
         }
       }
@@ -255,6 +273,17 @@ export class LumosServer {
               status: response.status,
               headers: response.headers
             })
+          }
+          // 如果是 JSON 响应，添加CORS头
+          if (response.headers.get('Content-Type')?.includes('application/json')) {
+            // api set cors from config
+            if (this.config!.cors && this.config!.cors.enabled) {
+              if (this.config!.cors.options) {
+                for (const [key, value] of Object.entries(this.config!.cors.options)) {
+                  response.headers.set(key, value)
+                }
+              }
+            }
           }
 
           return response
