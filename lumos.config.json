@@ -28,6 +28,10 @@
     "md-path-transform-plugin": {
       "enabled": true,
       "options": {}
+    },
+    "middleware-example-plugin": {
+      "enabled": true,
+      "options": {}
     }
   },
   "cors": {
@@ -39,5 +43,9 @@
       "Access-Control-Allow-Credentials": "true",
       "Access-Control-Max-Age": 86400
     }
+  },
+  "middleware": {
+    "ipWhitelist": [],
+    "ipBlacklist": ["192.168.1.100", "10.0.0.5"]
   }
 }

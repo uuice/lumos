@@ -135,3 +135,36 @@ export interface PluginConfig {
     options?: Record<string, any>
   }
 }
+
+// 中间件接口
+export interface Middleware {
+  name: string
+  priority?: number // 数值越小优先级越高
+  handler: (request: Request, response: Response, next: () => Promise<Response>) => Promise<Response>
+}
+
+// Lumos配置接口
+export interface LumosConfig {
+  theme: string
+  cache?: {
+    staticAssets?: {
+      maxAge?: number
+      enabled?: boolean
+    }
+  }
+  plugins: PluginConfig
+  cors?: {
+    enabled: boolean
+    options: {
+      'Access-Control-Allow-Origin': string
+      'Access-Control-Allow-Methods': string
+      'Access-Control-Allow-Headers': string
+      'Access-Control-Max-Age': number
+      'Access-Control-Allow-Credentials': boolean
+    }
+  }
+  middleware?: {
+    ipWhitelist?: string[] // IP白名单
+    ipBlacklist?: string[] // IP黑名单
+  }
+}

@@ -1,35 +1,16 @@
 import { join } from 'path'
-import { DatabaseSchema } from './types.ts'
+import { DatabaseSchema, Middleware, LumosConfig } from './types.ts'
 import { PluginManager } from './plugin-manager.ts'
 import { ThemeManager } from './theme-manager.ts'
 import { BunFile } from 'bun'
 // 添加导入routes API并设置服务器实例
 import { setServerInstance } from './routes/api/routes.ts'
 import { buildResponseHeaders } from './utils.ts'
+// 导入IP访问控制中间件
+import { IPAccessControlMiddleware } from './middlewares/ip-access-control.ts'
 
 // 定义配置接口
-interface LumosConfig {
-  theme: string
-  cache?: {
-    staticAssets?: {
-      maxAge?: number
-      enabled?: boolean
-    }
-  }
-  plugins: Record<string, any>
-  cors?: {
-    enabled: boolean
-    options: {
-      'Access-Control-Allow-Origin': string
-      'Access-Control-Allow-Methods': string
-      'Access-Control-Allow-Headers': string
-      'Access-Control-Max-Age': number
-      'Access-Control-Allow-Credentials': boolean
-    }
-  }
-}
-
-export interface ServerOptions {
+interface ServerOptions {
   port: number
   dataPath: string
   basePath?: string
@@ -46,6 +27,7 @@ export class LumosServer {
   private themeManager: ThemeManager
   private serverInstance: ReturnType<typeof Bun.serve> | null = null
   private config: LumosConfig | null = null
+  private middlewares: Middleware[] = []
 
   constructor(options: ServerOptions) {
     this.port = options.port
@@ -170,8 +152,62 @@ export class LumosServer {
     return null
   }
 
-  // 处理请求
-  private async handleRequest(request: Request): Promise<Response> {
+  // 添加中间件
+  addMiddleware(middleware: Middleware): void {
+    this.middlewares.push(middleware)
+    console.log(`🔒 已注册 ${middleware.name} 中间件`)
+    // 按优先级排序，数值越小优先级越高
+    this.middlewares.sort((a, b) => (a.priority || 0) - (b.priority || 0))
+  }
+
+  // 获取IP地址
+  private getIpAddress(request: Request): string {
+    return IPAccessControlMiddleware.getIpAddress(request)
+  }
+
+  // 初始化中间件
+  private async initMiddlewares(): Promise<void> {
+    // 添加IP访问控制中间件
+    this.addMiddleware({
+      name: 'ip-access-control',
+      priority: -100, // 高优先级
+      handler: async (request: Request, _response: Response, next: () => Promise<Response>): Promise<Response> => {
+        // 如果没有配置IP访问控制，直接通过
+        if (!this.config?.middleware) {
+          return await next()
+        }
+
+        const clientIp = this.getIpAddress(request)
+
+        // 使用中间件类中的静态方法检查IP是否被允许
+        if (!IPAccessControlMiddleware.isIPAllowed(clientIp, this.config.middleware)) {
+          return new Response('Forbidden', { status: 403 })
+        }
+
+        return await next()
+      }
+    })
+  }
+
+  // 执行中间件链
+  private async executeMiddlewares(request: Request): Promise<Response> {
+    let index = 0
+
+    const next = async (): Promise<Response> => {
+      if (index < this.middlewares.length) {
+        const middleware = this.middlewares[index++]
+        return await middleware.handler(request, new Response(), next)
+      } else {
+        // 所有中间件执行完毕，处理实际请求
+        return await this.handleRequestInternal(request)
+      }
+    }
+
+    return await next()
+  }
+
+  // 修改原来的handleRequest方法名，避免冲突
+  private async handleRequestInternal(request: Request): Promise<Response> {
     const url = new URL(request.url)
     const pathname = url.pathname
 
@@ -301,6 +337,19 @@ export class LumosServer {
     }
   }
 
+  // 重写handleRequest方法，使用中间件
+  private async handleRequest(request: Request): Promise<Response> {
+    try {
+      return await this.executeMiddlewares(request)
+    } catch (error) {
+      console.error('中间件执行错误:', error)
+      return await this.handleError(
+        error instanceof Error ? error.message : 'Internal Server Error',
+        500
+      )
+    }
+  }
+
   // 处理 404 错误
   private async handle404(): Promise<Response> {
     try {
@@ -415,8 +464,13 @@ export class LumosServer {
       await this.pluginManager.loadPluginConfig()
       await this.pluginManager.loadPlugins()
 
+      // 初始化中间件
+      await this.initMiddlewares()
+
       // 执行服务器启动钩子
       await this.pluginManager.executeServerStart(this)
+
+      console.log(`🔒 已注册 ${this.middlewares.length} 个中间件`)
 
       // 加载数据
       await this.loadData()
