@@ -14,7 +14,9 @@
     "skipLibCheck": true,
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    "types": ["bun-types"]
+    "types": ["bun-types"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": ["src/**/*", "templates/**/*", "themes/**/*", "plugins/**/*", "bundler/dist", "bundler/html"],
   "exclude": ["node_modules"]

@@ -47,5 +47,10 @@
   "middleware": {
     "ipWhitelist": [],
     "ipBlacklist": ["192.168.1.100", "10.0.0.5"]
+  },
+  "nestjs": {
+    "enabled": true,
+    "port": 3070,
+    "mountPath": "/api"
   }
 }

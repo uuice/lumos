@@ -29,6 +29,38 @@ export class LumosServer {
   private config: LumosConfig | null = null
   private middlewares: Middleware[] = []
 
+  // NestJS 最简适配配置（仅转发，不影响启动）
+  private getNestConfig() {
+    const defaults = { enabled: false, port: 4000, mountPath: '/nest', entry: 'src/nest/main.ts' }
+    const userCfg = (this.config as any)?.nestjs || {}
+    return {
+      enabled: userCfg.enabled ?? defaults.enabled,
+      port: userCfg.port ?? defaults.port,
+      mountPath: userCfg.mountPath ?? defaults.mountPath,
+      entry: userCfg.entry ?? defaults.entry
+    }
+  }
+
+  // 最简 NestJS 启动（可选）：仅尝试调用用户入口的 bootstrap(port)
+  private async tryStartNest(): Promise<void> {
+    const { enabled, port, entry } = this.getNestConfig()
+    if (!enabled) return
+    try {
+      const absoluteEntry = join(this.basePath, entry)
+      const entryMod: any = await import(absoluteEntry)
+      const bootstrap = entryMod.bootstrap || entryMod.default
+      if (typeof bootstrap === 'function') {
+        if (!process.env.PORT) process.env.PORT = String(port)
+        await bootstrap()
+        console.log(`🟢 NestJS started from entry on port ${process.env.PORT}`)
+        return
+      }
+      console.warn('NestJS entry found but no bootstrap function exported:', absoluteEntry)
+    } catch (e) {
+      console.warn('NestJS entry not found or failed to load:', e)
+    }
+  }
+
   constructor(options: ServerOptions) {
     this.port = options.port
     this.dataPath = options.dataPath
@@ -210,6 +242,26 @@ export class LumosServer {
   private async handleRequestInternal(request: Request): Promise<Response> {
     const url = new URL(request.url)
     const pathname = url.pathname
+
+    // 若启用 NestJS 适配，优先转发挂载前缀请求到 Nest 服务
+    try {
+      const { enabled, port, mountPath } = this.getNestConfig()
+      if (enabled && pathname.startsWith(mountPath)) {
+        const forwardPath = pathname.substring(mountPath.length) || '/'
+        const targetUrl = `http://localhost:${port}${forwardPath}${url.search}`
+        const method = request.method
+        const headers = new Headers(request.headers)
+        headers.delete('host')
+        const init: RequestInit = { method, headers }
+        if (method !== 'GET' && method !== 'HEAD') {
+          init.body = await request.arrayBuffer()
+        }
+        const nestRes = await fetch(targetUrl, init)
+        return new Response(nestRes.body, { status: nestRes.status, headers: nestRes.headers })
+      }
+    } catch (e) {
+      console.warn('NestJS proxy failed, continue with Lumos routes:', e)
+    }
 
     // 首先尝试处理静态资源
     const staticResponse = await this.handleStaticAssets(pathname)
@@ -477,6 +529,9 @@ export class LumosServer {
 
       // 初始化路由器
       await this.initRouter()
+
+      // 可选启动 Nest 服务（不阻塞 Lumos）
+      void this.tryStartNest()
 
       this.serverInstance = Bun.serve({
         port: this.port,

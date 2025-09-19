@@ -167,4 +167,14 @@ export interface LumosConfig {
     ipWhitelist?: string[] // IP白名单
     ipBlacklist?: string[] // IP黑名单
   }
+  // 可选的 NestJS 适配配置（最简）
+  nestjs?: {
+    enabled?: boolean
+    /** Nest 应用监听端口，默认 4000 */
+    port?: number
+    /** 在 Lumos 中的挂载前缀，默认 "/nest" */
+    mountPath?: string
+    /** 可选 Nest 启动入口相对路径，默认 "src/nest/main.ts" */
+    entry?: string
+  }
 }
