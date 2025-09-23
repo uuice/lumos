@@ -275,12 +275,29 @@ export class LumosServer {
         const themePath = join(this.basePath, 'bundler')
         const distDir = join(themePath, 'dist')
 
+        // 检查请求的路径是否是一个目录
+        const requestedPath = join(distDir, pathname.substring(1));
+        try {
+          const stat = await Bun.file(requestedPath).stat();
+          // 如果路径存在且是一个目录，重定向到带斜杠的版本
+          if (stat && stat.isDirectory() && !pathname.endsWith('/')) {
+            return new Response(null, {
+              status: 301,
+              headers: {
+                'Location': pathname + '/'
+              }
+            });
+          }
+        } catch {
+          // 路径不存在，继续处理
+        }
+
         // 构建可能的文件路径列表
         const possiblePaths = [
           // 直接使用请求的路径
           join(distDir, pathname.substring(1)),
           // 如果路径以 / 结尾，尝试查找 index.html
-          join(distDir, pathname.substring(1), 'index.html'),
+          pathname.endsWith('/') ? join(distDir, pathname.substring(1), 'index.html') : '',
           // 如果路径不以 .html 结尾，尝试添加 .html 扩展名
           pathname.endsWith('.html') ? '' : join(distDir, pathname.substring(1) + '.html')
         ].filter(path => path.length > 0) // 过滤掉空路径

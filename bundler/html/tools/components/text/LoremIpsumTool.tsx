@@ -41,59 +41,94 @@ const LoremIpsumTool = () => {
   }, []);
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="paragraphs-input" className="block mb-2 font-medium">段落数: {paragraphs}</label>
-          <input
-            id="paragraphs-input"
-            type="range"
-            min="1"
-            max="10"
-            value={paragraphs}
-            onChange={(e) => setParagraphs(parseInt(e.target.value))}
-            className="w-full"
+    <div className="space-y-6 p-1">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transition-all duration-300 hover:shadow-xl">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Lorem Ipsum 生成器</h2>
+        <p className="text-gray-600 dark:text-gray-300 mb-6">
+          生成占位文本用于设计和排版
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label htmlFor="paragraphs-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              段落数: <span className="font-bold text-blue-600 dark:text-blue-400">{paragraphs}</span>
+            </label>
+            <input
+              id="paragraphs-input"
+              type="range"
+              min="1"
+              max="10"
+              value={paragraphs}
+              onChange={(e) => setParagraphs(parseInt(e.target.value))}
+              className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+            />
+            <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <span>1</span>
+              <span>10</span>
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="sentences-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              每段句子数: <span className="font-bold text-blue-600 dark:text-blue-400">{sentences}</span>
+            </label>
+            <input
+              id="sentences-input"
+              type="range"
+              min="1"
+              max="50"
+              value={sentences}
+              onChange={(e) => setSentences(parseInt(e.target.value))}
+              className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+            />
+            <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <span>1</span>
+              <span>50</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-3 mb-6">
+          <button
+            onClick={generateLorem}
+            className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transform hover:-translate-y-0.5 transition-all duration-200"
+          >
+            生成假文
+          </button>
+          <button
+            onClick={copyToClipboard}
+            disabled={!output}
+            className={`px-5 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 ${
+              output
+                ? "bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 transform hover:-translate-y-0.5"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-600 dark:text-gray-300"
+            }`}
+          >
+            复制文本
+          </button>
+        </div>
+
+        <div className="mb-6">
+          <label htmlFor="lorem-output" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            生成的假文
+          </label>
+          <textarea
+            id="lorem-output"
+            value={output}
+            readOnly
+            className="w-full h-64 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white font-mono transition-all duration-200"
           />
         </div>
 
-        <div>
-          <label htmlFor="sentences-input" className="block mb-2 font-medium">每段句子数: {sentences}</label>
-          <input
-            id="sentences-input"
-            type="range"
-            min="1"
-            max="50"
-            value={sentences}
-            onChange={(e) => setSentences(parseInt(e.target.value))}
-            className="w-full"
-          />
+        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 transition-all duration-300">
+          <h3 className="font-medium text-blue-800 dark:text-blue-200 mb-2">使用说明</h3>
+          <ul className="text-sm text-blue-700 dark:text-blue-300 list-disc pl-5 space-y-1">
+            <li>调整滑块设置段落数和每段句子数</li>
+            <li>点击&quot;生成假文&quot;按钮创建Lorem Ipsum文本</li>
+            <li>适用于网页设计、排版测试等场景</li>
+            <li>支持复制生成的文本到剪贴板</li>
+          </ul>
         </div>
-      </div>
-
-      <div className="flex space-x-3">
-        <button
-          onClick={generateLorem}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-        >
-          生成假文
-        </button>
-        <button
-          onClick={copyToClipboard}
-          disabled={!output}
-          className={`px-4 py-2 rounded-lg ${output ? "bg-green-500 hover:bg-green-600 text-white" : "bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed"}`}
-        >
-          复制文本
-        </button>
-      </div>
-
-      <div>
-        <label htmlFor="lorem-output" className="block mb-2 font-medium">生成的假文:</label>
-        <textarea
-          id="lorem-output"
-          value={output}
-          readOnly
-          className="w-full h-64 p-4 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white font-mono"
-        />
       </div>
     </div>
   );

@@ -97,50 +97,50 @@ const UnitConverterTool = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5 p-1">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label htmlFor="value-input" className="block mb-2 font-medium">数值:</label>
+        <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-xl">
+          <label htmlFor="value-input" className="block mb-2 font-medium text-gray-800 dark:text-gray-200">数值:</label>
           <input
             id="value-input"
             type="number"
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder="输入数值"
-            className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white"
+            className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
           />
         </div>
 
-        <div>
-          <label htmlFor="from-unit" className="block mb-2 font-medium">从:</label>
+        <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-xl">
+          <label htmlFor="from-unit" className="block mb-2 font-medium text-gray-800 dark:text-gray-200">从:</label>
           <select
             id="from-unit"
             value={fromUnit}
             onChange={(e) => setFromUnit(e.target.value)}
-            className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white"
+            className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
           >
             {Object.entries(unitTypes).map(([type, units]) => (
-              <optgroup key={type} label={type}>
+              <optgroup key={type} label={type} className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                 {units.map(unit => (
-                  <option key={unit} value={unit}>{unit}</option>
+                  <option key={unit} value={unit} className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">{unit}</option>
                 ))}
               </optgroup>
             ))}
           </select>
         </div>
 
-        <div>
-          <label htmlFor="to-unit" className="block mb-2 font-medium">到:</label>
+        <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-xl">
+          <label htmlFor="to-unit" className="block mb-2 font-medium text-gray-800 dark:text-gray-200">到:</label>
           <select
             id="to-unit"
             value={toUnit}
             onChange={(e) => setToUnit(e.target.value)}
-            className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white"
+            className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-xl dark:bg-gray-700 dark:text-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
           >
             {Object.entries(unitTypes).map(([type, units]) => (
-              <optgroup key={type} label={type}>
+              <optgroup key={type} label={type} className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                 {units.map(unit => (
-                  <option key={unit} value={unit}>{unit}</option>
+                  <option key={unit} value={unit} className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white">{unit}</option>
                 ))}
               </optgroup>
             ))}
@@ -148,43 +148,47 @@ const UnitConverterTool = () => {
         </div>
       </div>
 
-      <div className="flex space-x-3">
+      <div className="flex flex-wrap gap-3">
         <button
           onClick={convertUnits}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          className="px-5 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
         >
           转换
         </button>
         <button
           onClick={swapUnits}
-          className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+          className="px-5 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-xl hover:from-gray-600 hover:to-gray-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
         >
           交换单位
         </button>
         <button
           onClick={copyToClipboard}
           disabled={!result || isNaN(parseFloat(result))}
-          className={`px-4 py-2 rounded-lg ${result && !isNaN(parseFloat(result)) ? "bg-green-500 hover:bg-green-600 text-white" : "bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed"}`}
+          className={`px-5 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg ${
+            result && !isNaN(parseFloat(result))
+              ? "bg-gradient-to-r from-green-500 to-teal-600 text-white hover:from-green-600 hover:to-teal-700"
+              : "bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed"
+          }`}
         >
           复制结果
         </button>
       </div>
 
       {result && (
-        <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+        <div className="mt-4 p-5 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-gray-300 dark:border-gray-700 shadow-sm">
           <div className="text-center">
-            <span className="text-2xl font-bold">{value || "0"}</span>
-            <span className="mx-2">{fromUnit}</span>
-            <span className="text-2xl">=</span>
-            <span className="mx-2 text-2xl font-bold">{result}</span>
-            <span>{toUnit}</span>
+            <span className="text-2xl font-bold text-gray-800 dark:text-gray-200">{value || "0"}</span>
+            <span className="mx-3 text-gray-600 dark:text-gray-400">{fromUnit}</span>
+            <span className="text-2xl text-gray-800 dark:text-gray-200">=</span>
+            <span className="mx-3 text-2xl font-bold text-gray-800 dark:text-gray-200">{result}</span>
+            <span className="text-gray-600 dark:text-gray-400">{toUnit}</span>
           </div>
         </div>
       )}
 
-      <div className="text-sm text-gray-600 dark:text-gray-400">
-        <p className="font-semibold">支持的单位:</p>
-        <ul className="list-disc pl-5 space-y-1">
+      <div className="bg-gray-100 dark:bg-gray-800 p-5 rounded-xl">
+        <p className="font-semibold text-gray-800 dark:text-gray-200 mb-3">支持的单位:</p>
+        <ul className="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
           <li>长度: mm, cm, m, km, in, ft, yd, mi</li>
           <li>重量: mg, g, kg, t, oz, lb</li>
           <li>体积: ml, l, gal, pt, qt</li>

@@ -52,32 +52,32 @@ const PaletteGeneratorTool = () => {
   }, [baseColor]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <label htmlFor="base-color" className="block mb-2 font-medium">基础颜色:</label>
+    <div className="space-y-6 p-1">
+      <div className="bg-white dark:bg-gray-800/50 p-5 rounded-2xl border border-gray-200 dark:border-gray-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
+        <label htmlFor="base-color" className="block mb-3 font-medium text-gray-800 dark:text-white">基础颜色:</label>
         <div className="flex items-center space-x-4">
           <input
             id="base-color"
             type="color"
             value={baseColor}
             onChange={(e) => setBaseColor(e.target.value)}
-            className="w-16 h-16 cursor-pointer"
+            className="w-16 h-16 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm"
           />
-          <div className="text-xl font-mono">{baseColor}</div>
+          <div className="text-xl font-mono text-gray-800 dark:text-white">{baseColor}</div>
         </div>
       </div>
 
       <div className="flex space-x-3">
         <button
           onClick={generatePalette}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 shadow-md"
         >
           生成调色板
         </button>
         {palette.length > 0 && (
           <button
             onClick={copyAllColors}
-            className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+            className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-300 shadow-md"
           >
             复制所有颜色
           </button>
@@ -85,21 +85,21 @@ const PaletteGeneratorTool = () => {
       </div>
 
       {palette.length > 0 && (
-        <div>
-          <h3 className="font-semibold mb-2">生成的调色板:</h3>
+        <div className="bg-white dark:bg-gray-800/50 p-5 rounded-2xl border border-gray-200 dark:border-gray-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
+          <h3 className="font-semibold text-lg text-gray-800 dark:text-white mb-4">生成的调色板:</h3>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
             {palette.map((color, index) => (
-              <div key={index} className="flex flex-col items-center">
+              <div key={index} className="flex flex-col items-center group">
                 <div
-                  className="w-full h-16 rounded-lg shadow-md border border-gray-300 mb-2 cursor-pointer hover:scale-105 transition-transform"
+                  className="w-full h-16 rounded-lg shadow-md border border-gray-300 dark:border-gray-600 mb-2 cursor-pointer transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg"
                   style={{ backgroundColor: color }}
                   onClick={() => copyToClipboard(color)}
                 ></div>
-                <div className="text-xs font-mono text-center">
-                  <div>{color}</div>
+                <div className="text-xs font-mono text-center mt-2">
+                  <div className="text-gray-800 dark:text-white">{color}</div>
                   <button
                     onClick={() => copyToClipboard(color)}
-                    className="text-blue-600 dark:text-blue-400 hover:underline mt-1"
+                    className="text-blue-600 dark:text-blue-400 hover:underline mt-1 transition-all duration-300"
                   >
                     复制
                   </button>
@@ -110,12 +110,21 @@ const PaletteGeneratorTool = () => {
         </div>
       )}
 
-      <div className="text-sm text-gray-600 dark:text-gray-400">
-        <p className="font-semibold">功能说明:</p>
-        <ul className="list-disc pl-5 space-y-1">
-          <li>基于基础颜色生成10种不同亮度的配色</li>
-          <li>点击颜色方块或&quot;复制&quot;按钮可复制单个颜色值</li>
-          <li>点击&quot;复制所有颜色&quot;按钮可复制整个调色板</li>
+      <div className="bg-white dark:bg-gray-800/50 p-5 rounded-2xl border border-gray-200 dark:border-gray-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
+        <p className="font-semibold text-gray-800 dark:text-white mb-3">功能说明:</p>
+        <ul className="space-y-2 text-gray-600 dark:text-gray-300">
+          <li className="flex items-start">
+            <span className="w-2 h-2 rounded-full bg-blue-500 mt-2 mr-2"></span>
+            基于基础颜色生成10种不同亮度的配色
+          </li>
+          <li className="flex items-start">
+            <span className="w-2 h-2 rounded-full bg-blue-500 mt-2 mr-2"></span>
+            点击颜色方块或&quot;复制&quot;按钮可复制单个颜色值
+          </li>
+          <li className="flex items-start">
+            <span className="w-2 h-2 rounded-full bg-blue-500 mt-2 mr-2"></span>
+            点击&quot;复制所有颜色&quot;按钮可复制整个调色板
+          </li>
         </ul>
       </div>
     </div>

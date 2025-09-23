@@ -64,6 +64,7 @@
     "@types/xml2js": "^0.4.14",
     "antd": "^5.27.3",
     "dayjs": "^1.11.18",
+    "diff": "^8.0.2",
     "flexsearch": "^0.8.205",
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.11.1",

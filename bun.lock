@@ -10,6 +10,7 @@
         "@types/xml2js": "^0.4.14",
         "antd": "^5.27.3",
         "dayjs": "^1.11.18",
+        "diff": "^8.0.2",
         "flexsearch": "^0.8.205",
         "gray-matter": "^4.0.3",
         "highlight.js": "^11.11.1",
@@ -438,6 +439,8 @@
     "diacritics-map": ["diacritics-map@0.1.0", "https://mirrors.cloud.tencent.com/npm/diacritics-map/-/diacritics-map-0.1.0.tgz", {}, "sha1-bfwP+dAQAKLt8oZTccrDFulJd68="],
 
     "didyoumean": ["didyoumean@1.2.2", "https://mirrors.cloud.tencent.com/npm/didyoumean/-/didyoumean-1.2.2.tgz", {}, "sha512-gxtyfqMg7GKyhQmb056K7M3xszy/myH8w+B4RT+QXBQsvAOdc3XymqDDPHx1BgPgsdAA5SIifona89YtRATDzw=="],
+
+    "diff": ["diff@8.0.2", "https://mirrors.cloud.tencent.com/npm/diff/-/diff-8.0.2.tgz", {}, "sha512-sSuxWU5j5SR9QQji/o2qMvqRNYRDOcBTgsJ/DeCf4iSN4gW+gNMXM7wFIP+fdXZxoNiAnHUTGjCr+TSWXdRDKg=="],
 
     "dlv": ["dlv@1.1.3", "https://mirrors.cloud.tencent.com/npm/dlv/-/dlv-1.1.3.tgz", {}, "sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA=="],
 

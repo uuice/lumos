@@ -8,29 +8,29 @@ const ColorPickerTool = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-1">
       <div className="flex flex-col items-center">
         <div
-          className="w-32 h-32 rounded-lg shadow-lg mb-4 border border-gray-300"
+          className="w-36 h-36 rounded-2xl shadow-lg mb-5 border-4 border-white dark:border-gray-700 transition-all duration-300"
           style={{ backgroundColor: color }}
         ></div>
-        <div className="text-xl font-mono">{color}</div>
+        <div className="text-2xl font-mono font-bold bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-lg">{color}</div>
         <button
           onClick={copyToClipboard}
-          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          className="mt-4 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
         >
           复制颜色值
         </button>
       </div>
 
-      <div>
-        <label htmlFor="color-picker" className="block mb-2 font-medium">选择颜色:</label>
+      <div className="bg-gray-100 dark:bg-gray-800 p-5 rounded-xl">
+        <label htmlFor="color-picker" className="block mb-3 font-medium text-gray-800 dark:text-gray-200">选择颜色:</label>
         <input
           id="color-picker"
           type="color"
           value={color}
           onChange={(e) => setColor(e.target.value)}
-          className="w-full h-12 cursor-pointer"
+          className="w-full h-14 cursor-pointer rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
         />
       </div>
 
@@ -43,13 +43,13 @@ const ColorPickerTool = () => {
           <div
             key={presetColor}
             onClick={() => setColor(presetColor)}
-            className="flex flex-col items-center cursor-pointer"
+            className="flex flex-col items-center cursor-pointer group"
           >
             <div
-              className="w-12 h-12 rounded-lg shadow-md border border-gray-300"
+              className="w-14 h-14 rounded-xl shadow-md border-2 border-white dark:border-gray-700 group-hover:scale-110 transition-all duration-300"
               style={{ backgroundColor: presetColor }}
             ></div>
-            <div className="text-xs mt-1 font-mono">{presetColor}</div>
+            <div className="text-xs mt-2 font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-md">{presetColor}</div>
           </div>
         ))}
       </div>

@@ -177,25 +177,25 @@ const TailwindLookupTool = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-        <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Tailwind CSS 类名速查</h2>
+      <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-lg p-6 transition-all duration-300 hover:shadow-xl">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Tailwind CSS 类名速查</h2>
         <p className="text-gray-600 dark:text-gray-300 mb-6">
           快速查找和复制常用的 Tailwind CSS 类名
         </p>
 
-        <div className="mb-6">
+        <div className="mb-6 bg-white dark:bg-gray-800/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700/50 shadow-sm transition-all duration-300">
           <div className="relative">
             <input
               type="text"
               placeholder="搜索类名..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-300"
             />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm('')}
-                className="absolute right-3 top-2 text-gray-500 dark:text-gray-400"
+                className="absolute right-3 top-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-300"
               >
                 ✕
               </button>
@@ -205,8 +205,8 @@ const TailwindLookupTool = () => {
 
         <div className="space-y-8">
           {filteredClasses.map((category, index) => (
-            <div key={index}>
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-3">
+            <div key={index} className="bg-white dark:bg-gray-800/50 p-5 rounded-2xl border border-gray-200 dark:border-gray-700/50 shadow-sm transition-all duration-300">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
                 {category.category}
               </h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
@@ -214,10 +214,10 @@ const TailwindLookupTool = () => {
                   <div
                     key={clsIndex}
                     onClick={() => copyToClipboard(className)}
-                    className={`p-2 text-sm rounded cursor-pointer transition-all ${
+                    className={`p-2 text-sm rounded-lg cursor-pointer transition-all duration-300 ${
                       copiedClass === className
-                        ? 'bg-green-500 text-white'
-                        : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200'
+                        ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md'
+                        : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 hover:shadow-sm'
                     }`}
                   >
                     {className}
@@ -229,18 +229,30 @@ const TailwindLookupTool = () => {
         </div>
 
         {filteredClasses.length === 0 && (
-          <div className="text-center py-8">
-            <p className="text-gray-500 dark:text-gray-400">没有找到匹配的类名</p>
+          <div className="text-center py-12 bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-200 dark:border-gray-700/50 shadow-sm transition-all duration-300">
+            <p className="text-gray-500 dark:text-gray-400 text-lg">没有找到匹配的类名</p>
           </div>
         )}
 
-        <div className="mt-6 bg-blue-50 dark:bg-blue-900 rounded-lg p-4">
-          <h3 className="font-medium text-blue-800 dark:text-blue-200 mb-2">使用提示</h3>
-          <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-            <li>• 点击任何类名即可复制到剪贴板</li>
-            <li>• 使用搜索框快速查找特定类名</li>
-            <li>• 复制成功后会显示绿色高亮提示</li>
-            <li>• 支持按类别浏览所有常用 Tailwind CSS 类</li>
+        <div className="mt-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 rounded-2xl p-5 border border-blue-200 dark:border-blue-700/50 shadow-sm transition-all duration-300">
+          <h3 className="font-semibold text-lg text-blue-800 dark:text-blue-200 mb-3">使用提示</h3>
+          <ul className="space-y-2 text-blue-700 dark:text-blue-300">
+            <li className="flex items-start">
+              <span className="w-2 h-2 rounded-full bg-blue-500 mt-2 mr-2"></span>
+              点击任何类名即可复制到剪贴板
+            </li>
+            <li className="flex items-start">
+              <span className="w-2 h-2 rounded-full bg-blue-500 mt-2 mr-2"></span>
+              使用搜索框快速查找特定类名
+            </li>
+            <li className="flex items-start">
+              <span className="w-2 h-2 rounded-full bg-blue-500 mt-2 mr-2"></span>
+              复制成功后会显示绿色高亮提示
+            </li>
+            <li className="flex items-start">
+              <span className="w-2 h-2 rounded-full bg-blue-500 mt-2 mr-2"></span>
+              支持按类别浏览所有常用 Tailwind CSS 类
+            </li>
           </ul>
         </div>
       </div>

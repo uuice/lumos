@@ -74,54 +74,82 @@ const YamlToJsonTool = () => {
   };
 
   return (
-    <div className="space-y-4">
-      <div>
-        <label htmlFor="yaml-input" className="block mb-2 font-medium">YAML文本:</label>
-        <textarea
-          id="yaml-input"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="在此输入YAML文本..."
-          className="w-full h-40 p-4 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white font-mono"
-        />
-      </div>
+    <div className="space-y-6 p-1">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transition-all duration-300 hover:shadow-xl">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">YAML 转 JSON</h2>
+        <p className="text-gray-600 dark:text-gray-300 mb-6">
+          将YAML格式数据转换为JSON格式
+        </p>
 
-      <div className="flex space-x-3">
-        <button
-          onClick={convertYamlToJson}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-        >
-          转换为JSON
-        </button>
-        <button
-          onClick={copyToClipboard}
-          disabled={!output}
-          className={`px-4 py-2 rounded-lg ${output ? "bg-green-500 hover:bg-green-600 text-white" : "bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed"}`}
-        >
-          复制JSON
-        </button>
-      </div>
-
-      {error && (
-        <div className="p-4 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded-lg">
-          {error}
+        <div className="mb-6">
+          <label htmlFor="yaml-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            YAML文本
+          </label>
+          <textarea
+            id="yaml-input"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="在此输入YAML文本..."
+            className="w-full h-40 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+          />
         </div>
-      )}
 
-      <div>
-        <label htmlFor="json-output" className="block mb-2 font-medium">JSON结果:</label>
-        <textarea
-          id="json-output"
-          value={output}
-          readOnly
-          placeholder="转换结果将显示在这里"
-          className="w-full h-40 p-4 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white font-mono"
-        />
-      </div>
+        <div className="flex flex-wrap gap-3 mb-6">
+          <button
+            onClick={convertYamlToJson}
+            className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transform hover:-translate-y-0.5 transition-all duration-200"
+          >
+            转换为JSON
+          </button>
+          <button
+            onClick={copyToClipboard}
+            disabled={!output}
+            className={`px-5 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 ${
+              output
+                ? "bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 transform hover:-translate-y-0.5"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-600 dark:text-gray-300"
+            }`}
+          >
+            复制JSON
+          </button>
+        </div>
 
-      <div className="text-sm text-gray-600 dark:text-gray-400">
-        <p className="font-semibold">注意:</p>
-        <p>这是一个简化的YAML解析器，仅支持基本的键值对转换。对于复杂的YAML结构，请使用专业的解析库。</p>
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 rounded-lg border border-red-200 dark:border-red-800 transition-all duration-300">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800 dark:text-red-200">
+                  {error}
+                </h3>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="mb-6">
+          <label htmlFor="json-output" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            JSON结果
+          </label>
+          <textarea
+            id="json-output"
+            value={output}
+            readOnly
+            placeholder="转换结果将显示在这里"
+            className="w-full h-40 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white font-mono transition-all duration-200"
+          />
+        </div>
+
+        <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800 transition-all duration-300">
+          <h3 className="font-medium text-yellow-800 dark:text-yellow-200 mb-2">注意</h3>
+          <p className="text-sm text-yellow-700 dark:text-yellow-300">
+            这是一个简化的YAML解析器，仅支持基本的键值对转换。对于复杂的YAML结构，请使用专业的解析库。
+          </p>
+        </div>
       </div>
     </div>
   );

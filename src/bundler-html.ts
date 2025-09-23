@@ -5,15 +5,11 @@
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import fs from 'fs/promises'
-import path, { dirname, join } from 'path'
-import { fileURLToPath } from 'url'
+import path, { join } from 'path'
 import { existsSync, statSync } from 'fs'
 import tailwindcssPlugin from './plugins/bun-plugin-tailwindcss'
 
 const execAsync = promisify(exec)
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 // 递归获取目录下的所有 HTML 文件（包括子目录）
 async function getAllHtmlFiles(dirPath: string, fileList: string[] = []): Promise<string[]> {
@@ -43,14 +39,14 @@ async function getAllHtmlFiles(dirPath: string, fileList: string[] = []): Promis
 async function copyDirectoryRecursive(src: string, dest: string): Promise<void> {
   try {
     await fs.access(src);
-  } catch (_error) {
+  } catch {
     // 源目录不存在，直接返回
     return;
   }
 
   try {
     await fs.access(dest);
-  } catch (_error) {
+  } catch {
     // 目标目录不存在，创建它
     await fs.mkdir(dest, { recursive: true });
   }
@@ -132,6 +128,10 @@ export async function buildHtmlFiles() {
         asset: "[dir]/[name]-[hash].[ext]"
       },
       plugins: [tailwindcssPlugin()],
+      // 添加 root 配置确保正确的相对路径计算
+      root: './bundler/html',
+      // 添加 publicPath 配置确保正确的资源路径
+      publicPath: './'
     });
 
     if (result.success) {

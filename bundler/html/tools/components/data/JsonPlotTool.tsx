@@ -9,14 +9,14 @@ const JsonPlotTool = () => {
 
   const parseJsonAndGenerateChart = () => {
     if (!jsonInput.trim()) return;
-    
+
     setIsParsing(true);
     setError(null);
-    
+
     try {
       // 解析JSON输入
       const parsedData = JSON.parse(jsonInput);
-      
+
       // 在实际应用中，这里会根据数据结构生成适合图表库的数据格式
       // 由于浏览器环境限制，我们在这里模拟生成过程
       setChartData(parsedData);
@@ -40,7 +40,7 @@ const JsonPlotTool = () => {
         }
       ]
     };
-    
+
     setJsonInput(JSON.stringify(sampleData, null, 2));
   };
 
@@ -52,7 +52,7 @@ const JsonPlotTool = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transition-all duration-300 hover:shadow-xl">
         <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">JSON图表绘制</h2>
         <p className="text-gray-600 dark:text-gray-300 mb-6">
           将JSON数据转换为可视化图表，支持多种图表类型
@@ -60,13 +60,14 @@ const JsonPlotTool = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="chartType" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               图表类型
             </label>
             <select
+              id="chartType"
               value={chartType}
               onChange={(e) => setChartType(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"
             >
               <option value="bar">柱状图</option>
               <option value="line">折线图</option>
@@ -76,11 +77,11 @@ const JsonPlotTool = () => {
               <option value="polarArea">极坐标图</option>
             </select>
           </div>
-          
+
           <div className="flex items-end">
             <button
               onClick={generateSampleData}
-              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500"
+              className="px-4 py-2.5 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-lg hover:from-gray-600 hover:to-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transform hover:-translate-y-0.5 transition-all duration-200"
             >
               生成示例数据
             </button>
@@ -88,10 +89,11 @@ const JsonPlotTool = () => {
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label htmlFor="jsonInput" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             JSON数据
           </label>
           <textarea
+            id="jsonInput"
             value={jsonInput}
             onChange={(e) => setJsonInput(e.target.value)}
             rows={10}
@@ -105,7 +107,7 @@ const JsonPlotTool = () => {
     }
   ]
 }'
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white font-mono text-sm"
+            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white font-mono text-sm transition-all duration-200"
           />
         </div>
 
@@ -113,22 +115,22 @@ const JsonPlotTool = () => {
           <button
             onClick={parseJsonAndGenerateChart}
             disabled={isParsing || !jsonInput.trim()}
-            className={`px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
+            className={`px-5 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 ${
               isParsing || !jsonInput.trim()
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-600 dark:text-gray-300'
-                : 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500'
+                : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 focus:ring-blue-500 transform hover:-translate-y-0.5'
             }`}
           >
             {isParsing ? '生成中...' : '生成图表'}
           </button>
-          
+
           <button
             onClick={clearData}
             disabled={!jsonInput && !chartData}
-            className={`px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
+            className={`px-5 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 ${
               !jsonInput && !chartData
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-gray-600 dark:text-gray-300'
-                : 'bg-red-100 text-red-700 hover:bg-red-200 focus:ring-red-500 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800'
+                : 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 focus:ring-red-500 transform hover:-translate-y-0.5'
             }`}
           >
             清除数据
@@ -136,7 +138,7 @@ const JsonPlotTool = () => {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900 rounded-lg">
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 rounded-lg border border-red-200 dark:border-red-800 transition-all duration-300">
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -157,16 +159,16 @@ const JsonPlotTool = () => {
             <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-3">
               图表预览
             </h3>
-            
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-              <div className="flex items-center justify-center h-64 bg-white dark:bg-gray-600 rounded">
+
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 transition-all duration-300">
+              <div className="flex items-center justify-center h-64 bg-white dark:bg-gray-600/50 rounded-lg border border-gray-200 dark:border-gray-600">
                 <div className="text-center">
                   <div className="text-5xl mb-4">📊</div>
                   <p className="text-gray-600 dark:text-gray-300">
-                    在实际应用中，这里将显示 {chartType === 'bar' ? '柱状图' : 
-                    chartType === 'line' ? '折线图' : 
-                    chartType === 'pie' ? '饼图' : 
-                    chartType === 'doughnut' ? '环形图' : 
+                    在实际应用中，这里将显示 {chartType === 'bar' ? '柱状图' :
+                    chartType === 'line' ? '折线图' :
+                    chartType === 'pie' ? '饼图' :
+                    chartType === 'doughnut' ? '环形图' :
                     chartType === 'radar' ? '雷达图' : '极坐标图'}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
@@ -178,14 +180,14 @@ const JsonPlotTool = () => {
           </div>
         )}
 
-        <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg">
+        <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 transition-all duration-300">
           <h4 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
             使用说明
           </h4>
           <ul className="text-sm text-blue-700 dark:text-blue-300 list-disc pl-5 space-y-1">
             <li>输入符合图表库要求的JSON格式数据</li>
             <li>选择要生成的图表类型</li>
-            <li>点击"生成图表"按钮创建可视化图表</li>
+            <li>点击&quot;生成图表&quot;按钮创建可视化图表</li>
             <li>支持的图表类型：柱状图、折线图、饼图、环形图、雷达图、极坐标图</li>
           </ul>
         </div>

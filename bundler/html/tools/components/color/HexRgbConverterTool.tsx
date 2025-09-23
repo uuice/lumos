@@ -44,42 +44,42 @@ const HexRgbConverterTool = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col items-center">
+    <div className="space-y-6 p-1">
+      <div className="flex flex-col items-center bg-white dark:bg-gray-800/50 p-6 rounded-2xl border border-gray-200 dark:border-gray-700/50 shadow-lg transition-all duration-300 hover:shadow-xl">
         <div
-          className="w-32 h-32 rounded-lg shadow-lg mb-4 border border-gray-300"
+          className="w-32 h-32 rounded-2xl shadow-lg mb-4 border-2 border-gray-300 dark:border-gray-600 transition-all duration-300"
           style={{ backgroundColor: hex }}
         ></div>
-        <div className="text-xl font-mono">{hex}</div>
-        <div className="text-lg">rgb({rgb.r}, {rgb.g}, {rgb.b})</div>
+        <div className="text-2xl font-mono font-bold text-gray-800 dark:text-white mt-2">{hex}</div>
+        <div className="text-xl text-gray-600 dark:text-gray-300">rgb({rgb.r}, {rgb.g}, {rgb.b})</div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="hex-input" className="block mb-2 font-medium">HEX颜色值:</label>
+        <div className="bg-white dark:bg-gray-800/50 p-5 rounded-2xl border border-gray-200 dark:border-gray-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
+          <label htmlFor="hex-input" className="block mb-3 font-medium text-gray-800 dark:text-white">HEX颜色值:</label>
           <div className="flex space-x-2">
             <input
               id="hex-input"
               type="text"
               value={hex}
               onChange={(e) => handleHexChange(e.target.value)}
-              className="flex-1 p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white font-mono"
+              className="flex-1 p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
             />
             <button
               onClick={() => copyToClipboard(hex)}
-              className="px-4 py-2 bg-gray-200 dark:bg-gray-600 rounded-lg hover:bg-gray-300"
+              className="px-4 py-2 bg-gradient-to-r from-gray-200 to-gray-300 text-gray-800 rounded-lg hover:from-gray-300 hover:to-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:from-gray-700 dark:to-gray-600 dark:text-white dark:hover:from-gray-600 dark:hover:to-gray-500 transition-all duration-300 shadow-sm"
             >
               复制
             </button>
           </div>
         </div>
 
-        <div>
-          <div className="block mb-2 font-medium">RGB颜色值:</div>
-          <div className="grid grid-cols-3 gap-2">
+        <div className="bg-white dark:bg-gray-800/50 p-5 rounded-2xl border border-gray-200 dark:border-gray-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
+          <div className="block mb-3 font-medium text-gray-800 dark:text-white">RGB颜色值:</div>
+          <div className="grid grid-cols-3 gap-3">
             {(['r', 'g', 'b'] as const).map((channel) => (
-              <div key={channel}>
-                <label htmlFor={`rgb-${channel}`} className="block text-sm mb-1">{channel.toUpperCase()}</label>
+              <div key={channel} className="space-y-2">
+                <label htmlFor={`rgb-${channel}`} className="block text-sm font-medium text-gray-700 dark:text-gray-300">{channel.toUpperCase()}</label>
                 <div className="flex space-x-2">
                   <input
                     id={`rgb-${channel}`}
@@ -88,7 +88,7 @@ const HexRgbConverterTool = () => {
                     max="255"
                     value={rgb[channel]}
                     onChange={(e) => handleRgbChange(channel, e.target.value)}
-                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
                   />
                 </div>
               </div>
@@ -97,9 +97,9 @@ const HexRgbConverterTool = () => {
         </div>
       </div>
 
-      <div>
-        <h3 className="font-semibold mb-2">预设颜色:</h3>
-        <div className="grid grid-cols-6 gap-2">
+      <div className="bg-white dark:bg-gray-800/50 p-5 rounded-2xl border border-gray-200 dark:border-gray-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
+        <h3 className="font-semibold text-lg text-gray-800 dark:text-white mb-4">预设颜色:</h3>
+        <div className="grid grid-cols-6 gap-3">
           {[
             "#ef4444", "#f97316", "#eab308",
             "#22c55e", "#3b82f6", "#8b5cf6",
@@ -109,10 +109,10 @@ const HexRgbConverterTool = () => {
             <div
               key={color}
               onClick={() => handleHexChange(color)}
-              className="flex flex-col items-center cursor-pointer"
+              className="flex flex-col items-center cursor-pointer group"
             >
               <div
-                className="w-10 h-10 rounded-lg shadow-md border border-gray-300"
+                className="w-12 h-12 rounded-xl shadow-md border-2 border-gray-300 dark:border-gray-600 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg"
                 style={{ backgroundColor: color }}
               ></div>
             </div>
@@ -120,12 +120,21 @@ const HexRgbConverterTool = () => {
         </div>
       </div>
 
-      <div className="text-sm text-gray-600 dark:text-gray-400">
-        <p className="font-semibold">使用说明:</p>
-        <ul className="list-disc pl-5 space-y-1">
-          <li>在HEX输入框中输入十六进制颜色值（如 #ff0000）</li>
-          <li>在RGB输入框中输入红、绿、蓝三个通道的值（0-255）</li>
-          <li>点击预设颜色可快速选择常用颜色</li>
+      <div className="bg-white dark:bg-gray-800/50 p-5 rounded-2xl border border-gray-200 dark:border-gray-700/50 shadow-sm transition-all duration-300 hover:shadow-md">
+        <p className="font-semibold text-gray-800 dark:text-white mb-3">使用说明:</p>
+        <ul className="space-y-2 text-gray-600 dark:text-gray-300">
+          <li className="flex items-start">
+            <span className="w-2 h-2 rounded-full bg-blue-500 mt-2 mr-2"></span>
+            在HEX输入框中输入十六进制颜色值（如 #ff0000）
+          </li>
+          <li className="flex items-start">
+            <span className="w-2 h-2 rounded-full bg-blue-500 mt-2 mr-2"></span>
+            在RGB输入框中输入红、绿、蓝三个通道的值（0-255）
+          </li>
+          <li className="flex items-start">
+            <span className="w-2 h-2 rounded-full bg-blue-500 mt-2 mr-2"></span>
+            点击预设颜色可快速选择常用颜色
+          </li>
         </ul>
       </div>
     </div>
