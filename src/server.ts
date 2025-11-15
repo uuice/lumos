@@ -2,12 +2,12 @@ import { join } from 'path'
 import { DatabaseSchema, Middleware, LumosConfig } from './types.ts'
 import { PluginManager } from './plugin-manager.ts'
 import { ThemeManager } from './theme-manager.ts'
-import { BunFile } from 'bun'
 // 添加导入routes API并设置服务器实例
 import { setServerInstance } from './routes/api/routes.ts'
 import { buildResponseHeaders } from './utils.ts'
 // 导入IP访问控制中间件
 import { IPAccessControlMiddleware } from './middlewares/ip-access-control.ts'
+import { htmlRoutes } from '../bundler/html-route.ts'
 
 // 定义配置接口
 interface ServerOptions {
@@ -23,6 +23,7 @@ export class LumosServer {
   private basePath: string
   private _themeRouter: unknown = null
   private _apiRouter: unknown = null
+  private _htmlRouter: any = null
   private pluginManager: PluginManager
   private themeManager: ThemeManager
   private serverInstance: ReturnType<typeof Bun.serve> | null = null
@@ -144,6 +145,9 @@ export class LumosServer {
       })
 
       console.log('FileSystemRouter 初始化成功')
+      this._htmlRouter = htmlRoutes
+
+      console.log('Html Router 初始化成功')
     } catch (error) {
       console.error('路由器初始化失败:', error)
       throw error
@@ -270,66 +274,66 @@ export class LumosServer {
     }
 
     // 检查是否是 dist 目录中的静态文件
-    if (!pathname.startsWith('/api/') && !pathname.startsWith('/assets/')) {
-      try {
-        const themePath = join(this.basePath, 'bundler')
-        const distDir = join(themePath, 'dist')
+    // if (!pathname.startsWith('/api/') && !pathname.startsWith('/assets/')) {
+    //   try {
+    //     const themePath = join(this.basePath, 'bundler')
+    //     const distDir = join(themePath, 'dist')
 
-        // 检查请求的路径是否是一个目录
-        const requestedPath = join(distDir, pathname.substring(1));
-        try {
-          const stat = await Bun.file(requestedPath).stat();
-          // 如果路径存在且是一个目录，重定向到带斜杠的版本
-          if (stat && stat.isDirectory() && !pathname.endsWith('/')) {
-            return new Response(null, {
-              status: 301,
-              headers: {
-                'Location': pathname + '/'
-              }
-            });
-          }
-        } catch {
-          // 路径不存在，继续处理
-        }
+    //     // 检查请求的路径是否是一个目录
+    //     const requestedPath = join(distDir, pathname.substring(1));
+    //     try {
+    //       const stat = await Bun.file(requestedPath).stat();
+    //       // 如果路径存在且是一个目录，重定向到带斜杠的版本
+    //       if (stat && stat.isDirectory() && !pathname.endsWith('/')) {
+    //         return new Response(null, {
+    //           status: 301,
+    //           headers: {
+    //             'Location': pathname + '/'
+    //           }
+    //         });
+    //       }
+    //     } catch {
+    //       // 路径不存在，继续处理
+    //     }
 
-        // 构建可能的文件路径列表
-        const possiblePaths = [
-          // 直接使用请求的路径
-          join(distDir, pathname.substring(1)),
-          // 如果路径以 / 结尾，尝试查找 index.html
-          pathname.endsWith('/') ? join(distDir, pathname.substring(1), 'index.html') : '',
-          // 如果路径不以 .html 结尾，尝试添加 .html 扩展名
-          pathname.endsWith('.html') ? '' : join(distDir, pathname.substring(1) + '.html')
-        ].filter(path => path.length > 0) // 过滤掉空路径
+    //     // 构建可能的文件路径列表
+    //     const possiblePaths = [
+    //       // 直接使用请求的路径
+    //       join(distDir, pathname.substring(1)),
+    //       // 如果路径以 / 结尾，尝试查找 index.html
+    //       pathname.endsWith('/') ? join(distDir, pathname.substring(1), 'index.html') : '',
+    //       // 如果路径不以 .html 结尾，尝试添加 .html 扩展名
+    //       pathname.endsWith('.html') ? '' : join(distDir, pathname.substring(1) + '.html')
+    //     ].filter(path => path.length > 0) // 过滤掉空路径
 
-        // 查找第一个存在的文件
-        let filePath: string | null = null
-        let file: BunFile | null = null
+    //     // 查找第一个存在的文件
+    //     let filePath: string | null = null
+    //     let file: BunFile | null = null
 
-        for (const path of possiblePaths) {
-          const candidateFile = Bun.file(path)
-          if (await candidateFile.exists()) {
-            filePath = path
-            file = candidateFile
-            break
-          }
-        }
+    //     for (const path of possiblePaths) {
+    //       const candidateFile = Bun.file(path)
+    //       if (await candidateFile.exists()) {
+    //         filePath = path
+    //         file = candidateFile
+    //         break
+    //       }
+    //     }
 
-        // 如果找到了存在的文件
-        if (filePath && file) {
-          // 获取缓存配置
-          const cacheConfig = this.getStaticAssetCacheConfig()
-          // 构建响应头
-          const headers: Record<string, string> = await buildResponseHeaders(filePath, cacheConfig)
+    //     // 如果找到了存在的文件
+    //     if (filePath && file) {
+    //       // 获取缓存配置
+    //       const cacheConfig = this.getStaticAssetCacheConfig()
+    //       // 构建响应头
+    //       const headers: Record<string, string> = await buildResponseHeaders(filePath, cacheConfig)
 
-          return new Response(file, {
-            headers
-          })
-        }
-      } catch (error) {
-        console.error('dist目录静态文件处理错误:', error)
-      }
-    }
+    //       return new Response(file, {
+    //         headers
+    //       })
+    //     }
+    //   } catch (error) {
+    //     console.error('dist目录静态文件处理错误:', error)
+    //   }
+    // }
 
     // 确保数据已加载
     if (!this.data) {
@@ -552,6 +556,18 @@ export class LumosServer {
 
       this.serverInstance = Bun.serve({
         port: this.port,
+         // development can also be an object.
+        development: {
+          // Enable Hot Module Reloading
+          hmr: true,
+
+          // Echo console logs from the browser to the terminal
+          console: true,
+        },
+
+        routes: {
+          ...this._htmlRouter
+        },
         fetch: request => this.handleRequest(request)
       })
 

@@ -5,7 +5,6 @@ import { webpCommand } from './commands/webp.ts'
 import { DataGenerator } from './generator.ts'
 import { join } from 'path'
 import { ensureAssetsDir } from './utils.ts'
-import { buildHtmlFiles } from './bundler-html.ts'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 
@@ -69,7 +68,7 @@ function showHelp() {
     '\x1b[96m'  // Bright Cyan
   ]
   const reset = '\x1b[0m'
-  
+
   // Split help text into lines
   const helpText = `
 Lumos - 基于 Bun 的静态博客生成器
@@ -92,9 +91,6 @@ Lumos - 基于 Bun 的静态博客生成器
       -w, --watch         监听 主题、src目录、插件目录变化并重新启动开发服务器
   build                   构建项目 (生成数据 + 处理资源)
   assets                  处理资源文件
-  html-gen                构建 HTML 文件
-    选项:
-      -w, --watch         监听 HTML 文件变化并重新构建
   css                     构建 CSS 文件
     选项:
       -w, --watch         监听 CSS 文件变化
@@ -119,8 +115,6 @@ Lumos - 基于 Bun 的静态博客生成器
   lumos gen               # 生成数据文件
   lumos build             # 构建项目
   lumos assets            # 处理资源文件
-  lumos html-gen          # 构建 Bundler HTML 文件
-  lumos html-gen -w       # 监听 Bundler HTML 文件变化并重新构建
   lumos css               # 构建 主题CSS 文件
   lumos css -w            # 监听 主题CSS 文件变化
   lumos server            # 启动服务器
@@ -132,7 +126,7 @@ Lumos - 基于 Bun 的静态博客生成器
   lumos webp ./images ./webp-images --quality=85
   lumos webp ./images/avatar.jpg ./webp-images/avatar.webp --quality=90
   `
-  
+
   // Print each line with a different color
   const lines = helpText.trim().split('\n')
   for (let i = 0; i < lines.length; i++) {
@@ -193,19 +187,6 @@ async function buildCommand() {
     process.exit(1)
   }
 }
-
-// HTML 构建命令
-async function htmlGenCommand(options: CLIOptions = {}) {
-  const isWatchMode = options.watch || options.w;
-
-  if (isWatchMode) {
-    const { watchHtmlFiles } = await import('./bundler-html.ts');
-    await watchHtmlFiles();
-  } else {
-    await buildHtmlFiles();
-  }
-}
-
 // CSS 构建命令
 async function buildCssCommand(options: CLIOptions = {}) {
   const isWatchMode = options.watch || options.w;
@@ -554,10 +535,6 @@ async function main() {
 
       case 'assets':
         await assetsCommand()
-        break
-
-      case 'html-gen':
-        await htmlGenCommand(options)
         break
 
       case 'css':

@@ -19,8 +19,6 @@
     "gen": "bun src/generate.ts",
     "lint": "eslint . --ext .ts,.tsx",
     "fix": "eslint . --ext .ts,.tsx --fix",
-    "dev:html": "bun src/cli.ts html-gen -w",
-    "build:html": "bun src/cli.ts html-gen",
     "pm2:start": "pm2 start ecosystem.config.cjs",
     "pm2:stop": "pm2 stop lumos-blog",
     "pm2:restart": "pm2 restart lumos-blog",
@@ -54,7 +52,7 @@
     "postcss-nested": "^7.0.2",
     "postcss-nesting": "^13.0.2",
     "prettier": "^3.3.2",
-    "tailwindcss": "^3.4.0",
+    "tailwindcss": "^4.1.17",
     "typescript": "^5.0.0"
   },
   "dependencies": {
@@ -64,6 +62,7 @@
     "@types/xml2js": "^0.4.14",
     "animejs": "^4.2.2",
     "antd": "^5.27.3",
+    "bun-plugin-tailwind": "^0.1.2",
     "dayjs": "^1.11.18",
     "diff": "^8.0.2",
     "flexsearch": "^0.8.205",

@@ -433,20 +433,17 @@ Lumos 支持使用 Bun 的 HTML bundling 功能创建页面，这种方式的优
 ### 工作原理
 
 1. 在 `bundler/html/` 目录中创建 HTML 文件和相关的 TypeScript/JSX 组件
-2. 运行 `bun run build:html` 命令构建这些页面
-3. 构建后的页面会被放置在 `bundler/dist/` 目录中
-4. 服务器会优先检查请求的路径是否在 `bundler/dist/` 目录中存在对应文件
-5. 如果存在，则直接返回该文件，不会经过主题路由处理
+2. 在 `html-route.ts` HTML 路由 入口文件配置
 
 ### 优先级说明
 
 Bundler HTML 页面具有比主题路由更高的优先级。当用户访问一个 URL 时，服务器会按照以下顺序处理：
 
 1. 首先检查是否是静态资源（/assets/\*）
-2. 然后检查是否在 `bundler/dist/` 目录中存在对应的文件
+2. 然后检查是否在 `html-route.ts` 目录中存在对应的路由
 3. 最后才检查主题路由（themes/\*/routes/）
 
-这意味着如果在 `bundler/dist/` 中有一个 `about.html` 文件，它会优先于 `themes/default/routes/about.tsx` 被访问。
+这意味着如果在 `html-route.ts` 中有一个 `/about` 路由，它会优先于 `themes/default/routes/about.tsx` 被访问。
 
 ### 使用场景
 

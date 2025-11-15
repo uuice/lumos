@@ -6,3 +6,7 @@ exact = false
 [test]
 # 测试配置
 preload = []
+
+
+[serve.static]
+plugins = ["bun-plugin-tailwind"]

@@ -80,7 +80,7 @@ import QuadraticSolverTool from "./components/math/QuadraticSolverTool";
 import MatrixMathTool from "./components/math/MatrixMathTool";
 import CurrencyConvertTool from "./components/math/CurrencyConvertTool";
 import RomanNumeralTool from "./components/math/RomanNumeralTool";
-import BaseNConvertTool from "./components/math/BaseNConvertTool";
+// import BaseNConvertTool from "./components/math/BaseNConvertTool";
 import RandomNumberTool from "./components/math/RandomNumberTool";
 
 // 编码/加密工具
@@ -687,8 +687,8 @@ function ToolComponent({ toolId }: { toolId: string }) {
       return <CurrencyConvertTool />;
     case "roman-numeral":
       return <RomanNumeralTool />;
-    case "base-n":
-      return <BaseNConvertTool />;
+    // case "base-n":
+    //   return <BaseNConvertTool />;
     case "random-number":
       return <RandomNumberTool />;
 

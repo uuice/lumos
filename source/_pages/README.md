@@ -9,6 +9,7 @@
 - [Lumos 项目介绍](./source/_pages/lumos-introduce.md) - 项目的详细介绍和架构说明
 - [Lumos CLI 使用指南](./source/_pages/lumos-cli-usage.md) - CLI 命令的详细使用方法
 - [Lumos 二次开发教程](./source/_pages/lumos-development.md) - 插件和主题开发的详细教程
+- [Bun 全栈开发](https://bun.sh/docs/bundler/fullstack#fullstack-dev-server) - Bun全栈开发
 
 ## ✨ 特性
 
@@ -109,19 +110,7 @@ lumos build
 lumos assets
 ```
 
-### 5. 构建 Bundler HTML 文件
-
-```bash
-# 构建 Bundler HTML 文件
-lumos html-gen
-
-# 监听 Bundler HTML 文件变化并重新构建
-lumos html-gen -w
-# 或
-lumos html-gen --watch
-```
-
-### 6. 构建 CSS 文件
+### 5. 构建 CSS 文件
 
 ```bash
 # 构建 主题CSS 文件
@@ -133,7 +122,7 @@ lumos css -w
 lumos css --watch
 ```
 
-### 7. 使用 PM2 部署（生产环境）
+### 6. 使用 PM2 部署（生产环境）
 
 Lumos 支持使用 PM2 进行生产环境部署，确保应用的高可用性和自动重启。
 
@@ -170,7 +159,7 @@ PM2 配置文件 `ecosystem.config.cjs` 已经包含在项目中，可以根据�
 - 端口: 默认 3000
 - 日志文件: 存储在 `logs` 目录中
 
-### 8. 使用 Docker 部署
+### 7. 使用 Docker 部署
 
 Lumos 支持使用 Docker 进行容器化部署，项目中已包含必要的 Docker 配置文件。
 
@@ -250,7 +239,7 @@ Docker 部署支持以下环境变量配置：
 ```yaml
 environment:
   NODE_ENV: production
-  PORT: "3060"
+  PORT: '3060'
 ```
 
 #### Dockerfile 说明
@@ -264,7 +253,7 @@ environment:
 
 镜像构建过程会自动排除不必要的文件，这由 `.dockerignore` 文件控制。
 
-### 9. WebP 图片转换
+### 8. WebP 图片转换
 
 Lumos 提供了内置的 WebP 图片转换功能，可以将 JPEG、PNG 等格式的图片批量转换为更高效的 WebP 格式，以提升网站加载速度和用户体验。
 
@@ -347,7 +336,7 @@ lumos/
 │   │   ├── 📄 index.html   # 首页 HTML 入口
 │   │   ├── 📄 app.tsx      # React 组件
 │   │   └── 📄 about.html   # 关于页面 HTML 入口
-│   └── 📁 dist/            # 构建输出目录
+│   └── 📄 html-route.ts    # HTML 路由 入口
 ├── 📁 templates/            # 模板文件
 ├── 📁 plugins/              # 插件目录
 ├── 📁 themes/               # 主题目录
@@ -743,15 +732,14 @@ GET /api/posts?page=1&limit=10&category=技术&tag=JavaScript&author=author-alia
 
 ## 📦 Bundler HTML 页面 (高优先级)
 
-Lumos 支持使用 Bun 的 HTML bundling 功能创建页面，这种方式的优先级比主题中的 route 更高。Bundler HTML 页面位于 `bundler/html/` 目录中，构建后会生成到 `bundler/dist/` 目录。
+Lumos 支持使用 Bun 的 HTML bundling 功能创建页面，这种方式的优先级比主题中的 route 更高。Bundler HTML 页面位于 `bundler/html/` 目录中。
 
 ### 工作原理
 
+<https://bun.sh/docs/bundler/fullstack#fullstack-dev-server>
+
 1. 在 `bundler/html/` 目录中创建 HTML 文件和相关的 TypeScript/JSX 组件
-2. 运行 `lumos html-gen` 命令构建这些页面
-3. 构建后的页面会被放置在 `bundler/dist/` 目录中
-4. 服务器会优先检查请求的路径是否在 `bundler/dist/` 目录中存在对应文件
-5. 如果存在，则直接返回该文件，不会经过主题路由处理
+2. 在`html-route.ts` 中配置路由
 
 ### 使用场景
 
