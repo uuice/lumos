@@ -554,16 +554,21 @@ export class LumosServer {
       // 可选启动 Nest 服务（不阻塞 Lumos）
       void this.tryStartNest()
 
+      // 根据环境变量配置开发模式
+      const isDevelopment = process.env.NODE_ENV !== 'production'
+      const developmentConfig = isDevelopment
+        ? {
+            // Enable Hot Module Reloading
+            hmr: true,
+
+            // Echo console logs from the browser to the terminal
+            console: true,
+          }
+        : false
+
       this.serverInstance = Bun.serve({
         port: this.port,
-         // development can also be an object.
-        development: {
-          // Enable Hot Module Reloading
-          hmr: true,
-
-          // Echo console logs from the browser to the terminal
-          console: true,
-        },
+        development: developmentConfig,
 
         routes: {
           ...this._htmlRouter
