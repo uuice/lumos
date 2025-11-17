@@ -1,7 +1,7 @@
 import matter from 'gray-matter'
 import yaml from 'js-yaml'
 import { basename, join } from 'path'
-import { ARTICLE, AUTHOR, JSON_OBJ, PAGE, POST } from './types.ts'
+import { ARTICLE, AUTHOR, JSON_OBJ, PAGE, POST } from '../../types.ts'
 import {
   DEFAULT_AUTHOR_ALIAS,
   formatDate,
@@ -20,8 +20,8 @@ import {
   saveCache,
   symbolsCount,
   titleToUrl
-} from './utils.ts'
-import { PluginManager } from './plugin-manager.ts'
+} from '../../utils.ts'
+import { PluginManager } from '../../plugin-manager.ts'
 
 export class Parser {
   private basePath: string

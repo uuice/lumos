@@ -1,12 +1,12 @@
 import { Parser } from './parser.ts'
-import { CATEGORY, DatabaseSchema, POST, POST_CATEGORY, POST_TAG, TAG } from './types.ts'
+import { CATEGORY, DatabaseSchema, POST, POST_CATEGORY, POST_TAG, TAG } from '../../types.ts'
 import {
   DEFAULT_AUTHOR_ALIAS,
   generateNamespaceUUID,
   getDefaultAuthorId,
   titleToUrl
-} from './utils.ts'
-import { PluginManager } from './plugin-manager.ts'
+} from '../../utils.ts'
+import { PluginManager } from '../../plugin-manager.ts'
 
 export class DataGenerator {
   private parser: Parser

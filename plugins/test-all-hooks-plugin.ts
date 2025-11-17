@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
 import { Plugin } from '../src/types.ts'
-import { DataGenerator } from '../src/generator.ts'
-import { Parser } from '../src/parser.ts'
+import { DataGenerator } from '../src/commands/gen-utils/generator.ts'
+import { Parser } from '../src/commands/gen-utils/parser.ts'
 import { PluginManager } from '../src/plugin-manager.ts'
 import { join } from 'path'
 
