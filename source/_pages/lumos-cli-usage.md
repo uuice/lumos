@@ -25,6 +25,7 @@ Lumos CLI 是一个基于 Bun 运行时的静态博客生成器命令行工具�
 - [Lumos 项目介绍](./lumos-introduce.md) - 项目的详细介绍和架构说明
 - [Lumos 二次开发教程](./lumos-development.md) - 插件和主题开发的详细教程
 - [README 文档](../README.md) - 项目完整文档
+- [Bun 全栈开发](https://bun.sh/docs/bundler/fullstack#fullstack-dev-server) - Bun全栈开发
 
 ## 📋 安装
 

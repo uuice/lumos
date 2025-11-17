@@ -22,6 +22,7 @@ Lumos 是一个现代化的静态博客生成器，基于 Bun 运行时构建，
 - [README 文档](../README.md) - 项目完整文档
 - [Lumos CLI 使用指南](./lumos-cli-usage.md) - CLI 命令的详细使用方法
 - [Lumos 二次开发教程](./lumos-development.md) - 插件和主题开发的详细教程
+- [Bun 全栈开发](https://bun.sh/docs/bundler/fullstack#fullstack-dev-server) - Bun全栈开发
 
 ## 🎯 项目概述
 

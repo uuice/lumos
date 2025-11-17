@@ -19,9 +19,10 @@ published: true
 
 ## 📚 相关资源
 
-- 📚 [Lumos 项目文档](./lumos-introduce.md) - 项目介绍和基础使用
-- 🛠️ [CLI 使用指南](./lumos-cli-usage.md) - 命令行工具使用说明
-- 📖 [README 文档](../README.md) - 项目完整文档
+- [Lumos 项目文档](./lumos-introduce.md) - 项目介绍和基础使用
+- [CLI 使用指南](./lumos-cli-usage.md) - 命令行工具使用说明
+- [README 文档](../README.md) - 项目完整文档
+- [Bun 全栈开发](https://bun.sh/docs/bundler/fullstack#fullstack-dev-server) - Bun全栈开发
 
 ## 🎯 学习目标
 
