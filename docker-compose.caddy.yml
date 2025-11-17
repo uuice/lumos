@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  lumos-app:
+    build: .
+    container_name: lumos-blog
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+    restart: unless-stopped
+    networks:
+      - app-network
+    # 不直接暴露端口，而是通过 Caddy 反向代理访问
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: lumos-caddy
+    depends_on:
+      - lumos-app
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  app-network:
+    driver: bridge

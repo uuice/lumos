@@ -571,8 +571,12 @@ export class LumosServer {
         development: developmentConfig,
 
         routes: {
-          ...this._htmlRouter
+          ...this._htmlRouter,
+          '/health': async (_req: Request) => {
+            return Response.json({ status: "ok" });
+          },
         },
+
         fetch: request => this.handleRequest(request)
       })
 

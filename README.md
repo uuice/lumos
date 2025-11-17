@@ -188,6 +188,12 @@ docker-compose logs -f
 docker-compose down
 ```
 
+#### 使用 Caddy 配置启动应用（推荐）
+
+```bash
+docker-compose -f docker-compose.caddy.yml up --build -d
+```
+
 默认情况下，应用将在 <http://localhost:3060> 上运行。
 
 #### 使用 Docker CLI

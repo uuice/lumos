@@ -1,0 +1,62 @@
+# Caddyfile
+{
+    # 全局选项
+    admin 0.0.0.0:2019
+    log {
+        output file /data/logs/access.log
+        level info
+    }
+}
+
+# 将 uuice.com 替换为您自己的域名
+uuice.com {
+    # 日志配置
+    log {
+        output file /data/logs/access.log
+        level info
+    }
+
+    # 反向代理到 Lumos 应用
+    reverse_proxy lumos-app:3000 {
+        # 健康检查
+        health_uri /health
+        health_interval 10s
+        health_timeout 5s
+    }
+
+    # 静态资源缓存
+    header Cache-Control "public, max-age=3600" {
+        /assets/*
+        /images/*
+        /styles/*
+        /javascript/*
+    }
+
+    # 安全头设置
+    header {
+        # 隐藏服务器信息
+        -Server
+        # XSS 保护
+        X-XSS-Protection "1; mode=block"
+        # 内容类型嗅探保护
+        X-Content-Type-Options "nosniff"
+        # 点击劫持保护
+        X-Frame-Options "SAMEORIGIN"
+        # Referrer Policy
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    # 压缩
+    encode gzip zstd
+
+    # 错误页面
+    handle_errors {
+        rewrite * /error.html
+        file_server
+    }
+}
+
+# 如果您需要同时支持 www 子域名，可以添加以下配置
+www.uuice.com {
+    redir https://uuice.com{uri}
+}
