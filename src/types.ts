@@ -136,6 +136,21 @@ export interface PluginConfig {
   }
 }
 
+// LumosContext 相关类型
+export interface LumosContextParams {
+  [key: string]: string
+}
+
+export interface LumosContextQuery {
+  [key: string]: string | string[]
+}
+
+export interface LumosContextResponse {
+  status: number
+  headers: Record<string, string>
+  body: string | null
+}
+
 // 中间件接口
 export interface Middleware {
   name: string

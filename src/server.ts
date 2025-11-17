@@ -21,8 +21,8 @@ export class LumosServer {
   private port: number
   private dataPath: string
   private basePath: string
-  private _themeRouter: unknown = null
-  private _apiRouter: unknown = null
+  private _themeRouter!: Bun.FileSystemRouter
+  private _apiRouter!: Bun.FileSystemRouter
   private _htmlRouter: any = null
   private pluginManager: PluginManager
   private themeManager: ThemeManager
@@ -342,7 +342,7 @@ export class LumosServer {
 
     try {
       // 首先尝试匹配API路由
-      const apiMatch = (this._apiRouter as any).match(pathname)
+      const apiMatch = this._apiRouter.match(pathname)
       if (apiMatch) {
         // 动态导入路由处理器
         const routeModule = await import(apiMatch.filePath)
@@ -364,7 +364,7 @@ export class LumosServer {
       }
 
       // 如果没有匹配的API路由，尝试匹配主题路由
-      const themeMatch = (this._themeRouter as any).match(pathname)
+      const themeMatch = this._themeRouter.match(pathname)
       if (themeMatch) {
         // 动态导入路由处理器
         const routeModule = await import(themeMatch.filePath)
