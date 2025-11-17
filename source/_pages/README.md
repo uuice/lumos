@@ -265,7 +265,7 @@ lumos webp ./images/avatar.jpg ./webp-images/avatar.webp --quality=85
 
 # 批量转换目录中的所有图片
 
-lumos webp ./images ./webp-images --quality=80 --compression=6
+lumos webp ./images ./webp-images --quality=80 --effort=6
 
 ```
 
@@ -274,7 +274,7 @@ lumos webp ./images ./webp-images --quality=80 --compression=6
 - `输入路径`: 要转换的图片文件或目录路径
 - `输出路径`: 转换后 WebP 图片的保存路径
 - `--quality`: WebP 图片质量（1-100，默认 80）
-- `--compression`: WebP 压缩级别（0-6，默认 6）
+- `--effort`: WebP 压缩级别（0-6，默认 6）
 
 #### 支持的图片格式
 
@@ -294,7 +294,7 @@ lumos webp ./assets/images/logo.png ./assets/images-webp/logo.webp
 lumos webp ./themes/default/assets/images ./themes/default/assets/images-webp
 
 # 高质量转换
-lumos webp ./images ./webp-images --quality=95 --compression=4
+lumos webp ./images ./webp-images --quality=95 --effort=4
 ```
 
 转换后的 WebP 图片体积通常比原图小 25-35%，同时保持相近的视觉质量，有助于提升网站性能。

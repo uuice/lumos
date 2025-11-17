@@ -524,7 +524,7 @@ bun run src/cli.ts webp <input> <output> [options]
 #### 选项
 
 - `--quality <number>`: WebP 图片质量（1-100，默认: 80）
-- `--compression <number>`: WebP 压缩级别（0-6，默认: 6）
+- `--effort <number>`: WebP 压缩级别（0-6，默认: 6）
 
 #### 支持的图片格式
 
@@ -569,13 +569,13 @@ bun run src/cli.ts webp <input> <output> [options]
    使用 `lumos` 命令：
 
    ```bash
-   lumos webp ./images ./webp-images --quality=95 --compression=4
+   lumos webp ./images ./webp-images --quality=95 --effort=4
    ```
 
    使用 `bun run` 命令：
 
    ```bash
-   bun run src/cli.ts webp ./images ./webp-images --quality=95 --compression=4
+   bun run src/cli.ts webp ./images ./webp-images --quality=95 --effort=4
    ```
 
 WebP 图片通常比原图小 25-35%，同时保持相近的视觉质量，有助于提升网站性能。
