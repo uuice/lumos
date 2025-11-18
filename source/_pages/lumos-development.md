@@ -816,21 +816,19 @@ const HomePage: React.FC<{ data: DatabaseSchema }> = ({ data }) => (
   </div>
 )
 
-export default async function handler(_request: Request): Promise<Response> {
+export default async function handler(ctx: LumosContext): Promise<void> {
   try {
     const data = (globalThis as any).__LUMOS_DATA__ as DatabaseSchema
     if (!data) {
-      return new Response('Server not initialized', { status: 500 })
+      ctx.html('Server not initialized', 500)
+      return
     }
 
     const html = '<!DOCTYPE html>' + renderToString(React.createElement(HomePage, { data }))
-
-    return new Response(html, {
-      headers: { 'Content-Type': 'text/html; charset=utf-8' }
-    })
+    ctx.html(html)
   } catch (error) {
     console.error('首页渲染错误:', error)
-    return new Response('Internal Server Error', { status: 500 })
+    ctx.html('Internal Server Error', 500)
   }
 }
 ```
@@ -930,22 +928,19 @@ export const Layout: React.FC<LayoutProps> = ({ title, children, data }) => {
 
 ```typescript
 // 在路由处理器中获取数据
-export default async function handler(_request: Request): Promise<Response> {
+export default async function handler(ctx: LumosContext): Promise<void> {
   try {
     const data = (globalThis as any).__LUMOS_DATA__ as DatabaseSchema
     if (!data) {
-      return new Response('Server not initialized', { status: 500 })
+      ctx.html('Server not initialized', 500)
+      return
     }
 
-    // 使用数据进行渲染
     const html = '<!DOCTYPE html>' + renderToString(React.createElement(MyComponent, { data }))
-
-    return new Response(html, {
-      headers: { 'Content-Type': 'text/html; charset=utf-8' }
-    })
+    ctx.html(html)
   } catch (error) {
     console.error('渲染错误:', error)
-    return new Response('Internal Server Error', { status: 500 })
+    ctx.html('Internal Server Error', 500)
   }
 }
 ```
@@ -1130,9 +1125,9 @@ export interface DatabaseSchema {}
 
 ```typescript
 // 简单的错误处理
-export function handleError(error: unknown): Response {
+export function handleError(error: unknown, ctx: LumosContext): void {
   console.error('Error:', error)
-  return new Response('Internal Server Error', { status: 500 })
+  ctx.html('Internal Server Error', 500)
 }
 ```
 
