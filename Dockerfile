@@ -20,9 +20,6 @@ RUN bun run build
 # 构建CSS
 RUN bun run build:css
 
-# 构建HTML
-RUN bun run build:html
-
 # 暴露端口
 EXPOSE 3060
 
