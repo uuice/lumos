@@ -44,12 +44,14 @@ async function parseHtmlRouteFile(): Promise<{ path: string; url: string | null 
   return results
 }
 
-export default async function handler(_request: Request): Promise<Response> {
+import { LumosContext } from '../../context.ts'
+
+export default async function handler(ctx: LumosContext): Promise<void> {
   try {
     const mappings = await parseHtmlRouteFile()
-    return Response.json(mappings)
+    ctx.json(mappings)
   } catch (error) {
     console.error('解析 html-route.ts 失败:', error)
-    return Response.json({ error: 'Failed to load dist pages' }, { status: 500 })
+    ctx.json({ error: 'Failed to load dist pages' }, 500)
   }
 }

@@ -1,17 +1,19 @@
 import { CATEGORY, DatabaseSchema, PAGE, POST, TAG } from '../../../src/types.ts'
+import { LumosContext } from '../../../src/context.ts'
 import { Builder } from 'xml2js'
 
 /**
  * Sitemap XML 路由处理器
  * 生成符合 sitemap.org 标准的站点地图
  */
-export default async function handler(_request: Request): Promise<Response> {
+export default async function handler(ctx: LumosContext): Promise<void> {
   try {
     // 获取全局数据
     const data: DatabaseSchema = (globalThis as any).__LUMOS_DATA__
 
     if (!data) {
-      return new Response('Data not available', { status: 500 })
+      ctx.text('Data not available', 500)
+      return
     }
 
     // 获取站点配置信息
@@ -146,15 +148,12 @@ export default async function handler(_request: Request): Promise<Response> {
 
     const xml = builder.buildObject(sitemapData)
 
-    return new Response(xml, {
-      headers: {
-        'Content-Type': 'application/xml; charset=UTF-8',
-        'Cache-Control': 'public, max-age=3600' // 1小时缓存
-      }
-    })
+    ctx.set('Content-Type', 'application/xml; charset=UTF-8')
+    ctx.set('Cache-Control', 'public, max-age=3600')
+    ctx.setBody(xml)
 
   } catch (error) {
     console.error('Sitemap generation error:', error)
-    return new Response('Internal Server Error', { status: 500 })
+    ctx.text('Internal Server Error', 500)
   }
 }

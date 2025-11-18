@@ -2,6 +2,7 @@
 import * as React from 'react'
 import { renderToString } from 'react-dom/server'
 import { DatabaseSchema } from '../../../src/types.ts'
+import { LumosContext } from '../../../src/context.ts'
 import { Layout } from '../components/Layout.tsx'
 
 // 定义链接类型
@@ -193,23 +194,22 @@ const LinksPage: React.FC<{ data: DatabaseSchema }> = ({ data }) => {
   )
 }
 
-export default async function handler(_request: Request): Promise<Response> {
+export default async function handler(ctx: LumosContext): Promise<void> {
   try {
     // 从全局状态获取数据
     const data = (globalThis as any).__LUMOS_DATA__ as DatabaseSchema
     if (!data) {
-      return new Response('Server not initialized', { status: 500 })
+      ctx.text('Server not initialized', 500)
+      return
     }
 
     const html = '<!DOCTYPE html>' + renderToString(
       React.createElement(LinksPage, { data })
     )
 
-    return new Response(html, {
-      headers: { 'Content-Type': 'text/html; charset=utf-8' }
-    })
+    ctx.html(html)
   } catch (error) {
     console.error('友情链接页渲染错误:', error)
-    return new Response('Internal Server Error', { status: 500 })
+    ctx.text('Internal Server Error', 500)
   }
 }

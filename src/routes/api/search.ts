@@ -1,6 +1,7 @@
 import { Charset, Document } from 'flexsearch'
 import { DatabaseSchema, LIST_POST_ITEM, POST } from '../../types.ts'
 import { mergeAndHighlightFlexsearchResults } from '../../utils.ts'
+import { LumosContext } from '../../context.ts'
 
 // Cache index and documents in module scope
 let postIndex: Document | null = null
@@ -43,11 +44,12 @@ function buildIndex(data: DatabaseSchema): void {
   }
 }
 
-export default async function handler(request: Request): Promise<Response> {
+export default async function handler(ctx: LumosContext): Promise<void> {
   try {
     const data = (globalThis as any).__LUMOS_DATA__ as DatabaseSchema
     if (!data) {
-      return new Response('Server not initialized', { status: 500 })
+      ctx.json({ error: 'Server not initialized' }, 500)
+      return
     }
 
     // Lazy-build index on first request or when missing
@@ -55,17 +57,18 @@ export default async function handler(request: Request): Promise<Response> {
       buildIndex(data)
     }
 
-    const url = new URL(request.url)
+    const url = ctx.url
     const q = (url.searchParams.get('q') || '').trim()
     if (!q) {
-      return Response.json({ q, results: [] })
+      ctx.json({ q, results: [] })
+      return
     }
     // Search across all indexed fields; normalize results
     const raw = await postIndex!.searchAsync({ query: q, enrich: true })
     const results = mergeAndHighlightFlexsearchResults(raw, q)
-    return Response.json({ q, results })
+    ctx.json({ q, results })
   } catch (error) {
     console.error('搜索接口错误:', error)
-    return Response.json({ error: 'Failed to search' }, { status: 500 })
+    ctx.json({ error: 'Failed to search' }, 500)
   }
 }

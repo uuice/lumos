@@ -1,17 +1,19 @@
 import { DatabaseSchema, POST } from '../../../src/types.ts'
+import { LumosContext } from '../../../src/context.ts'
 import { Builder } from 'xml2js'
 
 /**
  * RSS Feed 路由处理器
  * 生成符合 RSS 2.0 标准的 XML Feed
  */
-export default async function handler(_request: Request): Promise<Response> {
+export default async function handler(ctx: LumosContext): Promise<void> {
   try {
     // 获取全局数据
     const data: DatabaseSchema = (globalThis as any).__LUMOS_DATA__
 
     if (!data) {
-      return new Response('Data not available', { status: 500 })
+      ctx.text('Data not available', 500)
+      return
     }
 
     // 获取站点配置信息（从 JSON 配置文件中获取）
@@ -85,15 +87,12 @@ export default async function handler(_request: Request): Promise<Response> {
 
     const xml = builder.buildObject(rssData)
 
-    return new Response(xml, {
-      headers: {
-        'Content-Type': 'application/rss+xml; charset=UTF-8',
-        'Cache-Control': 'public, max-age=3600' // 1小时缓存
-      }
-    })
+    ctx.set('Content-Type', 'application/rss+xml; charset=UTF-8')
+    ctx.set('Cache-Control', 'public, max-age=3600')
+    ctx.setBody(xml)
 
   } catch (error) {
     console.error('RSS generation error:', error)
-    return new Response('Internal Server Error', { status: 500 })
+    ctx.text('Internal Server Error', 500)
   }
 }

@@ -1,23 +1,26 @@
 // API: 获取单个文章 - /api/posts/[id]
 import { DatabaseSchema } from '../../../types.ts'
+import { LumosContext } from '../../../context.ts'
 
-export default async function handler(request: Request, params: { id: string }): Promise<Response> {
+export default async function handler(ctx: LumosContext, params: { id: string }): Promise<void> {
   try {
     const data = (globalThis as any).__LUMOS_DATA__ as DatabaseSchema
     if (!data) {
-      return new Response('Server not initialized', { status: 500 })
+      ctx.json({ error: 'Server not initialized' }, 500)
+      return
     }
 
     const postId = params.id
     const post = data.posts.find(p => p.id === postId && p.published)
 
     if (!post) {
-      return Response.json({ error: 'Post not found' }, { status: 404 })
+      ctx.json({ error: 'Post not found' }, 404)
+      return
     }
 
-    return Response.json(post)
+    ctx.json(post)
   } catch (error) {
     console.error('获取文章详情错误:', error)
-    return Response.json({ error: 'Failed to load post' }, { status: 500 })
+    ctx.json({ error: 'Failed to load post' }, 500)
   }
 }

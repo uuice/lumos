@@ -8,12 +8,12 @@ export class LumosContext {
   res: {
     status: number
     headers: Record<string, string>
-    body: string | null
+    body: any
   }
   response: {
     status: number
     headers: Record<string, string>
-    body: string | null
+    body: any
   }
 
   // URL 对象
@@ -52,7 +52,7 @@ export class LumosContext {
     this.request = request
 
     this.res = {
-      status: 404,
+      status: 200,
       headers: {},
       body: null
     }
@@ -63,7 +63,7 @@ export class LumosContext {
     this.path = this.url.pathname
     this.query = this.parseQuery(this.url.searchParams)
     this.headers = request.headers
-    this.status = 404
+    this.status = 200
     this.params = this.extractRouteParams(request, params)
     this.body = null
     this.responded = false
@@ -74,7 +74,7 @@ export class LumosContext {
     }
 
     this.get = (field: string) => {
-      return this.headers.get(field)
+      return this.res.headers[field] ?? this.headers.get(field)
     }
   }
 
@@ -127,13 +127,15 @@ export class LumosContext {
 
   // 设置响应体
   setBody(content: string | object): void {
-    if (typeof content === 'object') {
-      this.body = JSON.stringify(content)
+    if (typeof content === 'object' && content !== null) {
+      const text = JSON.stringify(content)
+      this.res.body = text
+      this.body = text
       this.set('Content-Type', 'application/json')
     } else {
+      this.res.body = content
       this.body = content
     }
-    this.res.body = this.body
   }
 
   // 重定向
@@ -191,8 +193,26 @@ export class LumosContext {
     this.params[key] = value
   }
 
+  json(data: unknown, status?: number): void {
+    if (typeof status === 'number') this.setStatus(status)
+    this.set('Content-Type', 'application/json')
+    this.setBody(data as object)
+  }
+
+  html(html: string, status?: number): void {
+    if (typeof status === 'number') this.setStatus(status)
+    this.set('Content-Type', 'text/html; charset=utf-8')
+    this.setBody(html)
+  }
+
+  text(text: string, status?: number): void {
+    if (typeof status === 'number') this.setStatus(status)
+    this.set('Content-Type', 'text/plain; charset=utf-8')
+    this.setBody(text)
+  }
+
   // 创建 Response 对象
-  toResponse(): Response {
+  send(): Response {
     this.responded = true
 
     // 如果没有设置内容类型，根据内容自动设置

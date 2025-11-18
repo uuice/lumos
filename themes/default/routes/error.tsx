@@ -2,6 +2,7 @@
 import * as React from 'react'
 import { renderToString } from 'react-dom/server'
 import { DatabaseSchema } from '../../../src/types.ts'
+import { LumosContext } from '../../../src/context.ts'
 import { Layout } from '../components/Layout.tsx'
 
 // 错误页面组件
@@ -51,12 +52,13 @@ const ErrorPage: React.FC<{
   </Layout>
 )
 
-export default async function handler(request: Request, params?: { error?: string, statusCode?: number }): Promise<Response> {
+export default async function handler(ctx: LumosContext, params?: { error?: string, statusCode?: number }): Promise<void> {
   try {
     // 从全局状态获取数据   // 从全局状态获取数据
     const data = (globalThis as any).__LUMOS_DATA__ as DatabaseSchema
     if (!data) {
-      return new Response('Server not initialized', { status: 500 })
+      ctx.text('Server not initialized', 500)
+      return
     }
 
     const error = params?.error || '服务器遇到了意外错误'
@@ -66,10 +68,8 @@ export default async function handler(request: Request, params?: { error?: strin
       React.createElement(ErrorPage, { data, error, statusCode })
     )
 
-    return new Response(html, {
-      status: statusCode,
-      headers: { 'Content-Type': 'text/html; charset=utf-8' }
-    })
+    ctx.setStatus(statusCode)
+    ctx.html(html)
   } catch (renderError) {
     console.error('错误页面渲染失败:', renderError)
 
@@ -102,9 +102,7 @@ export default async function handler(request: Request, params?: { error?: strin
 </body>
 </html>`
 
-    return new Response(fallbackHtml, {
-      status: 500,
-      headers: { 'Content-Type': 'text/html; charset=utf-8' }
-    })
+    ctx.setStatus(500)
+    ctx.html(fallbackHtml)
   }
 }

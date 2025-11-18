@@ -1,4 +1,5 @@
 import { Middleware } from '../types.ts'
+import { LumosContext } from '../context.ts'
 
 export interface IPAccessControlConfig {
   ipWhitelist?: string[]
@@ -10,9 +11,7 @@ export class IPAccessControlMiddleware {
     return {
       name: 'ip-access-control',
       priority: -100, // 高优先级
-      handler: async (_request: Request, _response: Response, next: () => Promise<Response>): Promise<Response> => {
-        // 注意：由于在中间件中无法直接访问到 LumosServer 实例的配置和 getIpAddress 方法，
-        // 实际的 IP 控制逻辑会在 server.ts 中实现
+      handler: async (_ctx: LumosContext, next: () => Promise<Response>): Promise<Response> => {
         return await next()
       }
     }

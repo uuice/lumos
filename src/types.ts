@@ -1,3 +1,5 @@
+import { LumosContext } from "./context"
+
 // 文章基础接口
 export interface ARTICLE {
   id: string
@@ -155,7 +157,7 @@ export interface LumosContextResponse {
 export interface Middleware {
   name: string
   priority?: number // 数值越小优先级越高
-  handler: (request: Request, response: Response, next: () => Promise<Response>) => Promise<Response>
+  handler: (ctx: LumosContext, next: () => Promise<Response>) => Promise<Response>
 }
 
 // Lumos配置接口

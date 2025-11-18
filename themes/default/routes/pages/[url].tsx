@@ -2,6 +2,7 @@
 import * as React from 'react'
 import { renderToString } from 'react-dom/server'
 import { DatabaseSchema, PAGE } from '../../../../src/types.ts'
+import { LumosContext } from '../../../../src/context.ts'
 import { Layout } from '../../components/Layout.tsx'
 import { WordCountReadingTime } from '../../components/macros/wordCountReadingTime.tsx'
 import { Metadata } from '../../components/macros/metadata.tsx'
@@ -87,11 +88,12 @@ const PageDetailPage: React.FC<{ data: DatabaseSchema, page: PAGE }> = ({ data, 
   </Layout>
 )
 
-export default async function handler(request: Request, params: { url: string }): Promise<Response> {
+export default async function handler(ctx: LumosContext, params: { url: string }): Promise<void> {
   try {
     const data = (globalThis as any).__LUMOS_DATA__ as DatabaseSchema
     if (!data) {
-      return new Response('Server not initialized', { status: 500 })
+      ctx.text('Server not initialized', 500)
+      return
     }
 
     const pageUrl = params.url
@@ -108,24 +110,23 @@ export default async function handler(request: Request, params: { url: string })
         const notFoundModule = await import('../404.tsx')
         const notFoundHandler = notFoundModule.default
         if (notFoundHandler) {
-          return await notFoundHandler(request)
+          await notFoundHandler(ctx)
+          return
         }
       } catch (error) {
         console.error('加载 404 页面失败:', error)
       }
-
-      return new Response('Page not found', { status: 404 })
+      ctx.text('Page not found', 404)
+      return
     }
 
     const html = '<!DOCTYPE html>' + renderToString(
       React.createElement(PageDetailPage, { data, page })
     )
 
-    return new Response(html, {
-      headers: { 'Content-Type': 'text/html; charset=utf-8' }
-    })
+    ctx.html(html)
   } catch (error) {
     console.error('页面详情渲染错误:', error)
-    return new Response('Internal Server Error', { status: 500 })
+    ctx.text('Internal Server Error', 500)
   }
 }

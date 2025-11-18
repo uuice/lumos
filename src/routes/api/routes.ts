@@ -7,10 +7,11 @@ export function setServerInstance(server: any) {
   serverInstance = server;
 }
 
-export default async function handler(_request: Request): Promise<Response> {
+export default async function handler(ctx: LumosContext): Promise<void> {
   try {
     if (!serverInstance) {
-      return Response.json({ error: 'Server instance not available' }, { status: 500 });
+      ctx.json({ error: 'Server instance not available' }, 500)
+      return
     }
 
     // 使用服务器提供的公共方法获取路由器信息
@@ -43,9 +44,10 @@ export default async function handler(_request: Request): Promise<Response> {
       }));
     }
 
-    return Response.json(routesInfo);
+    ctx.json(routesInfo)
   } catch (error) {
     console.error('获取路由信息错误:', error);
-    return Response.json({ error: 'Failed to load routes info' }, { status: 500 });
+    ctx.json({ error: 'Failed to load routes info' }, 500)
   }
 }
+import { LumosContext } from '../../context.ts'

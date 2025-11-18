@@ -335,6 +335,7 @@ export const Layout: React.FC<LayoutProps> = ({ title, children }) => {
 // themes/my-theme/routes/index.tsx
 import * as React from 'react'
 import { renderToString } from 'react-dom/server'
+import { LumosContext } from '../../src/context.ts'
 import { Layout } from '../components/Layout.tsx'
 
 const HomePage: React.FC = () => (
@@ -344,11 +345,9 @@ const HomePage: React.FC = () => (
   </div>
 )
 
-export default async function handler(_request: Request): Promise<Response> {
+export default async function handler(ctx: LumosContext): Promise<void> {
   const html = '<!DOCTYPE html>' + renderToString(React.createElement(HomePage))
-  return new Response(html, {
-    headers: { 'Content-Type': 'text/html; charset=utf-8' }
-  })
+  ctx.html(html)
 }
 ```
 

@@ -43,6 +43,7 @@ Lumos 现在支持全局中间件功能，允许开发者在请求处理流程�
 
 ```typescript
 import { Plugin } from '../src/types.ts'
+import { LumosContext } from '../src/context.ts'
 
 const middlewareExamplePlugin: Plugin = {
   name: 'middleware-example-plugin',
@@ -50,19 +51,19 @@ const middlewareExamplePlugin: Plugin = {
   description: '示例插件，演示如何添加自定义中间件',
 
   async onServerStart(server: any) {
-    // 添加一个日志记录中间件
     server.addMiddleware({
       name: 'logging-middleware',
       priority: -50,
-      handler: async (request, response, next) => {
+      handler: async (ctx: LumosContext, next: () => Promise<Response>) => {
         const startTime = Date.now()
-        console.log(`📥 ${request.method} ${new URL(request.url).pathname}`)
+        const ua = ctx.get('user-agent') || ''
+        console.log(`📥 ${ctx.method} ${ctx.path} - UA: ${ua}`)
 
-        // 继续执行下一个中间件或处理请求
         const result = await next()
 
+        const status = result?.status ?? ctx.status
         const duration = Date.now() - startTime
-        console.log(`📤 响应状态: ${result.status} - 耗时: ${duration}ms`)
+        console.log(`📤 响应状态: ${status} - 耗时: ${duration}ms`)
 
         return result
       }

@@ -1,4 +1,5 @@
 import { Plugin, Middleware } from '../src/types.ts'
+import { LumosContext } from '../src/context.ts'
 
 const middlewareExamplePlugin: Plugin = {
   name: 'middleware-example-plugin',
@@ -13,16 +14,13 @@ const middlewareExamplePlugin: Plugin = {
     server.addMiddleware({
       name: 'logging-middleware',
       priority: -50, // 在IP访问控制之后执行
-      handler: async (request: Request, _response: Response, next: () => Promise<Response>): Promise<Response> => {
+      handler: async (ctx: LumosContext, next: () => Promise<Response>): Promise<Response> => {
         const startTime = Date.now()
-        console.log(`📥 ${request.method} ${new URL(request.url).pathname} - ${request.headers.get('user-agent')}`)
-
-        // 继续执行下一个中间件或处理请求
+        console.log(`📥 ${ctx.method} ${ctx.path} - ${ctx.get('user-agent')}`)
         const result = await next()
-
         const duration = Date.now() - startTime
-        console.log(`📤 响应状态: ${result.status} - 耗时: ${duration}ms`)
-
+        const status = (result && typeof result.status === 'number') ? result.status : ctx.status
+        console.log(`📤 响应状态: ${status} - 耗时: ${duration}ms`)
         return result
       }
     } as Middleware)
@@ -31,12 +29,9 @@ const middlewareExamplePlugin: Plugin = {
     server.addMiddleware({
       name: 'header-modification-middleware',
       priority: 100, // 低优先级，在其他中间件之后执行
-      handler: async (_request: Request, _response: Response, next: () => Promise<Response>): Promise<Response> => {
-        // 继续执行下一个中间件或处理请求
+      handler: async (ctx: LumosContext, next: () => Promise<Response>): Promise<Response> => {
         const result = await next()
-
-        // 添加自定义响应头
-        result.headers.set('X-Powered-By', 'Lumos Blog Engine')
+        ctx.set('X-Powered-By', 'Lumos Blog Engine')
         return result
       }
     } as Middleware)

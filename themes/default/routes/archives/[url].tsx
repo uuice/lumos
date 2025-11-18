@@ -2,6 +2,7 @@
 import * as React from 'react'
 import { renderToString } from 'react-dom/server'
 import { DatabaseSchema, POST } from '../../../../src/types.ts'
+import { LumosContext } from '../../../../src/context.ts'
 import { Layout } from '../../components/Layout.tsx'
 import { WordCountReadingTime } from '../../components/macros/wordCountReadingTime.tsx'
 import { Metadata } from '../../components/macros/metadata.tsx'
@@ -189,11 +190,12 @@ const PostDetailPage: React.FC<{ data: DatabaseSchema, post: POST, previousArtic
   </Layout>
 )
 
-export default async function handler(request: Request, params: { url: string }): Promise<Response> {
+export default async function handler(ctx: LumosContext, params: { url: string }): Promise<void> {
   try {
     const data = (globalThis as any).__LUMOS_DATA__ as DatabaseSchema
     if (!data) {
-      return new Response('Server not initialized', { status: 500 })
+      ctx.text('Server not initialized', 500)
+      return
     }
 
     const postUrl = params.url
@@ -210,13 +212,14 @@ export default async function handler(request: Request, params: { url: string })
         const notFoundModule = await import('../404.tsx')
         const notFoundHandler = notFoundModule.default
         if (notFoundHandler) {
-          return await notFoundHandler(request)
+          await notFoundHandler(ctx)
+          return
         }
       } catch (error) {
         console.error('加载 404 页面失败:', error)
       }
-
-      return new Response('Post not found', { status: 404 })
+      ctx.text('Post not found', 404)
+      return
     }
 
     const post = data.posts[postIndex]
@@ -230,11 +233,9 @@ export default async function handler(request: Request, params: { url: string })
       React.createElement(PostDetailPage, { data, post, previousArticle, nextArticle })
     )
 
-    return new Response(html, {
-      headers: { 'Content-Type': 'text/html; charset=utf-8' }
-    })
+    ctx.html(html)
   } catch (error) {
     console.error('文章详情渲染错误:', error)
-    return new Response('Internal Server Error', { status: 500 })
+    ctx.text('Internal Server Error', 500)
   }
 }

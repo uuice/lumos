@@ -367,6 +367,7 @@ return (
 import * as React from 'react'
 import { renderToString } from 'react-dom/server'
 import { DatabaseSchema } from '../types.ts'
+import { LumosContext } from '../../src/context.ts'
 import { Layout } from '../components/Layout.tsx'
 
 const MyCustomPage: React.FC<{ data: DatabaseSchema }> = ({ data }) => (
@@ -378,23 +379,22 @@ const MyCustomPage: React.FC<{ data: DatabaseSchema }> = ({ data }) => (
   </Layout>
 )
 
-export default async function handler(_request: Request): Promise<Response> {
+export default async function handler(ctx: LumosContext): Promise<void> {
   try {
     const data = (globalThis as any).__LUMOS_DATA__ as DatabaseSchema
     if (!data) {
-      return new Response('Server not initialized', { status: 500 })
+      ctx.html('Server not initialized', 500)
+      return
     }
 
     const html = '<!DOCTYPE html>' + renderToString(
       React.createElement(MyCustomPage, { data })
     )
 
-    return new Response(html, {
-      headers: { 'Content-Type': 'text/html; charset=utf-8' }
-    })
+    ctx.html(html)
   } catch (error) {
     console.error('页面渲染错误:', error)
-    return new Response('Internal Server Error', { status: 500 })
+    ctx.html('Internal Server Error', 500)
   }
 }
 ```
@@ -406,6 +406,7 @@ export default async function handler(_request: Request): Promise<Response> {
 import * as React from 'react'
 import { renderToString } from 'react-dom/server'
 import { DatabaseSchema } from '../types.ts'
+import { LumosContext } from '../../src/context.ts'
 import { Layout } from '../components/Layout.tsx'
 
 const CustomDynamicPage: React.FC<{
@@ -420,26 +421,24 @@ const CustomDynamicPage: React.FC<{
   </Layout>
 )
 
-export default async function handler(
-  request: Request,
-  params: { slug: string }
-): Promise<Response> {
+export default async function handler(ctx: LumosContext): Promise<void> {
   try {
     const data = (globalThis as any).__LUMOS_DATA__ as DatabaseSchema
     if (!data) {
-      return new Response('Server not initialized', { status: 500 })
+      ctx.html('Server not initialized', 500)
+      return
     }
 
+    const slug = ctx.params.slug
+
     const html = '<!DOCTYPE html>' + renderToString(
-      React.createElement(CustomDynamicPage, { data, slug: params.slug })
+      React.createElement(CustomDynamicPage, { data, slug })
     )
 
-    return new Response(html, {
-      headers: { 'Content-Type': 'text/html; charset=utf-8' }
-    })
+    ctx.html(html)
   } catch (error) {
     console.error('动态页面渲染错误:', error)
-    return new Response('Internal Server Error', { status: 500 })
+    ctx.html('Internal Server Error', 500)
   }
 }
 ```
@@ -451,36 +450,37 @@ export default async function handler(
 ```typescript
 // src/routes/api/custom.ts
 import { DatabaseSchema } from '../../types.ts'
+import { LumosContext } from '../../context.ts'
 
-export default async function handler(request: Request): Promise<Response> {
+export default async function handler(ctx: LumosContext): Promise<void> {
   try {
     const data = (globalThis as any).__LUMOS_DATA__ as DatabaseSchema
     if (!data) {
-      return new Response('Server not initialized', { status: 500 })
+      ctx.json({ error: 'Server not initialized' }, 500)
+      return
     }
 
-    // 处理不同的 HTTP 方法
-    const method = request.method
+    const method = ctx.method
 
     switch (method) {
       case 'GET':
-        return handleGet(data, request)
+        await handleGet(data, ctx)
+        break
       case 'POST':
-        return handlePost(data, request)
+        await handlePost(data, ctx)
+        break
       default:
-        return new Response('Method not allowed', { status: 405 })
+        ctx.json({ error: 'Method not allowed' }, 405)
     }
   } catch (error) {
     console.error('API 错误:', error)
-    return Response.json({ error: 'Internal Server Error' }, { status: 500 })
+    ctx.json({ error: 'Internal Server Error' }, 500)
   }
 }
 
-async function handleGet(data: DatabaseSchema, request: Request): Promise<Response> {
-  const url = new URL(request.url)
-  const query = url.searchParams.get('query')
+async function handleGet(data: DatabaseSchema, ctx: LumosContext): Promise<void> {
+  const query = ctx.url.searchParams.get('query')
 
-  // 自定义业务逻辑
   const result = {
     message: 'Hello from custom API',
     query,
@@ -492,14 +492,13 @@ async function handleGet(data: DatabaseSchema, request: Request): Promise<Respon
     }
   }
 
-  return Response.json(result)
+  ctx.json(result)
 }
 
-async function handlePost(data: DatabaseSchema, request: Request): Promise<Response> {
-  const body = await request.json()
+async function handlePost(data: DatabaseSchema, ctx: LumosContext): Promise<void> {
+  const body = await ctx.parseBody()
 
-  // 处理 POST 请求
-  return Response.json({
+  ctx.json({
     message: 'POST request received',
     data: body
   })

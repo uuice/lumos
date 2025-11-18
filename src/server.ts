@@ -8,6 +8,7 @@ import { buildResponseHeaders } from './utils.ts'
 // 导入IP访问控制中间件
 import { IPAccessControlMiddleware } from './middlewares/ip-access-control.ts'
 import { htmlRoutes } from '../bundler/html-route.ts'
+import { LumosContext } from './context.ts'
 
 // 定义配置接口
 interface ServerOptions {
@@ -206,36 +207,32 @@ export class LumosServer {
     // 添加IP访问控制中间件
     this.addMiddleware({
       name: 'ip-access-control',
-      priority: -100, // 高优先级
-      handler: async (request: Request, _response: Response, next: () => Promise<Response>): Promise<Response> => {
-        // 如果没有配置IP访问控制，直接通过
+      priority: -100,
+      handler: async (ctx: LumosContext, next: () => Promise<Response>): Promise<Response> => {
         if (!this.config?.middleware) {
           return await next()
         }
-
-        const clientIp = this.getIpAddress(request)
-
-        // 使用中间件类中的静态方法检查IP是否被允许
+        const clientIp = this.getIpAddress(ctx.request)
         if (!IPAccessControlMiddleware.isIPAllowed(clientIp, this.config.middleware)) {
-          return new Response('Forbidden', { status: 403 })
+          ctx.text('Forbidden', 403)
+          return ctx.send()
         }
-
         return await next()
       }
     })
   }
 
   // 执行中间件链
-  private async executeMiddlewares(request: Request): Promise<Response> {
+  private async executeMiddlewares(ctx: LumosContext): Promise<Response> {
     let index = 0
 
     const next = async (): Promise<Response> => {
       if (index < this.middlewares.length) {
         const middleware = this.middlewares[index++]
-        return await middleware.handler(request, new Response(), next)
+        return await middleware.handler(ctx, next)
       } else {
         // 所有中间件执行完毕，处理实际请求
-        return await this.handleRequestInternal(request)
+        return await this.handleRequestInternal(ctx)
       }
     }
 
@@ -243,8 +240,8 @@ export class LumosServer {
   }
 
   // 修改原来的handleRequest方法名，避免冲突
-  private async handleRequestInternal(request: Request): Promise<Response> {
-    const url = new URL(request.url)
+  private async handleRequestInternal(ctx: LumosContext): Promise<Response> {
+    const url = new URL(ctx.request.url)
     const pathname = url.pathname
 
     // 若启用 NestJS 适配，优先转发挂载前缀请求到 Nest 服务
@@ -253,15 +250,18 @@ export class LumosServer {
       if (enabled && pathname.startsWith(mountPath)) {
         const forwardPath = pathname.substring(mountPath.length) || '/'
         const targetUrl = `http://localhost:${port}${forwardPath}${url.search}`
-        const method = request.method
-        const headers = new Headers(request.headers)
+        const method = ctx.request.method
+        const headers = new Headers(ctx.request.headers)
         headers.delete('host')
         const init: RequestInit = { method, headers }
         if (method !== 'GET' && method !== 'HEAD') {
-          init.body = await request.arrayBuffer()
+          init.body = await ctx.request.arrayBuffer()
         }
         const nestRes = await fetch(targetUrl, init)
-        return new Response(nestRes.body, { status: nestRes.status, headers: nestRes.headers })
+        ctx.body = await nestRes.arrayBuffer()
+        ctx.status = nestRes.status
+        ctx.headers = nestRes.headers
+        return ctx.send()
       }
     } catch (e) {
       console.warn('NestJS proxy failed, continue with Lumos routes:', e)
@@ -272,68 +272,6 @@ export class LumosServer {
     if (staticResponse) {
       return staticResponse
     }
-
-    // 检查是否是 dist 目录中的静态文件
-    // if (!pathname.startsWith('/api/') && !pathname.startsWith('/assets/')) {
-    //   try {
-    //     const themePath = join(this.basePath, 'bundler')
-    //     const distDir = join(themePath, 'dist')
-
-    //     // 检查请求的路径是否是一个目录
-    //     const requestedPath = join(distDir, pathname.substring(1));
-    //     try {
-    //       const stat = await Bun.file(requestedPath).stat();
-    //       // 如果路径存在且是一个目录，重定向到带斜杠的版本
-    //       if (stat && stat.isDirectory() && !pathname.endsWith('/')) {
-    //         return new Response(null, {
-    //           status: 301,
-    //           headers: {
-    //             'Location': pathname + '/'
-    //           }
-    //         });
-    //       }
-    //     } catch {
-    //       // 路径不存在，继续处理
-    //     }
-
-    //     // 构建可能的文件路径列表
-    //     const possiblePaths = [
-    //       // 直接使用请求的路径
-    //       join(distDir, pathname.substring(1)),
-    //       // 如果路径以 / 结尾，尝试查找 index.html
-    //       pathname.endsWith('/') ? join(distDir, pathname.substring(1), 'index.html') : '',
-    //       // 如果路径不以 .html 结尾，尝试添加 .html 扩展名
-    //       pathname.endsWith('.html') ? '' : join(distDir, pathname.substring(1) + '.html')
-    //     ].filter(path => path.length > 0) // 过滤掉空路径
-
-    //     // 查找第一个存在的文件
-    //     let filePath: string | null = null
-    //     let file: BunFile | null = null
-
-    //     for (const path of possiblePaths) {
-    //       const candidateFile = Bun.file(path)
-    //       if (await candidateFile.exists()) {
-    //         filePath = path
-    //         file = candidateFile
-    //         break
-    //       }
-    //     }
-
-    //     // 如果找到了存在的文件
-    //     if (filePath && file) {
-    //       // 获取缓存配置
-    //       const cacheConfig = this.getStaticAssetCacheConfig()
-    //       // 构建响应头
-    //       const headers: Record<string, string> = await buildResponseHeaders(filePath, cacheConfig)
-
-    //       return new Response(file, {
-    //         headers
-    //       })
-    //     }
-    //   } catch (error) {
-    //     console.error('dist目录静态文件处理错误:', error)
-    //   }
-    // }
 
     // 确保数据已加载
     if (!this.data) {
@@ -350,16 +288,16 @@ export class LumosServer {
 
         if (handler) {
           // 调用路由处理器
-          const response = await handler(request, apiMatch.params || {})
+          await handler(ctx, apiMatch.params || {})
           // api set cors from config
           if (this.config!.cors && this.config!.cors.enabled) {
             if (this.config!.cors.options) {
               for (const [key, value] of Object.entries(this.config!.cors.options)) {
-                response.headers.set(key, value)
+                ctx.set(key, value.toString())
               }
             }
           }
-          return response
+          return ctx.send()
         }
       }
 
@@ -372,30 +310,30 @@ export class LumosServer {
 
         if (handler) {
           // 调用路由处理器
-          const response = await handler(request, themeMatch.params || {})
+          await handler(ctx, themeMatch.params || {})
 
           // 如果是 HTML 响应，执行渲染钩子
-          if (response && response.headers.get('Content-Type')?.includes('text/html')) {
-            const originalHtml = await response.text()
+          if (ctx.get('Content-Type')?.includes('text/html')) {
+            const originalHtml = typeof ctx.res.body === 'string' ? ctx.res.body : String(ctx.res.body ?? '')
             const modifiedHtml = await this.pluginManager.executeRender(originalHtml, this.data)
             return new Response(modifiedHtml, {
-              status: response.status,
-              headers: response.headers
+              status: ctx.status,
+              headers: ctx.res.headers
             })
           }
           // 如果是 JSON 响应，添加CORS头
-          if (response.headers.get('Content-Type')?.includes('application/json')) {
+          if (ctx.get('Content-Type')?.includes('application/json')) {
             // api set cors from config
             if (this.config!.cors && this.config!.cors.enabled) {
               if (this.config!.cors.options) {
                 for (const [key, value] of Object.entries(this.config!.cors.options)) {
-                  response.headers.set(key, value)
+                  ctx.set(key, value.toString())
                 }
               }
             }
           }
 
-          return response
+          return ctx.send()
         }
       }
 
@@ -412,8 +350,9 @@ export class LumosServer {
 
   // 重写handleRequest方法，使用中间件
   private async handleRequest(request: Request): Promise<Response> {
+    const ctx = new LumosContext(request)
     try {
-      return await this.executeMiddlewares(request)
+      return await this.executeMiddlewares(ctx)
     } catch (error) {
       console.error('中间件执行错误:', error)
       return await this.handleError(
@@ -432,7 +371,9 @@ export class LumosServer {
       const handler = notFoundModule.default
 
       if (handler) {
-        return await handler(new Request('http://localhost/404'))
+        const ctx = new LumosContext(new Request('http://localhost/404'))
+        await handler(ctx)
+        return ctx.send()
       }
     } catch (error) {
       console.error('404页面加载失败:', error)
@@ -481,10 +422,12 @@ export class LumosServer {
       const handler = errorModule.default
 
       if (handler) {
-        return await handler(new Request('http://localhost/error'), {
+        const ctx = new LumosContext(new Request('http://localhost/error'))
+        await handler(ctx, {
           error: errorMessage,
           statusCode
         })
+        return ctx.send()
       }
     } catch (error) {
       console.error('错误页面加载失败:', error)
