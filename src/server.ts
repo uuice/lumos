@@ -518,6 +518,12 @@ export class LumosServer {
           '/health': async (_req: Request) => {
             return Response.json({ status: "ok" });
           },
+          '/robots.txt': async (_req: Request) => {
+            return new Response('User-agent: *\nAllow: /', {
+              status: 200,
+              headers: { 'Content-Type': 'text/plain' }
+            })
+          }
         },
 
         fetch: request => this.handleRequest(request)
