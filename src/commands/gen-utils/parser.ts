@@ -15,6 +15,7 @@ import {
   getFilesByExtension,
   isCacheValid,
   markdownToHtml,
+  mdxToHtml,
   markdownToToc,
   readCache,
   saveCache,
@@ -59,9 +60,9 @@ export class Parser {
       content = await this.pluginManager.executeParseFile(filePath, content, type)
 
       const { data: frontMatter, content: mdContent } = matter(content)
-
-      // 将 Markdown 转换为 HTML（包含代码高亮）
-      const htmlContent = await markdownToHtml(mdContent)
+      const baseName = basename(filePath).replace(/\.(md|mdx)$/i, '')
+      const isMDX = filePath.endsWith('.mdx')
+      const htmlContent = isMDX ? await mdxToHtml(mdContent) : await markdownToHtml(mdContent)
 
       // 生成 TOC
       const tocContent = await markdownToToc(mdContent)
@@ -71,7 +72,7 @@ export class Parser {
       if (frontMatter.id) {
         generatedId = frontMatter.id
       } else {
-        const title = frontMatter.title || basename(filePath, '.md')
+        const title = frontMatter.title || baseName
         const alias = frontMatter.alias
 
         switch (type) {
@@ -91,8 +92,8 @@ export class Parser {
 
       const article: ARTICLE = {
         id: generatedId,
-        title: frontMatter.title || basename(filePath, '.md'),
-        alias: frontMatter.alias || titleToUrl(frontMatter.title || basename(filePath, '.md')),
+        title: frontMatter.title || baseName,
+        alias: frontMatter.alias || titleToUrl(frontMatter.title || baseName),
         cover: frontMatter.cover || '',
         created_time: frontMatter.created_time || formatDate(),
         date: frontMatter.date || frontMatter.created_time || formatDate(),
@@ -115,7 +116,7 @@ export class Parser {
         toc: tocContent, // 使用生成的 TOC
         created_timestamp: new Date(frontMatter.created_time || Date.now()).getTime(),
         updated_timestamp: new Date(frontMatter.updated_time || Date.now()).getTime(),
-        url: `${frontMatter.url || titleToUrl(frontMatter.alias || frontMatter.title || basename(filePath, '.md'))}`,
+        url: `${frontMatter.url || titleToUrl(frontMatter.alias || frontMatter.title || baseName)}`,
         symbolsCount: symbolsCount(mdContent),
         authorIds: Array.isArray(frontMatter.authors)
           ? frontMatter.authors
@@ -175,7 +176,7 @@ export class Parser {
 
     // 解析 posts
     const postsDir = join(sourceDir, '_posts')
-    const postFiles = await getFilesByExtension(postsDir, ['.md'])
+    const postFiles = await getFilesByExtension(postsDir, ['.md', '.mdx'])
 
     for (const filePath of postFiles) {
       const article = await this.parseMarkdownFile(filePath, 'post')
@@ -186,7 +187,7 @@ export class Parser {
 
     // 解析 pages
     const pagesDir = join(sourceDir, '_pages')
-    const pageFiles = await getFilesByExtension(pagesDir, ['.md'])
+    const pageFiles = await getFilesByExtension(pagesDir, ['.md', '.mdx'])
 
     for (const filePath of pageFiles) {
       const article = await this.parseMarkdownFile(filePath, 'page')
@@ -197,7 +198,7 @@ export class Parser {
 
     // 解析 authors
     const authorsDir = join(sourceDir, '_authors')
-    const authorFiles = await getFilesByExtension(authorsDir, ['.md'])
+    const authorFiles = await getFilesByExtension(authorsDir, ['.md', '.mdx'])
 
     for (const filePath of authorFiles) {
       const article = await this.parseMarkdownFile(filePath, 'author')

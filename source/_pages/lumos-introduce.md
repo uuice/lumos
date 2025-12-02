@@ -479,6 +479,7 @@ Bundler HTML 页面具有比主题路由更高的优先级。当用户访问一�
 - 📄 **Gray Matter**: Front Matter 解析
 - 🎨 **Highlight.js**: 代码语法高亮
 - 🔤 **Pinyin**: 中文转拼音工具
+- 📦 **MDX 支持**: 支持创建和使用 .mdx 文件，在 Markdown 中直接使用 JSX
 
 ### 数据存储
 
@@ -522,6 +523,9 @@ lumos new page "关于我们"
 
 # 创建新作者
 lumos new author "张三"
+
+# 创建 MDX 页面
+lumos new page "MDX 示例" -e "mdx"
 ```
 
 关于 CLI 命令的详细使用方法，请参阅 [Lumos CLI 使用指南](./lumos-cli-usage.md)。

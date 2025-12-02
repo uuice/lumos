@@ -106,7 +106,8 @@ async function main() {
 
         const title = restArgs[0]
         const newOptions = {
-          path: (options.path || options.p) as string
+          path: (options.path || options.p) as string,
+          extension: (options.extension || options.e) as string
         }
 
         await newCommand(subcommand, title, newOptions)

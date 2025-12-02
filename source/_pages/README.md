@@ -14,7 +14,7 @@
 ## ✨ 特性
 
 - ⚡ **极快启动**: 基于 Bun 运行时，冷启动时间 < 100ms
-- 📝 **Markdown 原生支持**: 完整的 Markdown 解析，支持代码高亮和 TOC 生成
+- 📝 **Markdown，MDX 原生支持**: 完整的 Markdown，MDX 解析，支持代码高亮和 TOC 生成
 - 🎨 **现代化模板**: JSX + React 组件替代传统模板引擎
 - 🎯 **TypeScript 全覆盖**: 完整的类型安全和开发体验
 - 📁 **多格式配置**: 支持 JSON、YAML 配置文件
@@ -74,6 +74,9 @@ lumos new author "张三"
 
 # 指定子目录
 lumos new post "技术分享" -p "tech"
+
+# 创建 MDX 页面
+lumos new page "MDX 示例" -e "mdx"
 ```
 
 ### 2. 生成数据文件
@@ -314,9 +317,9 @@ lumos gen && lumos server -w
 ```
 lumos/
 ├── 📁 source/               # 内容源目录
-│   ├── 📁 _authors/         # 作者 Markdown 文件
-│   ├── 📁 _pages/          # 页面 Markdown 文件
-│   ├── 📁 _posts/          # 文章 Markdown 文件
+│   ├── 📁 _authors/         # 作者 Markdown 文件 (支持 .md 和 .mdx)
+│   ├── 📁 _pages/          # 页面 Markdown 文件 (支持 .md 和 .mdx)
+│   ├── 📁 _posts/          # 文章 Markdown 文件 (支持 .md 和 .mdx)
 │   ├── 📁 _jsons/          # JSON 配置文件
 │   └── 📁 _ymls/           # YAML 配置文件
 ├── 📁 src/                  # 源码目录
@@ -552,6 +555,11 @@ export default async function handler(ctx: LumosContext): Promise<void> {
 
 主题支持继承机制，可以通过扩展默认主题来创建自定义主题，只需覆盖需要修改的部分。
 
+## 📄 内容格式支持
+
+- Markdown (`.md`)
+- MDX (`.mdx`)，可在 Markdown 中直接使用 JSX
+
 ## 📄 Markdown 文件格式
 
 ### 文章 (\_posts/\*.md)
@@ -595,6 +603,20 @@ navOrder: 1 # 导航栏排序
 # 关于我们
 
 这里是页面内容...
+```
+
+### 页面 (\_pages/\*.mdx)
+
+```mdx
+---
+title: 'MDX 页面'
+alias: 'mdx-demo'
+published: true
+---
+
+# 这是一个 MDX 页面
+
+<em>可以直接写 JSX 组件</em>
 ```
 
 ### 作者 (\_authors/\*.md)

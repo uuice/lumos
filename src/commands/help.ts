@@ -44,7 +44,8 @@ Lumos - 基于 Bun 的静态博客生成器
   new <type> <title>      创建新的文章、页面或作者
     类型: post, page, author
     选项:
-      -p, --path <path>   指定子目录路径
+      -p, --path <path>      指定子目录路径
+      -e, --extension <ext>  指定文件扩展名 (md, mdx) 默认: md
   webp <input> <output>   将图片转换为 WebP 格式
     支持格式: jpg, jpeg, png, tiff, gif, bmp
     选项:
@@ -70,6 +71,7 @@ Lumos - 基于 Bun 的静态博客生成器
   lumos new post "Hello World"
   lumos new page "About Me" -p "info"
   lumos new author "John Doe"
+  lumos new page "MDX Demo" -e "mdx"
   lumos webp ./images ./webp-images --quality=85
   lumos webp ./images/avatar.jpg ./webp-images/avatar.webp --quality=90
   `

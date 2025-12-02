@@ -194,6 +194,7 @@ bun run src/cli.ts new <type> <title> [options]
 #### 选项
 
 - `-p, --path <path>`: 指定子目录路径
+- `-e, --extension <ext>`: 指定文件扩展名 (md, mdx) 默认: md
 
 #### 示例
 
@@ -265,6 +266,20 @@ bun run src/cli.ts new <type> <title> [options]
 
    ```bash
    bun run src/cli.ts new author "张三"
+   ```
+
+6. **创建 MDX 页面**
+
+   使用 `lumos` 命令：
+
+   ```bash
+   lumos new page "MDX 示例" -e "mdx"
+   ```
+
+   使用 `bun run` 命令：
+
+   ```bash
+   bun run src/cli.ts new page "MDX 示例" -e "mdx"
    ```
 
 ### gen 命令
@@ -602,15 +617,15 @@ WebP 图片通常比原图小 25-35%，同时保持相近的视觉质量，有�
 
 ### 文章 (Post)
 
-生成路径: `source/_posts/[path/]<title>.md`
+生成路径: `source/_posts/[path/]<title>.md` (默认) 或 `source/_posts/[path/]<title>.mdx`
 
 ### 页面 (Page)
 
-生成路径: `source/_pages/[path/]<title>.md`
+生成路径: `source/_pages/[path/]<title>.md` (默认) 或 `source/_pages/[path/]<title>.mdx`
 
 ### 作者 (Author)
 
-生成路径: `source/_authors/[path/]<title>.md`
+生成路径: `source/_authors/[path/]<title>.md` (默认) 或 `source/_authors/[path/]<title>.mdx`
 
 ## 📄 模板结构
 

@@ -5,6 +5,7 @@ import { AuthorTemplate, PageTemplate, PostTemplate } from '../../templates/inde
 
 export interface NewCommandOptions {
   path?: string
+  extension?: string
 }
 
 export async function newCommand(type: string, title: string, options: NewCommandOptions = {}) {
@@ -12,29 +13,34 @@ export async function newCommand(type: string, title: string, options: NewComman
     throw new Error('Type and title are required')
   }
 
-  const { path: subPath = '' } = options
+  const { path: subPath = '', extension = 'md' } = options
   const currentTime = formatDate()
+
+  // Validate extension
+  if (extension !== 'md' && extension !== 'mdx') {
+    throw new Error(`Unknown extension: ${extension}. Supported extensions: md, mdx`)
+  }
 
   switch (type.toLowerCase()) {
     case 'post':
-      await createPost(title, subPath, currentTime)
+      await createPost(title, subPath, currentTime, extension)
       break
     case 'page':
-      await createPage(title, subPath, currentTime)
+      await createPage(title, subPath, currentTime, extension)
       break
     case 'author':
-      await createAuthor(title, subPath, currentTime)
+      await createAuthor(title, subPath, currentTime, extension)
       break
     default:
       throw new Error(`Unknown type: ${type}. Supported types: post, page, author`)
   }
 }
 
-async function createPost(title: string, subPath: string, currentTime: string) {
+async function createPost(title: string, subPath: string, currentTime: string, extension: string) {
   const postId = generatePostId(title)
   const sourcePath = process.cwd()
   const postDir = join(sourcePath, 'source', '_posts', subPath)
-  const postPath = join(postDir, `${title}.md`)
+  const postPath = join(postDir, `${title}.${extension}`)
 
   await ensureDirectoryExists(postDir)
   await checkFileNotExists(postPath, 'post', title)
@@ -50,11 +56,11 @@ async function createPost(title: string, subPath: string, currentTime: string) {
   console.log(`✅ Post "${title}" created successfully at ${postPath}`)
 }
 
-async function createPage(title: string, subPath: string, currentTime: string) {
+async function createPage(title: string, subPath: string, currentTime: string, extension: string) {
   const pageId = generatePageId(title)
   const sourcePath = process.cwd()
   const pageDir = join(sourcePath, 'source', '_pages', subPath)
-  const pagePath = join(pageDir, `${title}.md`)
+  const pagePath = join(pageDir, `${title}.${extension}`)
 
   await ensureDirectoryExists(pageDir)
   await checkFileNotExists(pagePath, 'page', title)
@@ -70,11 +76,11 @@ async function createPage(title: string, subPath: string, currentTime: string) {
   console.log(`✅ Page "${title}" created successfully at ${pagePath}`)
 }
 
-async function createAuthor(title: string, subPath: string, currentTime: string) {
+async function createAuthor(title: string, subPath: string, currentTime: string, extension: string) {
   const authorId = generateAuthorId(title)
   const sourcePath = process.cwd()
   const authorDir = join(sourcePath, 'source', '_authors', subPath)
-  const authorPath = join(authorDir, `${title}.md`)
+  const authorPath = join(authorDir, `${title}.${extension}`)
 
   await ensureDirectoryExists(authorDir)
   await checkFileNotExists(authorPath, 'author', title)

@@ -3,6 +3,10 @@ import { mkdir, readdir, stat } from 'fs/promises'
 import { extname, join } from 'path'
 import { v4 as uuidv4, v5 as uuidv5 } from 'uuid'
 import { marked } from 'marked'
+import { compile, run } from '@mdx-js/mdx'
+import * as jsxRuntime from 'react/jsx-runtime'
+import { renderToString } from 'react-dom/server'
+import React from 'react'
 // @ts-expect-error markdown-toc库没有TypeScript类型定义
 import markToc from 'markdown-toc'
 import highlight from 'highlight.js'
@@ -350,6 +354,44 @@ export async function markdownToHtml(content: string): Promise<string> {
       }
     }
   )
+}
+
+export async function mdxToHtml(content: string): Promise<string> {
+  try {
+    const compiled = await compile(content, { outputFormat: 'function-body', development: false, baseUrl: 'file://' + process.cwd() + '/' })
+    const mod = await run(String(compiled), { ...jsxRuntime, baseUrl: 'file://' + process.cwd() + '/' })
+    const MDXContent = (mod as any).default
+    const html = renderToString(React.createElement(MDXContent))
+    const withAnchors = html.replace(/<h(\d)[^<>]*>(.*?)<\/h\1>/g, (a, b, c) => {
+      return `<h${b} id="${generateTocName(c)}"><a class="anchor" href="#${generateTocName(c)}"></a>${c}</h${b}>`
+    })
+    return withAnchors.replace(
+      /<pre><code\s*(?:class="(lang|language)-(\w+)")?>[\s\S]*?<\/code><\/pre>/gm,
+      (match) => {
+        const langMatch = match.match(/<pre><code\s*(?:class="(?:lang|language)-(\w+)")?>(.*?)<\/code><\/pre>/s)
+        if (!langMatch) return match
+        const language = langMatch[1]
+        let text = langMatch[2]
+        text = text
+          .replace(/&#39;/g, "'")
+          .replace(/&gt;/g, '>')
+          .replace(/&lt;/g, '<')
+          .replace(/&quot;/g, '"')
+          .replace(/&amp;/g, '&')
+        try {
+          const result = highlight.highlightAuto(text, language ? [language] : undefined)
+          return `<pre><code class="hljs lang-${result.language || 'text'}">${result.value}</code></pre>`
+        } catch (error) {
+          console.warn('代码高亮失败:', error)
+          return match
+        }
+      }
+    )
+  } catch (error) {
+    console.error('MDX 编译失败:', error)
+    // 降级到普通的 Markdown 处理
+    return await markdownToHtml(content)
+  }
 }
 
 // 缓存相关功能

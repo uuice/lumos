@@ -1,0 +1,368 @@
+---
+title: 'Advanced MDX Demo'
+date: '2025-12-02'
+alias: 'advanced-mdx-demo'
+categories: ['技术', 'MDX', '前端']
+tags: ['MDX', 'React', 'Bun', '静态博客']
+excerpt: '这是一个高级 MDX 功能演示，展示了复杂组件、交互式元素和现代前端技术的结合'
+author: 'default-author'
+published: true
+featured: true
+---
+
+import React from 'react'
+
+# 高级 MDX 功能演示
+
+这是一个更复杂和完整的 MDX 示例，展示了各种高级功能和组件。
+
+## 动态组件示例
+
+export function Counter() {
+  const [count, setCount] = React.useState(0)
+
+  return (
+    <>
+      <div style={{
+        border: '2px solid #3b82f6',
+        borderRadius: '8px',
+        padding: '16px',
+        textAlign: 'center',
+        backgroundColor: '#f0f9ff'
+      }}>
+        <h3>交互式计数器</h3>
+        <p>当前计数: <strong>{count}</strong></p>
+        <button
+          onClick={() => setCount(count + 1)}
+          style={{
+            backgroundColor: '#3b82f6',
+            color: 'white',
+            border: 'none',
+            padding: '8px 16px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            marginRight: '8px'
+          }} >
+          增加
+        </button>
+        <button
+          onClick={() => setCount(0)}
+          style={{
+            backgroundColor: '#ef4444',
+            color: 'white',
+            border: 'none',
+            padding: '8px 16px',
+            borderRadius: '4px',
+            cursor: 'pointer'
+          }} >
+          重置
+        </button>
+      </div>
+    </>
+  )
+}
+
+<Counter />
+
+## 条件渲染示例
+
+export function ConditionalContent({ showAdvanced }) {
+  return (
+    <div
+      style={{
+        border: '1px dashed #64748b',
+        borderRadius: '8px',
+        padding: '16px',
+        marginTop: '16px'
+      }}
+    >
+      <h3>条件渲染内容</h3>
+      {showAdvanced ? (
+        <div>
+          <p>这是高级内容，只有在启用时才会显示。</p>
+          <ul>
+            <li>特性一：支持复杂的状态管理</li>
+            <li>特性二：可以包含嵌套组件</li>
+            <li>特性三：支持动态数据展示</li>
+          </ul>
+        </div>
+      ) : (
+        <p>基础内容显示中... 点击下面的按钮查看高级内容。</p>
+      )}
+    </div>
+  )
+}
+
+export function ToggleButton() {
+  const [showAdvanced, setShowAdvanced] = React.useState(false)
+
+  return (
+    <>
+      <div>
+        <ConditionalContent showAdvanced={showAdvanced} />
+        <button
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          style={{
+            backgroundColor: '#10b981',
+            color: 'white',
+            border: 'none',
+            padding: '8px 16px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            marginTop: '12px'
+          }} >
+          {showAdvanced ? '隐藏高级内容' : '显示高级内容'}
+        </button>
+      </div>
+    </>
+  )
+}
+
+<ToggleButton />
+
+## 数据展示组件
+
+export function DataTable({ data }) {
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <table
+        style={{
+          width: '100%',
+          borderCollapse: 'collapse',
+          marginTop: '16px'
+        }}
+      >
+        <thead>
+          <tr style={{ backgroundColor: '#f1f5f9' }}>
+            {data && data.length > 0 && Object.keys(data[0]).map(key => (
+              <th
+                key={key}
+                style={{
+                  border: '1px solid #cbd5e1',
+                  padding: '8px 12px',
+                  textAlign: 'left'
+                }}
+              >
+                {key}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data && data.map((row, index) => (
+            <tr
+              key={index}
+              style={{
+                backgroundColor: index % 2 === 0 ? 'white' : '#f8fafc'
+              }}
+            >
+              {row && Object.values(row).map((cell, cellIndex) => (
+                <td
+                  key={cellIndex}
+                  style={{
+                    border: '1px solid #cbd5e1',
+                    padding: '8px 12px'
+                  }}
+                >
+                  {cell}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+export function DataTableWithSampleData() {
+  const sampleData = [
+    { name: '项目 A', status: '已完成', progress: '100%', owner: '张三' },
+    { name: '项目 B', status: '进行中', progress: '75%', owner: '李四' },
+    { name: '项目 C', status: '待开始', progress: '0%', owner: '王五' },
+    { name: '项目 D', status: '已暂停', progress: '50%', owner: '赵六' }
+  ]
+
+  return <DataTable data={sampleData} />
+}
+
+<DataTableWithSampleData />
+
+## 图表组件模拟
+
+export function BarChart({ data }) {
+  const maxValue = Math.max(...data.map(item => item.value))
+
+  return (
+    <div style={{
+      padding: '16px',
+      backgroundColor: '#f8fafc',
+      borderRadius: '8px',
+      marginTop: '16px'
+    }}>
+      <h3>数据可视化模拟</h3>
+      <div style={{ display: 'flex', alignItems: 'flex-end', height: '150px', gap: '8px' }}>
+        {data.map((item, index) => (
+          <div
+            key={index}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              flex: 1
+            }} >
+            <div
+              style={{
+                width: '100%',
+                height: (item.value / maxValue) * 100 + '%',
+                backgroundColor: item.color || '#3b82f6',
+                borderRadius: '4px 4px 0 0',
+                transition: 'height 0.3s ease'
+              }}
+            />
+            <div style={{ marginTop: '8px', fontSize: '12px' }}>{item.label}</div>
+            <div style={{ fontSize: '10px', color: '#64748b' }}>{item.value}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export function BarChartWithSampleData() {
+  const chartData = [
+    { label: '一月', value: 65, color: '#3b82f6' },
+    { label: '二月', value: 59, color: '#8b5cf6' },
+    { label: '三月', value: 80, color: '#10b981' },
+    { label: '四月', value: 81, color: '#f59e0b' },
+    { label: '五月', value: 56, color: '#ef4444' },
+    { label: '六月', value: 55, color: '#06b6d4' }
+  ]
+
+  return <BarChart data={chartData} />
+}
+
+<BarChartWithSampleData />
+
+## 代码高亮与交互
+
+```jsx
+// 这是一个复杂的 React 组件示例
+import React, { useState, useEffect } from 'react'
+
+function ComplexComponent({ initialData }) {
+  const [data, setData] = useState(initialData)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    // 模拟数据获取
+    const fetchData = async () => {
+      setLoading(true)
+      try {
+        // 模拟 API 调用
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        setData(prev => [...prev, { id: Date.now(), name: 'New Item' }])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  return (
+    <div className="complex-component">
+      <h2>复杂组件示例</h2>
+      {loading ? (
+        <p>加载中...</p>
+      ) : (
+        <ul>
+          {data.map(item => (
+            <li key={item.id}>{item.name}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+```
+
+## 数学公式支持
+
+虽然原生 MDX 不直接支持 LaTeX，但我们可以通过自定义组件来实现：
+
+export function MathFormula({ formula }) {
+  return (
+    <div
+      style={{
+        backgroundColor: '#f1f5f9',
+        padding: '12px',
+        borderRadius: '4px',
+        fontFamily: 'monospace',
+        textAlign: 'center',
+        margin: '16px 0'
+      }}
+    >
+      {formula}
+    </div>
+  )
+}
+
+<MathFormula formula="E = mc^2" />
+<MathFormula formula="F = ma" />
+<MathFormula formula="a^2 + b^2 = c^2" />
+
+## 响应式布局示例
+
+export function ResponsiveGrid({ children }) {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+        gap: '16px',
+        marginTop: '16px'
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
+export function Card({ title, content }) {
+  return (
+    <div
+      style={{
+        border: '1px solid #cbd5e1',
+        borderRadius: '8px',
+        padding: '16px',
+        backgroundColor: 'white',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+      }}
+    >
+      <h4 style={{ marginTop: 0, color: '#3b82f6' }}>{title}</h4>
+      <p>{content}</p>
+    </div>
+  )
+}
+
+<ResponsiveGrid>
+  <Card title="特性一" content="支持复杂的响应式布局，自动适应不同屏幕尺寸" />
+  <Card title="特性二" content="可以创建可复用的组件库，提高开发效率" />
+  <Card title="特性三" content="结合 Markdown 和 JSX 的优势，提供最佳写作体验" />
+  <Card title="特性四" content="支持状态管理和用户交互，创建动态内容" />
+</ResponsiveGrid>
+
+## 总结
+
+这个高级 MDX 示例展示了以下功能：
+
+1. **交互式组件**：计数器、切换按钮等
+2. **条件渲染**：根据状态显示不同内容
+3. **数据展示**：表格和图表组件
+4. **代码高亮**：展示复杂代码片段
+5. **自定义组件**：数学公式和卡片布局
+6. **响应式设计**：自适应网格布局
+7. **状态管理**：使用 React Hooks 管理组件状态
+
+通过这些示例，我们可以看到 MDX 在创建丰富、交互式内容方面的强大能力。

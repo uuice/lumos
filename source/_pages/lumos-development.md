@@ -141,9 +141,9 @@ const server = Bun.serve({
 ```
 lumos/
 ├── 📁 source/               # 内容源目录
-│   ├── 📁 _authors/         # 作者 Markdown 文件
-│   ├── 📁 _pages/          # 页面 Markdown 文件
-│   ├── 📁 _posts/          # 文章 Markdown 文件
+│   ├── 📁 _authors/         # 作者 Markdown 文件 (支持 .md 和 .mdx)
+│   ├── 📁 _pages/          # 页面 Markdown 文件 (支持 .md 和 .mdx)
+│   ├── 📁 _posts/          # 文章 Markdown 文件 (支持 .md 和 .mdx)
 │   ├── 📁 _jsons/          # JSON 配置文件
 │   └── 📁 _ymls/           # YAML 配置文件
 ├── 📁 src/                  # 源码目录（核心开发区域）
@@ -984,6 +984,22 @@ const MyComponent: React.FC<{ data: DatabaseSchema }> = ({ data }) => {
   )
 }
 ```
+
+## 📄 MDX 文件支持
+
+Lumos 支持创建和使用 MDX 文件，这是一种可以在 Markdown 中直接使用 JSX 的文件格式。通过 `lumos new` 命令的 `-e` 选项，可以指定创建 `.mdx` 文件。
+
+示例：
+
+```bash
+# 创建 MDX 页面
+lumos new page "MDX 示例" -e mdx
+
+# 创建 MDX 文章
+lumos new post "MDX 文章" -e mdx
+```
+
+MDX 文件与普通 Markdown 文件具有相同的 Front Matter 结构，但可以在内容中直接使用 JSX 组件。
 
 ## 🧪 测试与调试
 

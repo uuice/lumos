@@ -1,0 +1,70 @@
+---
+title: 'MDX Demo'
+alias: 'mdx-demo'
+published: true
+navOrder: 9
+---
+
+# 这是 MDX 页面
+
+<em>支持 JSX 内联</em>
+
+```js
+console.log('hello mdx')
+```
+
+## 组件示例
+
+export function Callout({ type = 'info', children }) {
+  const colors = { info: '#3b82f6', success: '#16a34a', warn: '#f59e0b' }
+  return (
+    <div style={{ border: '1px solid #e5e7eb', padding: '12px', borderRadius: '12px' }}>
+      <strong style={{ color: colors[type] }}>{type.toUpperCase()}</strong>
+      <div>{children}</div>
+    </div>
+  )
+}
+
+<Callout type="info">这是一个 MDX 内部组件，用于演示 JSX 渲染</Callout>
+
+<Callout type="success">支持多种状态样式</Callout>
+
+## 列表与表格
+
+- 支持无序列表
+- 支持有序列表
+  1. 项目一
+  2. 项目二
+
+| 字段  | 描述     |
+| ----- | -------- |
+| title | 页面标题 |
+| alias | 路由别名 |
+
+## 代码与高亮
+
+```tsx
+function Hello({ name }: { name: string }) {
+  return <span>Hello {name}</span>
+}
+```
+
+```bash
+echo "MDX 示例"
+```
+
+## 链接与强调
+
+支持内联代码：`const x = 1`
+
+支持链接：<a href="/">返回首页</a>
+
+> 引用段落：这是一个用于展示的引用文本
+
+## 中文标题生成锚点
+
+### 子标题测试
+
+这是一个子标题段落。你可以点击下方链接跳转到上面的中文标题锚点。
+
+<a href="#中文标题生成锚点">跳转到中文标题锚点</a>
